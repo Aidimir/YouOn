@@ -9,10 +9,9 @@ target 'YouOn' do
 	pod 'SnapKit'
 	pod 'RxSwift'
 	pod 'RxCocoa'
-	pod 'SwiftEntryKit', '2.0.0'
     	pod 'MarqueeLabel'
     	pod 'Alamofire'
-    	pod 'Kingfisher' 
+    	pod 'Kingfisher'
 
   target 'YouOnTests' do
     inherit! :search_paths
