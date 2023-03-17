@@ -12,6 +12,16 @@ struct Playlist: Codable {
     var title: String
     var imageURL: URL?
     var id: UUID
+    var isDeletable: Bool {
+        get {
+            let str = UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist)
+            if str != nil {
+                return id != UUID(uuidString: str!)
+            } else {
+                return true
+            }
+        }
+    }
     
     mutating func addFile(file: MediaFile) {
         content.append(file)

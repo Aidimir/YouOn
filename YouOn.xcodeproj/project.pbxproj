@@ -10,6 +10,7 @@
 		2632501A5802B62DE7836783 /* Pods_YouOnTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F425F0CBFB6198A89E21BA3 /* Pods_YouOnTests.framework */; };
 		9D6E93D129C327470044A642 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D029C327470044A642 /* DataManager.swift */; };
 		9D6E93D329C328D60044A642 /* MediaDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D229C328D60044A642 /* MediaDataManager.swift */; };
+		9D6E93D629C4374F0044A642 /* UserDefaultKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D529C4374F0044A642 /* UserDefaultKeys.swift */; };
 		9DA011C729C1B61E00962778 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA011C629C1B61E00962778 /* AppDelegate.swift */; };
 		9DA011C929C1B61E00962778 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA011C829C1B61E00962778 /* SceneDelegate.swift */; };
 		9DA011CE29C1B61E00962778 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9DA011CC29C1B61E00962778 /* Main.storyboard */; };
@@ -58,6 +59,7 @@
 		8599946C2C54C1A4E27D368C /* Pods-YouOnTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouOnTests.release.xcconfig"; path = "Target Support Files/Pods-YouOnTests/Pods-YouOnTests.release.xcconfig"; sourceTree = "<group>"; };
 		9D6E93D029C327470044A642 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		9D6E93D229C328D60044A642 /* MediaDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDataManager.swift; sourceTree = "<group>"; };
+		9D6E93D529C4374F0044A642 /* UserDefaultKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultKeys.swift; sourceTree = "<group>"; };
 		9DA011C329C1B61E00962778 /* YouOn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YouOn.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DA011C629C1B61E00962778 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9DA011C829C1B61E00962778 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -109,6 +111,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9D6E93D429C4373F0044A642 /* Storages */ = {
+			isa = PBXGroup;
+			children = (
+				9D6E93D529C4374F0044A642 /* UserDefaultKeys.swift */,
+			);
+			path = Storages;
+			sourceTree = "<group>";
+		};
 		9DA011BA29C1B61E00962778 = {
 			isa = PBXGroup;
 			children = (
@@ -194,6 +204,7 @@
 		9DA011FC29C21BF900962778 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				9D6E93D429C4373F0044A642 /* Storages */,
 				9DA0120B29C2345E00962778 /* Services */,
 				9DA0120229C2297F00962778 /* MediaFileModel.swift */,
 				9DA0120429C22AA700962778 /* PlaylistModel.swift */,
@@ -484,6 +495,7 @@
 				9DA011FF29C21C0D00962778 /* MainRouter.swift in Sources */,
 				9DA0121229C239D100962778 /* Extensions.swift in Sources */,
 				9DA0120D29C2346A00962778 /* YTNetworkService.swift in Sources */,
+				9D6E93D629C4374F0044A642 /* UserDefaultKeys.swift in Sources */,
 				9DA011D129C1B61E00962778 /* YouOn.xcdatamodeld in Sources */,
 				9DA0120529C22AA700962778 /* PlaylistModel.swift in Sources */,
 				9DA0120329C2297F00962778 /* MediaFileModel.swift in Sources */,
