@@ -41,7 +41,7 @@ class MusicPlayer: MusicPlayerProtocol {
             nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player!.duration
             nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player!.rate
             nowPlayingInfo[MPMediaItemPropertyTitle] = file.title
-            URLSession.shared.dataTask(with: (file.imgURL!)) {[weak self] data, response, error in
+            URLSession.shared.dataTask(with: (file.imageURL!)) {[weak self] data, response, error in
                 if error == nil {
                     let artwork = MPMediaItemArtwork(boundsSize: .zero) { (size) -> UIImage in
                         return UIImage(data: data!)!

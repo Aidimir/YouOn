@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import Differentiator
 
 protocol MediaFileUIProtocol {
     var title: String { get set }
     var duration: TimeInterval { get set }
     var author: String { get set }
+    var imageURL: URL? { get set }
 }
 
 struct MediaFile: Codable, MediaFileUIProtocol {
@@ -22,5 +24,17 @@ struct MediaFile: Codable, MediaFileUIProtocol {
     var videoURL: URL
     var supportsVideo: Bool = false
     var videoDescription: String?
-    var imgURL: URL?
+    var imageURL: URL?
+}
+
+struct SectionOfMediaFileUI: SectionModelType {
+    init(original: SectionOfMediaFileUI, items: [Item]) {
+        self.items = items
+        self = original
+    }
+    
+    typealias Item = MediaFileUIProtocol
+    
+    var header: String?
+    var items: [Item]
 }

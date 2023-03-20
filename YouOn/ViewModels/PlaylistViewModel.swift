@@ -8,15 +8,15 @@
 import Foundation
 import RxRelay
 
-protocol CollectableViewModelProtocol {
+protocol CollectableViewModelProtocol: ViewModelProtocol {
     associatedtype T
     
     var uiModels: BehaviorRelay<[T]> { get set }
 }
 
-protocol PlaylistViewModelProtocol: ViewModelProtocol, CollectableViewModelProtocol {
+protocol PlaylistViewModelProtocol: CollectableViewModelProtocol {
     var player: MusicPlayerProtocol { get }
-    var saver: MediaSaverProtocol { get }
+    var saver: PlaylistSaverProtocol { get }
     var router: RouterProtocol { get }
     func playSong(indexPath: IndexPath)
 }
@@ -29,11 +29,11 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
         
     var player: MusicPlayerProtocol
     
-    var saver: MediaSaverProtocol
+    var saver: PlaylistSaverProtocol
     
     private var playlist: Playlist
     
-    init(player: MusicPlayerProtocol, saver: MediaSaverProtocol, router: RouterProtocol, playlist: Playlist) {
+    init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol, router: RouterProtocol, playlist: Playlist) {
         self.player = player
         self.saver = saver
         self.router = router
@@ -49,12 +49,14 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     }
     
     func playSong(indexPath: IndexPath) {
-        var curIndex = indexPath.row
-        player.play(file: uiModels.value[indexPath.row]) {
-            curIndex = IndexPath(index: indexPath.row + 1)
-            if curIndex != uiModels.value.endIndex {
-                playSong(indexPath: curIndex)
-            } else { return }
+        var curIndex = indexPath
+        if let file = uiModels.value[indexPath.row] as? MediaFile {
+            player.play(file: file) { [weak self] in
+                curIndex = IndexPath(index: indexPath.row + 1)
+                if curIndex.row != self?.uiModels.value.endIndex {
+                    self?.playSong(indexPath: curIndex)
+                } else { return }
+            }
         }
     }
     

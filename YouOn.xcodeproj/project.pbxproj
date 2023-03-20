@@ -8,6 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		2632501A5802B62DE7836783 /* Pods_YouOnTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F425F0CBFB6198A89E21BA3 /* Pods_YouOnTests.framework */; };
+		9D508FEE29C8789300F9EE5F /* XCDYouTubeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9D508FED29C8789300F9EE5F /* XCDYouTubeKit */; };
+		9D508FF029C879DE00F9EE5F /* AllPlaylistsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FEF29C879DD00F9EE5F /* AllPlaylistsTableView.swift */; };
+		9D508FF229C87A0D00F9EE5F /* BindableTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FF129C87A0D00F9EE5F /* BindableTableView.swift */; };
+		9D508FF429C8916F00F9EE5F /* LibraryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FF329C8916F00F9EE5F /* LibraryViewController.swift */; };
+		9D508FF629C893CF00F9EE5F /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FF529C893CF00F9EE5F /* LibraryViewModel.swift */; };
+		9D508FF829C8960000F9EE5F /* PlaylistSaverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FF729C8960000F9EE5F /* PlaylistSaverService.swift */; };
+		9D508FFA29C8981500F9EE5F /* LibraryPageBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FF929C8981500F9EE5F /* LibraryPageBuilder.swift */; };
 		9D6E93D129C327470044A642 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D029C327470044A642 /* DataManager.swift */; };
 		9D6E93D329C328D60044A642 /* MediaDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D229C328D60044A642 /* MediaDataManager.swift */; };
 		9D6E93D629C4374F0044A642 /* UserDefaultKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D529C4374F0044A642 /* UserDefaultKeys.swift */; };
@@ -15,6 +22,10 @@
 		9D6E93DB29C43C600044A642 /* VideoFounderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93DA29C43C600044A642 /* VideoFounderViewModel.swift */; };
 		9D6E93DD29C43DED0044A642 /* PlaylistViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93DC29C43DED0044A642 /* PlaylistViewModel.swift */; };
 		9D6E93E029C84DD40044A642 /* LibraryPageRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93DF29C84DD40044A642 /* LibraryPageRouter.swift */; };
+		9D6E93E429C860D30044A642 /* ProgressCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93E329C860D30044A642 /* ProgressCircleView.swift */; };
+		9D6E93E629C873B40044A642 /* PlaylistCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93E529C873B40044A642 /* PlaylistCell.swift */; };
+		9D6E93E829C874640044A642 /* MediaFileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93E729C874640044A642 /* MediaFileCell.swift */; };
+		9D6E93EA29C876740044A642 /* VideoFounderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93E929C876740044A642 /* VideoFounderViewController.swift */; };
 		9DA011C729C1B61E00962778 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA011C629C1B61E00962778 /* AppDelegate.swift */; };
 		9DA011C929C1B61E00962778 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA011C829C1B61E00962778 /* SceneDelegate.swift */; };
 		9DA011CE29C1B61E00962778 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9DA011CC29C1B61E00962778 /* Main.storyboard */; };
@@ -61,6 +72,12 @@
 		768C78EB65BC3A5873C9D7C0 /* Pods-YouOnTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouOnTests.debug.xcconfig"; path = "Target Support Files/Pods-YouOnTests/Pods-YouOnTests.debug.xcconfig"; sourceTree = "<group>"; };
 		79B6D6A51CC935FBA7D81208 /* Pods-YouOn-YouOnUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouOn-YouOnUITests.release.xcconfig"; path = "Target Support Files/Pods-YouOn-YouOnUITests/Pods-YouOn-YouOnUITests.release.xcconfig"; sourceTree = "<group>"; };
 		8599946C2C54C1A4E27D368C /* Pods-YouOnTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouOnTests.release.xcconfig"; path = "Target Support Files/Pods-YouOnTests/Pods-YouOnTests.release.xcconfig"; sourceTree = "<group>"; };
+		9D508FEF29C879DD00F9EE5F /* AllPlaylistsTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllPlaylistsTableView.swift; sourceTree = "<group>"; };
+		9D508FF129C87A0D00F9EE5F /* BindableTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableTableView.swift; sourceTree = "<group>"; };
+		9D508FF329C8916F00F9EE5F /* LibraryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewController.swift; sourceTree = "<group>"; };
+		9D508FF529C893CF00F9EE5F /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
+		9D508FF729C8960000F9EE5F /* PlaylistSaverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistSaverService.swift; sourceTree = "<group>"; };
+		9D508FF929C8981500F9EE5F /* LibraryPageBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPageBuilder.swift; sourceTree = "<group>"; };
 		9D6E93D029C327470044A642 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		9D6E93D229C328D60044A642 /* MediaDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDataManager.swift; sourceTree = "<group>"; };
 		9D6E93D529C4374F0044A642 /* UserDefaultKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultKeys.swift; sourceTree = "<group>"; };
@@ -68,6 +85,10 @@
 		9D6E93DA29C43C600044A642 /* VideoFounderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoFounderViewModel.swift; sourceTree = "<group>"; };
 		9D6E93DC29C43DED0044A642 /* PlaylistViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewModel.swift; sourceTree = "<group>"; };
 		9D6E93DF29C84DD40044A642 /* LibraryPageRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPageRouter.swift; sourceTree = "<group>"; };
+		9D6E93E329C860D30044A642 /* ProgressCircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressCircleView.swift; sourceTree = "<group>"; };
+		9D6E93E529C873B40044A642 /* PlaylistCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistCell.swift; sourceTree = "<group>"; };
+		9D6E93E729C874640044A642 /* MediaFileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFileCell.swift; sourceTree = "<group>"; };
+		9D6E93E929C876740044A642 /* VideoFounderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoFounderViewController.swift; sourceTree = "<group>"; };
 		9DA011C329C1B61E00962778 /* YouOn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YouOn.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DA011C629C1B61E00962778 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9DA011C829C1B61E00962778 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -97,6 +118,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E847D7C616F772C15E6A2083 /* Pods_YouOn.framework in Frameworks */,
+				9D508FEE29C8789300F9EE5F /* XCDYouTubeKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,6 +155,27 @@
 				9D6E93D829C438710044A642 /* MusicPlayer.swift */,
 			);
 			path = Players;
+			sourceTree = "<group>";
+		};
+		9D6E93E129C860540044A642 /* Widgets */ = {
+			isa = PBXGroup;
+			children = (
+				9D6E93E329C860D30044A642 /* ProgressCircleView.swift */,
+				9D6E93E529C873B40044A642 /* PlaylistCell.swift */,
+				9D6E93E729C874640044A642 /* MediaFileCell.swift */,
+				9D508FF129C87A0D00F9EE5F /* BindableTableView.swift */,
+			);
+			path = Widgets;
+			sourceTree = "<group>";
+		};
+		9D6E93E229C8605E0044A642 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				9D6E93E929C876740044A642 /* VideoFounderViewController.swift */,
+				9D508FEF29C879DD00F9EE5F /* AllPlaylistsTableView.swift */,
+				9D508FF329C8916F00F9EE5F /* LibraryViewController.swift */,
+			);
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 		9DA011BA29C1B61E00962778 = {
@@ -207,6 +250,7 @@
 			isa = PBXGroup;
 			children = (
 				9DA0120029C21CB200962778 /* MainBuilder.swift */,
+				9D508FF929C8981500F9EE5F /* LibraryPageBuilder.swift */,
 			);
 			path = Builders;
 			sourceTree = "<group>";
@@ -214,6 +258,8 @@
 		9DA011FB29C21BF500962778 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				9D6E93E229C8605E0044A642 /* Controllers */,
+				9D6E93E129C860540044A642 /* Widgets */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -234,6 +280,7 @@
 			children = (
 				9D6E93DA29C43C600044A642 /* VideoFounderViewModel.swift */,
 				9D6E93DC29C43DED0044A642 /* PlaylistViewModel.swift */,
+				9D508FF529C893CF00F9EE5F /* LibraryViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -246,6 +293,7 @@
 				9DA0121529C3037A00962778 /* MediaSaverService.swift */,
 				9D6E93D029C327470044A642 /* DataManager.swift */,
 				9D6E93D229C328D60044A642 /* MediaDataManager.swift */,
+				9D508FF729C8960000F9EE5F /* PlaylistSaverService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -291,6 +339,9 @@
 			dependencies = (
 			);
 			name = YouOn;
+			packageProductDependencies = (
+				9D508FED29C8789300F9EE5F /* XCDYouTubeKit */,
+			);
 			productName = YouOn;
 			productReference = 9DA011C329C1B61E00962778 /* YouOn.app */;
 			productType = "com.apple.product-type.application";
@@ -366,6 +417,9 @@
 				Base,
 			);
 			mainGroup = 9DA011BA29C1B61E00962778;
+			packageReferences = (
+				9D508FEC29C8789200F9EE5F /* XCRemoteSwiftPackageReference "XCDYouTubeKit" */,
+			);
 			productRefGroup = 9DA011C429C1B61E00962778 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -514,17 +568,27 @@
 			files = (
 				9D6E93DD29C43DED0044A642 /* PlaylistViewModel.swift in Sources */,
 				9D6E93E029C84DD40044A642 /* LibraryPageRouter.swift in Sources */,
+				9D508FFA29C8981500F9EE5F /* LibraryPageBuilder.swift in Sources */,
 				9DA011FF29C21C0D00962778 /* MainRouter.swift in Sources */,
 				9DA0121229C239D100962778 /* Extensions.swift in Sources */,
 				9DA0120D29C2346A00962778 /* YTNetworkService.swift in Sources */,
 				9D6E93D629C4374F0044A642 /* UserDefaultKeys.swift in Sources */,
 				9D6E93D929C438710044A642 /* MusicPlayer.swift in Sources */,
+				9D508FF829C8960000F9EE5F /* PlaylistSaverService.swift in Sources */,
+				9D6E93E629C873B40044A642 /* PlaylistCell.swift in Sources */,
+				9D508FF629C893CF00F9EE5F /* LibraryViewModel.swift in Sources */,
 				9DA011D129C1B61E00962778 /* YouOn.xcdatamodeld in Sources */,
 				9DA0120529C22AA700962778 /* PlaylistModel.swift in Sources */,
+				9D508FF429C8916F00F9EE5F /* LibraryViewController.swift in Sources */,
+				9D6E93EA29C876740044A642 /* VideoFounderViewController.swift in Sources */,
 				9DA0120329C2297F00962778 /* MediaFileModel.swift in Sources */,
+				9D508FF029C879DE00F9EE5F /* AllPlaylistsTableView.swift in Sources */,
 				9DA0121629C3037A00962778 /* MediaSaverService.swift in Sources */,
 				9DA0120129C21CB200962778 /* MainBuilder.swift in Sources */,
 				9D6E93D129C327470044A642 /* DataManager.swift in Sources */,
+				9D6E93E829C874640044A642 /* MediaFileCell.swift in Sources */,
+				9D508FF229C87A0D00F9EE5F /* BindableTableView.swift in Sources */,
+				9D6E93E429C860D30044A642 /* ProgressCircleView.swift in Sources */,
 				9D6E93DB29C43C600044A642 /* VideoFounderViewModel.swift in Sources */,
 				9DA011C729C1B61E00962778 /* AppDelegate.swift in Sources */,
 				9D6E93D329C328D60044A642 /* MediaDataManager.swift in Sources */,
@@ -876,6 +940,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9D508FEC29C8789200F9EE5F /* XCRemoteSwiftPackageReference "XCDYouTubeKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kbex-dev/XCDYouTubeKit.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9D508FED29C8789300F9EE5F /* XCDYouTubeKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9D508FEC29C8789200F9EE5F /* XCRemoteSwiftPackageReference "XCDYouTubeKit" */;
+			productName = XCDYouTubeKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		9DA011CF29C1B61E00962778 /* YouOn.xcdatamodeld */ = {

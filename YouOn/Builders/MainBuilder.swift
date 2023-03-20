@@ -31,7 +31,9 @@ class MainBuilder: MainBuilderProtocol {
     }
     
     func buildMainPage() -> UIViewController {
-        let controller = UIViewController()
+        let networkService = YTNetworkService()
+        let viewModel = VideoFounderViewModel(networkService: networkService)
+        let controller = VideoFounderViewController(viewModel: viewModel)
         return controller
     }
 }

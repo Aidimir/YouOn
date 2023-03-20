@@ -8,13 +8,8 @@
 import Foundation
 
 protocol MediaSaverProtocol {
-    var dataManager: MediaDataManagerProtocol { get set }
     func saveToAll(file: MediaFile) throws
     func removeFromAll(file: MediaFile) throws
-    func savePlaylist(playlist: Playlist) throws
-    func removePlaylist(playlist: Playlist) throws
-    func fetchPlaylist(id: UUID) throws -> Playlist?
-    func fetchAllPlaylists() throws -> [Playlist]
     func fetchAllMedia() throws -> [MediaFile]
 }
 
@@ -51,22 +46,6 @@ class MediaSaver: MediaSaverProtocol {
             playlist?.removeFileById(id: file.id)
             try dataManager.savePlaylist(data: playlist, id: id)
         }
-    }
-    
-    func savePlaylist(playlist: Playlist) throws {
-        try dataManager.savePlaylist(data: playlist, id: playlist.id)
-    }
-    
-    func removePlaylist(playlist: Playlist) throws {
-        try dataManager.removePlaylist(id: playlist.id)
-    }
-    
-    func fetchPlaylist(id: UUID) throws -> Playlist? {
-        try dataManager.fetchPlaylist(id: id)
-    }
-    
-    func fetchAllPlaylists() throws -> [Playlist] {
-        try dataManager.fetchAllPlaylists()
     }
     
     func fetchAllMedia() throws -> [MediaFile] {
