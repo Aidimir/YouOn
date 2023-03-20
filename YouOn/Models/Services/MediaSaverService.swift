@@ -13,9 +13,13 @@ protocol MediaSaverProtocol {
     func removeFromAll(file: MediaFile) throws
     func savePlaylist(playlist: Playlist) throws
     func removePlaylist(playlist: Playlist) throws
+    func fetchPlaylist(id: UUID) throws -> Playlist?
+    func fetchAllPlaylists() throws -> [Playlist]
+    func fetchAllMedia() throws -> [MediaFile]
 }
 
 class MediaSaver: MediaSaverProtocol {
+    
     var dataManager: MediaDataManagerProtocol
     
     init(dataManager: MediaDataManagerProtocol) {
@@ -57,4 +61,15 @@ class MediaSaver: MediaSaverProtocol {
         try dataManager.removePlaylist(id: playlist.id)
     }
     
+    func fetchPlaylist(id: UUID) throws -> Playlist? {
+        try dataManager.fetchPlaylist(id: id)
+    }
+    
+    func fetchAllPlaylists() throws -> [Playlist] {
+        try dataManager.fetchAllPlaylists()
+    }
+    
+    func fetchAllMedia() throws -> [MediaFile] {
+        try dataManager.fetchAllMedia()
+    }
 }

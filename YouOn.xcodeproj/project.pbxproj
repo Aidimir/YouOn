@@ -12,6 +12,9 @@
 		9D6E93D329C328D60044A642 /* MediaDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D229C328D60044A642 /* MediaDataManager.swift */; };
 		9D6E93D629C4374F0044A642 /* UserDefaultKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D529C4374F0044A642 /* UserDefaultKeys.swift */; };
 		9D6E93D929C438710044A642 /* MusicPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D829C438710044A642 /* MusicPlayer.swift */; };
+		9D6E93DB29C43C600044A642 /* VideoFounderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93DA29C43C600044A642 /* VideoFounderViewModel.swift */; };
+		9D6E93DD29C43DED0044A642 /* PlaylistViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93DC29C43DED0044A642 /* PlaylistViewModel.swift */; };
+		9D6E93E029C84DD40044A642 /* LibraryPageRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93DF29C84DD40044A642 /* LibraryPageRouter.swift */; };
 		9DA011C729C1B61E00962778 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA011C629C1B61E00962778 /* AppDelegate.swift */; };
 		9DA011C929C1B61E00962778 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA011C829C1B61E00962778 /* SceneDelegate.swift */; };
 		9DA011CE29C1B61E00962778 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9DA011CC29C1B61E00962778 /* Main.storyboard */; };
@@ -62,6 +65,9 @@
 		9D6E93D229C328D60044A642 /* MediaDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDataManager.swift; sourceTree = "<group>"; };
 		9D6E93D529C4374F0044A642 /* UserDefaultKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultKeys.swift; sourceTree = "<group>"; };
 		9D6E93D829C438710044A642 /* MusicPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicPlayer.swift; sourceTree = "<group>"; };
+		9D6E93DA29C43C600044A642 /* VideoFounderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoFounderViewModel.swift; sourceTree = "<group>"; };
+		9D6E93DC29C43DED0044A642 /* PlaylistViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewModel.swift; sourceTree = "<group>"; };
+		9D6E93DF29C84DD40044A642 /* LibraryPageRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPageRouter.swift; sourceTree = "<group>"; };
 		9DA011C329C1B61E00962778 /* YouOn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YouOn.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DA011C629C1B61E00962778 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9DA011C829C1B61E00962778 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -192,6 +198,7 @@
 			isa = PBXGroup;
 			children = (
 				9DA011FE29C21C0D00962778 /* MainRouter.swift */,
+				9D6E93DF29C84DD40044A642 /* LibraryPageRouter.swift */,
 			);
 			path = Routers;
 			sourceTree = "<group>";
@@ -225,6 +232,8 @@
 		9DA011FD29C21BFD00962778 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				9D6E93DA29C43C600044A642 /* VideoFounderViewModel.swift */,
+				9D6E93DC29C43DED0044A642 /* PlaylistViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -503,6 +512,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D6E93DD29C43DED0044A642 /* PlaylistViewModel.swift in Sources */,
+				9D6E93E029C84DD40044A642 /* LibraryPageRouter.swift in Sources */,
 				9DA011FF29C21C0D00962778 /* MainRouter.swift in Sources */,
 				9DA0121229C239D100962778 /* Extensions.swift in Sources */,
 				9DA0120D29C2346A00962778 /* YTNetworkService.swift in Sources */,
@@ -514,6 +525,7 @@
 				9DA0121629C3037A00962778 /* MediaSaverService.swift in Sources */,
 				9DA0120129C21CB200962778 /* MainBuilder.swift in Sources */,
 				9D6E93D129C327470044A642 /* DataManager.swift in Sources */,
+				9D6E93DB29C43C600044A642 /* VideoFounderViewModel.swift in Sources */,
 				9DA011C729C1B61E00962778 /* AppDelegate.swift in Sources */,
 				9D6E93D329C328D60044A642 /* MediaDataManager.swift in Sources */,
 				9DA011C929C1B61E00962778 /* SceneDelegate.swift in Sources */,

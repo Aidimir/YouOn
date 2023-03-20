@@ -12,6 +12,8 @@ target 'YouOn' do
     	pod 'MarqueeLabel'
     	pod 'Alamofire'
     	pod 'Kingfisher'
+	pod 'RxDataSources', '~> 5.0'
+
 
   target 'YouOnTests' do
     inherit! :search_paths

@@ -10,13 +10,13 @@ import UIKit
 
 protocol RouterProtocol {
     var navigationController: UINavigationController { get set }
+    func showAlert(title: String, error: Error?, msgWithError: String?, action: (() -> Void)?)
     func popToRoot()
 }
 
 protocol MainRouterProtocol: RouterProtocol {
     var builder: MainBuilderProtocol { get set }
     func initStartViewController()
-    func showAlert(title: String, error: Error?, msgWithError: String?, action: (() -> Void)?)
 }
 
 class MainRouter: MainRouterProtocol {

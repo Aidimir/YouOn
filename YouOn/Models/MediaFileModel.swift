@@ -7,7 +7,13 @@
 
 import Foundation
 
-struct MediaFile: Codable {
+protocol MediaFileUIProtocol {
+    var title: String { get set }
+    var duration: TimeInterval { get set }
+    var author: String { get set }
+}
+
+struct MediaFile: Codable, MediaFileUIProtocol {
     var url: String
     var title: String
     var id: String
