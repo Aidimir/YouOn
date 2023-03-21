@@ -38,12 +38,11 @@ class VideoFounderViewModel: VideoFounderViewModelProtocol {
     public var delegate: VideoFounderViewModelDelegate?
     
     public func onSearchTap() {
-        YTNetworkService().downloadVideo(linkString: searchFieldString) { progress in
+        networkService.downloadVideo(linkString: searchFieldString, completion: { progress in
             self.delegate?.downloadProgress(result: progress)
-        } errorHandler: { error in
-            self.errorHandler(error: error)
-        }
-
+        }, onCompleted: {
+            NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
+        }, errorHandler: errorHandler(error:))
     }
     
     public func errorHandler(error: Error) {

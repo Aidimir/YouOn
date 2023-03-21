@@ -12,8 +12,10 @@ import Alamofire
 protocol YTNetworkServiceProtocol {
     var saver: MediaSaverProtocol? { get set }
     func downloadVideo(linkString: String, completion: ((_ progress: Double) -> Void)?,
+                       onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?)
     func downloadAudio(linkString: String, completion: ((_ progress: Double) -> Void)?,
+                       onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?)
 }
 
@@ -22,6 +24,7 @@ class YTNetworkService: YTNetworkServiceProtocol {
     var saver: MediaSaverProtocol?
     
     func downloadVideo(linkString: String, completion: ((Double) -> Void)?,
+                       onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?) {
         let manager = FileManager.default
         
@@ -39,7 +42,8 @@ class YTNetworkService: YTNetworkServiceProtocol {
             
             let mediaFile = MediaFile(url: fileName, title: video.title,
                                       id: video.identifier, duration: video.duration,
-                                      author: video.author, videoURL: URL(string: "")!)
+                                      author: video.author, videoURL: URL(string: linkString)!,
+                                      imageURL: video.thumbnailURLs?.first)
             do {
                 if manager.fileExists(atPath: url.appendingPathComponent(fileName).path) {
                     try manager.removeItem(at: url.appendingPathComponent(fileName))
@@ -52,12 +56,13 @@ class YTNetworkService: YTNetworkServiceProtocol {
                     case .success(let data):
                         manager.createFile(atPath: url.appendingPathComponent(fileName).path, contents: data)
                         try? self.saver?.saveToAll(file: mediaFile)
+                        onCompleted?()
                     case .failure(let error):
                         errorHandler?(error)
                         return
                     }
                 }
-            } catch let error {
+            } catch {
                 errorHandler?(error)
                 return
             }
@@ -65,6 +70,7 @@ class YTNetworkService: YTNetworkServiceProtocol {
     }
     
     func downloadAudio(linkString: String, completion: ((Double) -> Void)?,
+                       onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?) {
 //        
     }

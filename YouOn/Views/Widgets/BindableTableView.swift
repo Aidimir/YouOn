@@ -8,18 +8,26 @@
 import Foundation
 import RxSwift
 import RxDataSources
+import SnapKit
 
-class BindableTableViewController<T: SectionModelType>: UITableViewController {
+class BindableTableViewController<T: SectionModelType>: UIViewController {
     
     var items: RxSwift.Observable<[T]>
     
-    var dataSource: RxTableViewSectionedReloadDataSource<T>
+    let tableView = UITableView()
     
+    var classesToRegister: [String: AnyClass]
+    
+    var dataSource: RxTableViewSectionedReloadDataSource<T>
+        
     private let disposeBag = DisposeBag()
     
-    init(items: RxSwift.Observable<[T]>, dataSource: RxTableViewSectionedReloadDataSource<T>) {
+    init(items: RxSwift.Observable<[T]>,
+         dataSource: RxTableViewSectionedReloadDataSource<T>,
+         classesToRegister: [String: AnyClass]) {
         self.items = items
         self.dataSource = dataSource
+        self.classesToRegister = classesToRegister
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -29,8 +37,21 @@ class BindableTableViewController<T: SectionModelType>: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        for (key, value) in classesToRegister {
+            tableView.register(value, forCellReuseIdentifier: key)
+        }
+        
         items.bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
+        
+        view.addSubview(tableView)
+        tableView.snp.makeConstraints { make in
+            make.left.equalTo(view.readableContentGuide.snp.left)
+            make.right.equalTo(view.readableContentGuide.snp.right)
+            make.top.equalTo(view.readableContentGuide.snp.top)
+            make.bottom.equalTo(view.readableContentGuide.snp.bottom)
+        }
     }
     
 }

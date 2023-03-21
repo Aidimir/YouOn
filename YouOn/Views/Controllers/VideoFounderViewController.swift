@@ -83,14 +83,15 @@ class VideoFounderViewController: UIViewController,
         viewModel.onSearchTap()
         currentDownload?.removeFromSuperview()
         // frame init is required here, because shapeLayer works only with frame init ( frame size should be the same as autolayout size
-        currentDownload = ProgressCircleView(currentProgress: 0, fillColor: UIColor.clear.cgColor, frame: CGRect(x: 0, y: 0, width: button.frame.width*1.5, height: button.frame.width*1.5))
+        currentDownload = ProgressCircleView(currentProgress: 0, fillColor: UIColor.clear.cgColor, frame: .zero, updateTimeInterval: 0.1)
         currentDownload!.strokeColor = UIColor.green.cgColor
         
         view.addSubview(currentDownload!)
         currentDownload!.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(view.frame.height/8)
-            make.width.height.equalTo(button.snp.width).multipliedBy(1.5)
-            make.centerX.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.centerX.equalTo(view.readableContentGuide)
+            make.width.equalTo(view.readableContentGuide.snp.width).dividedBy(5)
+            make.height.equalTo(view.readableContentGuide.snp.width).dividedBy(5)
         }
     }
     

@@ -32,11 +32,12 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
     func buildLibraryViewController() -> UIViewController {
         let saver = PlaylistSaver(dataManager: MediaDataManager(appDelegate: appDelegate))
         let viewModel = LibraryViewModel(saver: saver)
-        let controller = LibraryViewController(viewModel: viewModel)
+        let controller = LibraryViewController()
         let navController = UINavigationController(rootViewController: controller)
+        navController.navigationBar.topItem?.title = nil
         let router = LibraryPageRouter(builder: self, navigationController: navController)
         viewModel.router = router
-        navController.navigationBar.topItem?.title = nil
+        controller.viewModel = viewModel
         return navController
     }
     

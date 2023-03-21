@@ -24,13 +24,19 @@ class ProgressCircleView: UIView {
     
     public var fillColor: CGColor
     
+    public var updateTimeInterval: TimeInterval
+    
     var progressLabel: UILabel!
     
-    init(currentProgress: CGFloat = 0, fillColor: CGColor,frame: CGRect) {
+    init(currentProgress: CGFloat = 0, fillColor: CGColor,
+         frame: CGRect, showProgressLabel: Bool = false, updateTimeInterval: TimeInterval) {
         self.currentProgress = currentProgress
         self.fillColor = fillColor
+        self.updateTimeInterval = updateTimeInterval
         super.init(frame: frame)
-        addView()
+        if showProgressLabel {
+            addView()
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -38,6 +44,7 @@ class ProgressCircleView: UIView {
     }
     
     private func addView() {
+
         progressLabel = {
             let label = UILabel()
             label.textAlignment = .center
@@ -47,12 +54,17 @@ class ProgressCircleView: UIView {
             return label
         }()
         
-        progressLabel.frame = frame
         addSubview(progressLabel)
+        progressLabel.snp.makeConstraints { make in
+            make.left.equalToSuperview().offset(strokeWidth)
+            make.right.equalToSuperview().inset(strokeWidth)
+            make.top.equalToSuperview().offset(strokeWidth)
+            make.bottom.equalToSuperview().inset(strokeWidth)
+        }
     }
     
     @objc public func updateProgress() {
-        progressLabel!.text = "\(Int(currentProgress*100))%"
+        progressLabel?.text = "\(Int(currentProgress*100))%"
         basicAnimation.fromValue = lastProgress
         
         if (lastProgress != 1) {
@@ -68,10 +80,10 @@ class ProgressCircleView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        let circularPath = UIBezierPath(arcCenter: center,
+        let circularPath = UIBezierPath(arcCenter: CGPoint(x: bounds.midX, y: bounds.midY),
                                         radius: frame.size.height / 2,
-                                        startAngle: -.pi/2,
-                                        endAngle: 2 * .pi - .pi/2,
+                                        startAngle: -.pi / 2,
+                                        endAngle: 2 * .pi - .pi / 2,
                                         clockwise: true)
         
         shapeLayer.path = circularPath.cgPath
@@ -82,6 +94,6 @@ class ProgressCircleView: UIView {
         
         layer.addSublayer(shapeLayer)
         
-        let timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
+        let timer = Timer.scheduledTimer(timeInterval: updateTimeInterval, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
     }
 }

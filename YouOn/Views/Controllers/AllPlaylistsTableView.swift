@@ -14,28 +14,35 @@ protocol AllPlaylistsTableViewDelegate {
     func didTapOnPlaylist(indexPath: IndexPath)
 }
 
-class AllPlaylistsTableView: BindableTableViewController<SectionOfPlaylistUI> {
+class AllPlaylistsTableView: BindableTableViewController<SectionModel<String, PlaylistUIProtocol>>, UITableViewDelegate {
     
     private var heightForRow: CGFloat
     
     private var backgroundColor: UIColor
     
+    let disposeBag = DisposeBag()
+    
     var delegate: AllPlaylistsTableViewDelegate?
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return heightForRow
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         delegate?.didTapOnPlaylist(indexPath: indexPath)
     }
     
-    init(heightForRow: CGFloat, backgroundColor: UIColor,
-         items: Observable<[SectionOfPlaylistUI]>,
-         dataSource: RxTableViewSectionedReloadDataSource<SectionOfPlaylistUI>) {
+    init(heightForRow: CGFloat,
+         backgroundColor: UIColor,
+         tableViewColor: UIColor,
+         items: Observable<[SectionModel<String, PlaylistUIProtocol>]>,
+         classesToRegister: [String: AnyClass],
+         dataSource: RxTableViewSectionedReloadDataSource<SectionModel<String, PlaylistUIProtocol>>) {
         self.heightForRow = heightForRow
         self.backgroundColor = backgroundColor
-        super.init(items: items, dataSource: dataSource)
+        super.init(items: items, dataSource: dataSource, classesToRegister: classesToRegister)
+        tableView.backgroundColor = tableViewColor
+        view.backgroundColor = backgroundColor
     }
     
     required init?(coder: NSCoder) {
@@ -44,6 +51,6 @@ class AllPlaylistsTableView: BindableTableViewController<SectionOfPlaylistUI> {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = backgroundColor
+        tableView.rx.setDelegate(self).disposed(by: disposeBag)
     }
 }

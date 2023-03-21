@@ -18,6 +18,8 @@ protocol FounderBuilderProtocol: BuilderProtocol {
 
 class FounderPageBuilder: FounderBuilderProtocol {
     
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
     func createAlert(title: String? = "Error", error: Error?,
                      msgWithError: String?, action: (() -> Void)? = nil) -> UIAlertController {
         let alert = UIAlertController(title: title,
@@ -31,7 +33,16 @@ class FounderPageBuilder: FounderBuilderProtocol {
     }
     
     func buildFounderPage() -> UIViewController {
+        let dataManager = MediaDataManager(appDelegate: appDelegate)
+//        do {
+//            try dataManager.resetStorage()
+//            UserDefaults.standard.removeObject(forKey: UserDefaultKeys.defaultAllPlaylist)
+//        } catch {
+//            print()
+//        }
+        let saver = MediaSaver(dataManager: dataManager)
         let networkService = YTNetworkService()
+        networkService.saver = saver
         let viewModel = VideoFounderViewModel(networkService: networkService)
         let controller = VideoFounderViewController(viewModel: viewModel)
         let navController = UINavigationController(rootViewController: controller)

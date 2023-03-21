@@ -7,8 +7,9 @@
 
 import Foundation
 import RxRelay
+import Differentiator
 
-protocol LibraryViewModelProtocol: CollectableViewModelProtocol {
+protocol LibraryViewModelProtocol: CollectableViewModelProtocol where T == SectionModel<String, PlaylistUIProtocol> {
     var saver: PlaylistSaverProtocol { get set }
     var router: LibraryPageRouterProtocol? { get }
     func fetchPlaylists()
@@ -20,27 +21,31 @@ class LibraryViewModel: LibraryViewModelProtocol {
     
     var router: LibraryPageRouterProtocol?
     
-    var uiModels: RxRelay.BehaviorRelay<[PlaylistUIProtocol]> = BehaviorRelay(value: [PlaylistUIProtocol]())
+    var uiModels: RxRelay.BehaviorRelay<[SectionModel<String, PlaylistUIProtocol>]> = BehaviorRelay(value: [SectionModel(model: "", items: [PlaylistUIProtocol]() )])
     
-    func fetchPlaylists() {
+    @objc func fetchPlaylists() {
         do {
-            try uiModels.accept(saver.fetchAllPlaylists())
+            try uiModels.accept([SectionModel(model: "", items: saver.fetchAllPlaylists())])
         } catch {
             errorHandler(error: error)
         }
     }
     
     func errorHandler(error: Error) {
-//
+        //
     }
     
     func didTapOnPlaylist(indexPath: IndexPath) {
-        if let pl = uiModels.value[indexPath.row] as? Playlist {
+        if let pl = uiModels.value.first?.items[indexPath.row] as? Playlist {
             router?.moveToPlaylist(playlistID: pl.id)
         }
     }
     
     init(saver: PlaylistSaverProtocol) {
         self.saver = saver
+        fetchPlaylists()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(fetchPlaylists),
+                                               name: NotificationCenterNames.updatedPlaylists,                                           object: nil)
     }
 }
