@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 protocol LibraryPageBuilderProtocol: BuilderProtocol {
-    func buildLibraryViewController() -> LibraryViewController
+    func buildLibraryViewController() -> UIViewController
     func buildPlaylistController(playlistID: UUID) -> UIViewController
 }
 
@@ -29,13 +29,15 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
         return alert
     }
     
-    func buildLibraryViewController() -> LibraryViewController {
+    func buildLibraryViewController() -> UIViewController {
         let saver = PlaylistSaver(dataManager: MediaDataManager(appDelegate: appDelegate))
-        let navController = UINavigationController()
-        let router = LibraryPageRouter(builder: self, navigationController: navController)
-        let viewModel = LibraryViewModel(saver: saver, router: router)
+        let viewModel = LibraryViewModel(saver: saver)
         let controller = LibraryViewController(viewModel: viewModel)
-        return controller
+        let navController = UINavigationController(rootViewController: controller)
+        let router = LibraryPageRouter(builder: self, navigationController: navController)
+        viewModel.router = router
+        navController.navigationBar.topItem?.title = nil
+        return navController
     }
     
     func buildPlaylistController(playlistID: UUID) -> UIViewController {

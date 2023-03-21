@@ -19,10 +19,13 @@ protocol VideoFounderViewModelProtocol: ViewModelProtocol {
     var searchFieldString: String { get set }
     var networkService: YTNetworkServiceProtocol { get set }
     var delegate: VideoFounderViewModelDelegate? { get set }
+    var router: FounderRouterProtocol? { get set }
     func onSearchTap()
 }
 
 class VideoFounderViewModel: VideoFounderViewModelProtocol {
+    
+    var router: FounderRouterProtocol?
     
     var networkService: YTNetworkServiceProtocol
     
@@ -38,12 +41,12 @@ class VideoFounderViewModel: VideoFounderViewModelProtocol {
         YTNetworkService().downloadVideo(linkString: searchFieldString) { progress in
             self.delegate?.downloadProgress(result: progress)
         } errorHandler: { error in
-//
+            self.errorHandler(error: error)
         }
 
     }
     
     public func errorHandler(error: Error) {
-        //
+        router?.showAlert(title: "Download error", error: error, msgWithError: nil, action: nil)
     }
 }

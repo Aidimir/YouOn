@@ -10,14 +10,15 @@ import RxRelay
 
 protocol LibraryViewModelProtocol: CollectableViewModelProtocol {
     var saver: PlaylistSaverProtocol { get set }
-    var router: LibraryPageRouterProtocol { get set }
+    var router: LibraryPageRouterProtocol? { get }
     func fetchPlaylists()
+    func didTapOnPlaylist(indexPath: IndexPath)
 }
 
 class LibraryViewModel: LibraryViewModelProtocol {
     var saver: PlaylistSaverProtocol
     
-    var router: LibraryPageRouterProtocol
+    var router: LibraryPageRouterProtocol?
     
     var uiModels: RxRelay.BehaviorRelay<[PlaylistUIProtocol]> = BehaviorRelay(value: [PlaylistUIProtocol]())
     
@@ -33,9 +34,13 @@ class LibraryViewModel: LibraryViewModelProtocol {
 //
     }
     
-    init(saver: PlaylistSaverProtocol,
-         router: LibraryPageRouterProtocol) {
+    func didTapOnPlaylist(indexPath: IndexPath) {
+        if let pl = uiModels.value[indexPath.row] as? Playlist {
+            router?.moveToPlaylist(playlistID: pl.id)
+        }
+    }
+    
+    init(saver: PlaylistSaverProtocol) {
         self.saver = saver
-        self.router = router
     }
 }

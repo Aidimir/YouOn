@@ -2,21 +2,24 @@
 //  MainBuilder.swift
 //  YouOn
 //
-//  Created by Айдимир Магомедов on 15.03.2023.
+//  Created by Айдимир Магомедов on 21.03.2023.
 //
 
 import Foundation
 import UIKit
 
-protocol BuilderProtocol {
-    func createAlert(title: String?, error: Error?, msgWithError: String?, action: (() -> Void)?) -> UIAlertController
-}
-
 protocol MainBuilderProtocol: BuilderProtocol {
     func buildMainPage() -> UIViewController
+    var founderPageBuilder: FounderBuilderProtocol { get }
+    var libraryPageBuilder: LibraryPageBuilderProtocol { get }
 }
 
 class MainBuilder: MainBuilderProtocol {
+    
+    var founderPageBuilder: FounderBuilderProtocol = FounderPageBuilder()
+    
+    var libraryPageBuilder: LibraryPageBuilderProtocol = LibraryPageBuilder()
+    
     
     func createAlert(title: String? = "Error", error: Error?,
                      msgWithError: String?, action: (() -> Void)? = nil) -> UIAlertController {
@@ -31,9 +34,12 @@ class MainBuilder: MainBuilderProtocol {
     }
     
     func buildMainPage() -> UIViewController {
-        let networkService = YTNetworkService()
-        let viewModel = VideoFounderViewModel(networkService: networkService)
-        let controller = VideoFounderViewController(viewModel: viewModel)
+        let founderC = founderPageBuilder.buildFounderPage()
+        let libraryC = libraryPageBuilder.buildLibraryViewController()
+        let controller = UITabBarController()
+        controller.tabBar.tintColor = .white
+        controller.tabBar.barTintColor = .black
+        controller.viewControllers = [founderC, libraryC]
         return controller
     }
 }

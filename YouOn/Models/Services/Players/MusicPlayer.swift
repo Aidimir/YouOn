@@ -14,6 +14,7 @@ import MediaPlayer
 protocol MusicPlayerDelegate {
     func onPlayNext()
     func onPlayPrevious()
+    func errorHandler(error: Error)
 }
 
 protocol MusicPlayerProtocol {
@@ -59,8 +60,8 @@ class MusicPlayer: MusicPlayerProtocol {
             startRemoteCommandsCenter()
 //            player!.delegate = self
             player!.play()
-        } catch let error as NSError {
-            print(error.description)
+        } catch {
+            delegate?.errorHandler(error: error)
         }
 
     }

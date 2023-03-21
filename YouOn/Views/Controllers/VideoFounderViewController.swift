@@ -37,8 +37,8 @@ class VideoFounderViewController: UIViewController,
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
-        
+        view.backgroundColor = UIColor(red: 0.22, green: 0.22, blue: 0.22, alpha: 1)
+
         textField = {
             let textField = UITextField()
             textField.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
@@ -48,6 +48,8 @@ class VideoFounderViewController: UIViewController,
             textField.returnKeyType = .done
             textField.adjustsFontSizeToFitWidth = true
             textField.placeholder = "Paste your YouTube video link to download it"
+            textField.setLeftPaddingPoints(20)
+            textField.setRightPaddingPoints(20)
             return textField
         }()
         

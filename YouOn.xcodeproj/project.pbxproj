@@ -15,6 +15,8 @@
 		9D508FF629C893CF00F9EE5F /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FF529C893CF00F9EE5F /* LibraryViewModel.swift */; };
 		9D508FF829C8960000F9EE5F /* PlaylistSaverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FF729C8960000F9EE5F /* PlaylistSaverService.swift */; };
 		9D508FFA29C8981500F9EE5F /* LibraryPageBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FF929C8981500F9EE5F /* LibraryPageBuilder.swift */; };
+		9D508FFC29C99E3E00F9EE5F /* MainBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FFB29C99E3E00F9EE5F /* MainBuilder.swift */; };
+		9D508FFE29C9A1E500F9EE5F /* FounderPageRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FFD29C9A1E500F9EE5F /* FounderPageRouter.swift */; };
 		9D6E93D129C327470044A642 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D029C327470044A642 /* DataManager.swift */; };
 		9D6E93D329C328D60044A642 /* MediaDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D229C328D60044A642 /* MediaDataManager.swift */; };
 		9D6E93D629C4374F0044A642 /* UserDefaultKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D529C4374F0044A642 /* UserDefaultKeys.swift */; };
@@ -36,7 +38,7 @@
 		9DA011EB29C1B61F00962778 /* YouOnUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA011EA29C1B61F00962778 /* YouOnUITests.swift */; };
 		9DA011ED29C1B61F00962778 /* YouOnUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA011EC29C1B61F00962778 /* YouOnUITestsLaunchTests.swift */; };
 		9DA011FF29C21C0D00962778 /* MainRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA011FE29C21C0D00962778 /* MainRouter.swift */; };
-		9DA0120129C21CB200962778 /* MainBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA0120029C21CB200962778 /* MainBuilder.swift */; };
+		9DA0120129C21CB200962778 /* FounderPageBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA0120029C21CB200962778 /* FounderPageBuilder.swift */; };
 		9DA0120329C2297F00962778 /* MediaFileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA0120229C2297F00962778 /* MediaFileModel.swift */; };
 		9DA0120529C22AA700962778 /* PlaylistModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA0120429C22AA700962778 /* PlaylistModel.swift */; };
 		9DA0120D29C2346A00962778 /* YTNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA0120C29C2346A00962778 /* YTNetworkService.swift */; };
@@ -78,6 +80,8 @@
 		9D508FF529C893CF00F9EE5F /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
 		9D508FF729C8960000F9EE5F /* PlaylistSaverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistSaverService.swift; sourceTree = "<group>"; };
 		9D508FF929C8981500F9EE5F /* LibraryPageBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPageBuilder.swift; sourceTree = "<group>"; };
+		9D508FFB29C99E3E00F9EE5F /* MainBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBuilder.swift; sourceTree = "<group>"; };
+		9D508FFD29C9A1E500F9EE5F /* FounderPageRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FounderPageRouter.swift; sourceTree = "<group>"; };
 		9D6E93D029C327470044A642 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		9D6E93D229C328D60044A642 /* MediaDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDataManager.swift; sourceTree = "<group>"; };
 		9D6E93D529C4374F0044A642 /* UserDefaultKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultKeys.swift; sourceTree = "<group>"; };
@@ -103,7 +107,7 @@
 		9DA011EA29C1B61F00962778 /* YouOnUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouOnUITests.swift; sourceTree = "<group>"; };
 		9DA011EC29C1B61F00962778 /* YouOnUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouOnUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		9DA011FE29C21C0D00962778 /* MainRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainRouter.swift; sourceTree = "<group>"; };
-		9DA0120029C21CB200962778 /* MainBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBuilder.swift; sourceTree = "<group>"; };
+		9DA0120029C21CB200962778 /* FounderPageBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FounderPageBuilder.swift; sourceTree = "<group>"; };
 		9DA0120229C2297F00962778 /* MediaFileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFileModel.swift; sourceTree = "<group>"; };
 		9DA0120429C22AA700962778 /* PlaylistModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistModel.swift; sourceTree = "<group>"; };
 		9DA0120C29C2346A00962778 /* YTNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTNetworkService.swift; sourceTree = "<group>"; };
@@ -242,6 +246,7 @@
 			children = (
 				9DA011FE29C21C0D00962778 /* MainRouter.swift */,
 				9D6E93DF29C84DD40044A642 /* LibraryPageRouter.swift */,
+				9D508FFD29C9A1E500F9EE5F /* FounderPageRouter.swift */,
 			);
 			path = Routers;
 			sourceTree = "<group>";
@@ -249,8 +254,9 @@
 		9DA011FA29C21BE300962778 /* Builders */ = {
 			isa = PBXGroup;
 			children = (
-				9DA0120029C21CB200962778 /* MainBuilder.swift */,
+				9DA0120029C21CB200962778 /* FounderPageBuilder.swift */,
 				9D508FF929C8981500F9EE5F /* LibraryPageBuilder.swift */,
+				9D508FFB29C99E3E00F9EE5F /* MainBuilder.swift */,
 			);
 			path = Builders;
 			sourceTree = "<group>";
@@ -584,12 +590,14 @@
 				9DA0120329C2297F00962778 /* MediaFileModel.swift in Sources */,
 				9D508FF029C879DE00F9EE5F /* AllPlaylistsTableView.swift in Sources */,
 				9DA0121629C3037A00962778 /* MediaSaverService.swift in Sources */,
-				9DA0120129C21CB200962778 /* MainBuilder.swift in Sources */,
+				9DA0120129C21CB200962778 /* FounderPageBuilder.swift in Sources */,
+				9D508FFE29C9A1E500F9EE5F /* FounderPageRouter.swift in Sources */,
 				9D6E93D129C327470044A642 /* DataManager.swift in Sources */,
 				9D6E93E829C874640044A642 /* MediaFileCell.swift in Sources */,
 				9D508FF229C87A0D00F9EE5F /* BindableTableView.swift in Sources */,
 				9D6E93E429C860D30044A642 /* ProgressCircleView.swift in Sources */,
 				9D6E93DB29C43C600044A642 /* VideoFounderViewModel.swift in Sources */,
+				9D508FFC29C99E3E00F9EE5F /* MainBuilder.swift in Sources */,
 				9DA011C729C1B61E00962778 /* AppDelegate.swift in Sources */,
 				9D6E93D329C328D60044A642 /* MediaDataManager.swift in Sources */,
 				9DA011C929C1B61E00962778 /* SceneDelegate.swift in Sources */,

@@ -17,13 +17,13 @@ protocol CollectableViewModelProtocol: ViewModelProtocol {
 protocol PlaylistViewModelProtocol: CollectableViewModelProtocol {
     var player: MusicPlayerProtocol { get }
     var saver: PlaylistSaverProtocol { get }
-    var router: RouterProtocol { get }
+    var router: RouterProtocol? { get set }
     func playSong(indexPath: IndexPath)
 }
 
 class PlaylistViewModel: PlaylistViewModelProtocol {
     
-    var router: RouterProtocol
+    var router: RouterProtocol?
     
     var uiModels: RxRelay.BehaviorRelay<[MediaFileUIProtocol]> = BehaviorRelay(value: [MediaFileUIProtocol]())
         
