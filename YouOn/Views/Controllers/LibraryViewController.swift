@@ -14,8 +14,8 @@ protocol LibraryViewProtocol {
     var viewModel: (any LibraryViewModelProtocol)? { get set }
 }
 
-class LibraryViewController: UIViewController, LibraryViewProtocol {
-    
+class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylistsTableViewDelegate {
+        
     var viewModel: (any LibraryViewModelProtocol)?
     
     private var playlistsTableView: UIViewController?
@@ -59,12 +59,15 @@ class LibraryViewController: UIViewController, LibraryViewProtocol {
             
             let color = UIColor(red: 0.22, green: 0.22, blue: 0.22, alpha: 1)
             
-            playlistsTableView = AllPlaylistsTableView(heightForRow: view.frame.size.height / 6,
+            let allPlTableView = AllPlaylistsTableView(heightForRow: view.frame.size.height / 6,
                                                        backgroundColor: backgroundColor,
                                                        tableViewColor: backgroundColor,
                                                        items: viewModel.uiModels.asObservable(),
                                                        classesToRegister: cellsToRegister,
                                                        dataSource: dataSource)
+            allPlTableView.delegate = self
+            
+            playlistsTableView = allPlTableView
                         
             addChild(playlistsTableView!)
             
@@ -74,6 +77,10 @@ class LibraryViewController: UIViewController, LibraryViewProtocol {
             
             playlistsTableView?.didMove(toParent: self)
         }
+    }
+    
+    func didTapOnPlaylist(indexPath: IndexPath) {
+        viewModel?.didTapOnPlaylist(indexPath: indexPath)
     }
     
     required init?(coder: NSCoder) {

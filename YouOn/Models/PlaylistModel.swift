@@ -13,23 +13,30 @@ protocol PlaylistUIProtocol {
     var title: String { get set }
     var imageURL: URL? { get }
     var isDeletable: Bool { get }
-    var tracksCount: Int { get }
+    var tracksCountString: String { get }
 }
 
 struct Playlist: Codable, PlaylistUIProtocol {
     var content: [MediaFile]
     var title: String
-    var tracksCount: Int {
+    var id: UUID
+    
+    var tracksCountString: String {
         get {
-            return content.count
+            if content.count == 0 {
+                return "No tracks"
+            } else {
+                return "\(content.count) tracks"
+            }
         }
     }
+    
     var imageURL: URL? {
         get {
             return content.last?.imageURL
         }
     }
-    var id: UUID
+        
     var isDeletable: Bool {
         get {
             let str = UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist)

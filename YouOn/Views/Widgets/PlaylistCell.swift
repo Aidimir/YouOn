@@ -12,12 +12,6 @@ import SnapKit
 
 class PlaylistCell: UITableViewCell {
     
-    private var imgView: UIImageView!
-    
-    private var playlistTitle: UILabel!
-    
-    private var uiModel: PlaylistUIProtocol!
-    
     private let placeholder = UIImage(systemName: "music.note.list")
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -31,7 +25,6 @@ class PlaylistCell: UITableViewCell {
     
     public func setup(uiModel: PlaylistUIProtocol, foregroundColor: UIColor,
                       backgroundColor: UIColor, cornerRadius: CGFloat = 0) {
-        self.uiModel = uiModel
         enum Constants {
             static let topPadding = 10
             static let bottomPadding = 10
@@ -39,25 +32,25 @@ class PlaylistCell: UITableViewCell {
             static let rightPadding = 10
         }
         
-        imgView = {
-           let imgView = UIImageView(image: nil)
-            imgView.kf.setImage(with: uiModel.imageURL, placeholder: placeholder)
-            imgView.contentMode = .scaleAspectFill
-            imgView.layer.cornerRadius = cornerRadius
-            imgView.tintColor = .gray
-            imgView.clipsToBounds = true
-            return imgView
-        }()
+        let imgView = UIImageView()
+        imgView.kf.setImage(with: uiModel.imageURL, placeholder: placeholder)
+        imgView.contentMode = .scaleAspectFill
+        imgView.layer.cornerRadius = cornerRadius
+        imgView.tintColor = .gray
+        imgView.clipsToBounds = true
         
-        playlistTitle = {
-           let label = UILabel()
-            label.text = uiModel.title
-            label.textColor = .white
-            label.font = .boldSystemFont(ofSize: 30)
-            label.textAlignment = .center
-            return label
-        }()
+        let playlistTitle = UILabel()
+        playlistTitle.text = uiModel.title
+        playlistTitle.textColor = .white
+        playlistTitle.font = .boldSystemFont(ofSize: 30)
+        playlistTitle.textAlignment = .center
         
+        let countLabel = UILabel()
+        countLabel.text = uiModel.tracksCountString
+        countLabel.textColor = .gray
+        countLabel.font = .boldSystemFont(ofSize: 20)
+        countLabel.textAlignment = .center
+
         let view = UIView()
         view.backgroundColor = foregroundColor
         
@@ -72,7 +65,16 @@ class PlaylistCell: UITableViewCell {
         playlistTitle.snp.makeConstraints { make in
             make.left.equalTo(imgView.snp.right).offset(Constants.leftPadding)
             make.right.equalToSuperview()
-            make.centerY.equalToSuperview()
+            make.top.equalToSuperview()
+            make.bottom.equalTo(view.snp.centerY)
+        }
+        
+        view.addSubview(countLabel)
+        countLabel.snp.makeConstraints { make in
+            make.bottom.equalToSuperview()
+            make.top.equalTo(playlistTitle.snp.bottom)
+            make.left.equalTo(imgView.snp.right)
+            make.right.equalToSuperview()
         }
         
         addSubview(view)
@@ -80,4 +82,3 @@ class PlaylistCell: UITableViewCell {
         contentView.backgroundColor = backgroundColor
     }
 }
-
