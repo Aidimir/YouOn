@@ -12,6 +12,14 @@ import SnapKit
 
 class PlaylistCell: UITableViewCell {
     
+    var imgView = UIImageView()
+    
+    var playlistTitle = UILabel()
+    
+    var countLabel = UILabel()
+    
+    var view = UIView()
+    
     private let placeholder = UIImage(systemName: "music.note.list")
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -32,26 +40,26 @@ class PlaylistCell: UITableViewCell {
             static let rightPadding = 10
         }
         
-        let imgView = UIImageView()
+        imgView = UIImageView()
         imgView.kf.setImage(with: uiModel.imageURL, placeholder: placeholder)
         imgView.contentMode = .scaleAspectFill
         imgView.layer.cornerRadius = cornerRadius
         imgView.tintColor = .gray
         imgView.clipsToBounds = true
         
-        let playlistTitle = UILabel()
+        playlistTitle = UILabel()
         playlistTitle.text = uiModel.title
         playlistTitle.textColor = .white
         playlistTitle.font = .boldSystemFont(ofSize: 30)
         playlistTitle.textAlignment = .center
         
-        let countLabel = UILabel()
+        countLabel = UILabel()
         countLabel.text = uiModel.tracksCountString
         countLabel.textColor = .gray
         countLabel.font = .boldSystemFont(ofSize: 20)
         countLabel.textAlignment = .center
 
-        let view = UIView()
+        view = UIView()
         view.backgroundColor = foregroundColor
         
         view.addSubview(imgView)
@@ -80,5 +88,13 @@ class PlaylistCell: UITableViewCell {
         addSubview(view)
         view.frame = contentView.bounds
         contentView.backgroundColor = backgroundColor
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imgView.removeFromSuperview()
+        playlistTitle.removeFromSuperview()
+        countLabel.removeFromSuperview()
+        view.removeFromSuperview()
     }
 }

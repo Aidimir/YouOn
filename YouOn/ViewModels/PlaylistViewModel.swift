@@ -7,6 +7,7 @@
 
 import Foundation
 import RxRelay
+import Differentiator
 
 protocol CollectableViewModelProtocol: ViewModelProtocol {
     associatedtype T
@@ -14,53 +15,67 @@ protocol CollectableViewModelProtocol: ViewModelProtocol {
     var uiModels: BehaviorRelay<[T]> { get set }
 }
 
-protocol PlaylistViewModelProtocol: CollectableViewModelProtocol {
+protocol PlaylistViewModelProtocol: CollectableViewModelProtocol where T == SectionModel<String, MediaFileUIProtocol> {
     var player: MusicPlayerProtocol { get }
-    var saver: PlaylistSaverProtocol { get }
+    var saver: PlaylistSaverProtocol? { get }
     var router: RouterProtocol? { get set }
+    var id: UUID { get set }
     func playSong(indexPath: IndexPath)
+    func saveStorage()
 }
 
 class PlaylistViewModel: PlaylistViewModelProtocol {
-    
+        
     var router: RouterProtocol?
     
-    var uiModels: RxRelay.BehaviorRelay<[MediaFileUIProtocol]> = BehaviorRelay(value: [MediaFileUIProtocol]())
-        
+    var uiModels: RxRelay.BehaviorRelay<[SectionModel<String, MediaFileUIProtocol>]> = BehaviorRelay(value: [SectionModel(model: "", items: [MediaFileUIProtocol]() )])
+
     var player: MusicPlayerProtocol
     
-    var saver: PlaylistSaverProtocol
+    var saver: PlaylistSaverProtocol?
     
-    private var playlist: Playlist
+    var id: UUID
     
-    init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol, router: RouterProtocol, playlist: Playlist) {
+    private var playlist: Playlist?
+    
+    init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol?,
+         router: RouterProtocol?, id: UUID) {
         self.player = player
         self.saver = saver
         self.router = router
-        self.playlist = playlist
+        self.id = id
+        fetchData()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(fetchData),
+                                               name: NotificationCenterNames.updatePlaylistWithID(id: id),                                           object: nil)
     }
     
-    func fetchData() {
+    @objc func fetchData() {
         do {
-            try uiModels.accept(saver.fetchAllMedia())
+            if let mediaFiles = try saver?.fetchPlaylist(id: id)?.content {
+                uiModels.accept([SectionModel(model: "", items: mediaFiles)])
+            }
         } catch {
             errorHandler(error: error)
         }
     }
     
     func playSong(indexPath: IndexPath) {
-        var curIndex = indexPath
-        if let file = uiModels.value[indexPath.row] as? MediaFile {
-            player.play(file: file) { [weak self] in
-                curIndex = IndexPath(index: indexPath.row + 1)
-                if curIndex.row != self?.uiModels.value.endIndex {
-                    self?.playSong(indexPath: curIndex)
-                } else { return }
-            }
+        if let mediaStorage = uiModels.value[indexPath.section].items as? [MediaFile] {
+            player.storage = mediaStorage
+            player.play(index: indexPath.row)
+        }
+    }
+    
+    func saveStorage() {
+        playlist?.content = uiModels.value.first?.items as! [MediaFile]
+        do {
+            try saver?.savePlaylist(playlist: playlist!)
+        } catch {
+            errorHandler(error: error)
         }
     }
     
     func errorHandler(error: Error) {
-//
     }
 }

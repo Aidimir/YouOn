@@ -1,20 +1,21 @@
 //
-//  AllPlaylistsTableView.swift
+//  PlaylistTableView.swift
 //  YouOn
 //
-//  Created by Айдимир Магомедов on 20.03.2023.
+//  Created by Айдимир Магомедов on 22.03.2023.
 //
 
 import Foundation
 import UIKit
 import RxSwift
+import Differentiator
 import RxDataSources
 
-protocol AllPlaylistsTableViewDelegate {
-    func didTapOnPlaylist(indexPath: IndexPath)
+protocol PlaylistTableViewProtocol {
+    func onMediaFileTapped(indexPath: IndexPath)
 }
 
-class AllPlaylistsTableView: BindableTableViewController<SectionModel<String, PlaylistUIProtocol>>, UITableViewDelegate {
+class PlaylistTableView: BindableTableViewController<SectionModel<String, MediaFileUIProtocol>>, UITableViewDelegate {
     
     private var heightForRow: CGFloat
     
@@ -22,22 +23,22 @@ class AllPlaylistsTableView: BindableTableViewController<SectionModel<String, Pl
     
     let disposeBag = DisposeBag()
     
-    var delegate: AllPlaylistsTableViewDelegate?
+    var delegate: PlaylistTableViewProtocol?
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return heightForRow
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.didTapOnPlaylist(indexPath: indexPath)
+        delegate?.onMediaFileTapped(indexPath: indexPath)
     }
     
     init(heightForRow: CGFloat,
          backgroundColor: UIColor,
          tableViewColor: UIColor,
-         items: Observable<[SectionModel<String, PlaylistUIProtocol>]>,
+         items: Observable<[SectionModel<String, MediaFileUIProtocol>]>,
          classesToRegister: [String: AnyClass],
-         dataSource: RxTableViewSectionedReloadDataSource<SectionModel<String, PlaylistUIProtocol>>) {
+         dataSource: RxTableViewSectionedReloadDataSource<SectionModel<String, MediaFileUIProtocol>>) {
         self.heightForRow = heightForRow
         self.backgroundColor = backgroundColor
         super.init(items: items, dataSource: dataSource, classesToRegister: classesToRegister)

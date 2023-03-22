@@ -18,6 +18,9 @@
 		9D508FFC29C99E3E00F9EE5F /* MainBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FFB29C99E3E00F9EE5F /* MainBuilder.swift */; };
 		9D508FFE29C9A1E500F9EE5F /* FounderPageRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FFD29C9A1E500F9EE5F /* FounderPageRouter.swift */; };
 		9D50900029C9D2FD00F9EE5F /* NotificationCenterNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FFF29C9D2FD00F9EE5F /* NotificationCenterNames.swift */; };
+		9D50900229CB03CE00F9EE5F /* PlaylistTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D50900129CB03CE00F9EE5F /* PlaylistTableView.swift */; };
+		9D50900629CB071300F9EE5F /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D50900529CB071300F9EE5F /* PlaylistViewController.swift */; };
+		9D50900829CB0A5400F9EE5F /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D50900729CB0A5400F9EE5F /* ViewModel.swift */; };
 		9D6E93D129C327470044A642 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D029C327470044A642 /* DataManager.swift */; };
 		9D6E93D329C328D60044A642 /* MediaDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D229C328D60044A642 /* MediaDataManager.swift */; };
 		9D6E93D629C4374F0044A642 /* UserDefaultKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6E93D529C4374F0044A642 /* UserDefaultKeys.swift */; };
@@ -84,6 +87,9 @@
 		9D508FFB29C99E3E00F9EE5F /* MainBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBuilder.swift; sourceTree = "<group>"; };
 		9D508FFD29C9A1E500F9EE5F /* FounderPageRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FounderPageRouter.swift; sourceTree = "<group>"; };
 		9D508FFF29C9D2FD00F9EE5F /* NotificationCenterNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterNames.swift; sourceTree = "<group>"; };
+		9D50900129CB03CE00F9EE5F /* PlaylistTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistTableView.swift; sourceTree = "<group>"; };
+		9D50900529CB071300F9EE5F /* PlaylistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
+		9D50900729CB0A5400F9EE5F /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		9D6E93D029C327470044A642 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		9D6E93D229C328D60044A642 /* MediaDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDataManager.swift; sourceTree = "<group>"; };
 		9D6E93D529C4374F0044A642 /* UserDefaultKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultKeys.swift; sourceTree = "<group>"; };
@@ -147,6 +153,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9D50900329CB05E300F9EE5F /* TableViews */ = {
+			isa = PBXGroup;
+			children = (
+				9D50900129CB03CE00F9EE5F /* PlaylistTableView.swift */,
+				9D508FEF29C879DD00F9EE5F /* AllPlaylistsTableView.swift */,
+			);
+			path = TableViews;
+			sourceTree = "<group>";
+		};
+		9D50900429CB05F000F9EE5F /* Generics */ = {
+			isa = PBXGroup;
+			children = (
+				9D508FF129C87A0D00F9EE5F /* BindableTableView.swift */,
+			);
+			path = Generics;
+			sourceTree = "<group>";
+		};
 		9D6E93D429C4373F0044A642 /* Storages */ = {
 			isa = PBXGroup;
 			children = (
@@ -167,10 +190,11 @@
 		9D6E93E129C860540044A642 /* Widgets */ = {
 			isa = PBXGroup;
 			children = (
+				9D50900429CB05F000F9EE5F /* Generics */,
+				9D50900329CB05E300F9EE5F /* TableViews */,
 				9D6E93E329C860D30044A642 /* ProgressCircleView.swift */,
 				9D6E93E529C873B40044A642 /* PlaylistCell.swift */,
 				9D6E93E729C874640044A642 /* MediaFileCell.swift */,
-				9D508FF129C87A0D00F9EE5F /* BindableTableView.swift */,
 			);
 			path = Widgets;
 			sourceTree = "<group>";
@@ -179,8 +203,8 @@
 			isa = PBXGroup;
 			children = (
 				9D6E93E929C876740044A642 /* VideoFounderViewController.swift */,
-				9D508FEF29C879DD00F9EE5F /* AllPlaylistsTableView.swift */,
 				9D508FF329C8916F00F9EE5F /* LibraryViewController.swift */,
+				9D50900529CB071300F9EE5F /* PlaylistViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -290,6 +314,7 @@
 				9D6E93DA29C43C600044A642 /* VideoFounderViewModel.swift */,
 				9D6E93DC29C43DED0044A642 /* PlaylistViewModel.swift */,
 				9D508FF529C893CF00F9EE5F /* LibraryViewModel.swift */,
+				9D50900729CB0A5400F9EE5F /* ViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -583,10 +608,12 @@
 				9DA0120D29C2346A00962778 /* YTNetworkService.swift in Sources */,
 				9D6E93D629C4374F0044A642 /* UserDefaultKeys.swift in Sources */,
 				9D6E93D929C438710044A642 /* MusicPlayer.swift in Sources */,
+				9D50900629CB071300F9EE5F /* PlaylistViewController.swift in Sources */,
 				9D508FF829C8960000F9EE5F /* PlaylistSaverService.swift in Sources */,
 				9D6E93E629C873B40044A642 /* PlaylistCell.swift in Sources */,
 				9D508FF629C893CF00F9EE5F /* LibraryViewModel.swift in Sources */,
 				9DA011D129C1B61E00962778 /* YouOn.xcdatamodeld in Sources */,
+				9D50900229CB03CE00F9EE5F /* PlaylistTableView.swift in Sources */,
 				9DA0120529C22AA700962778 /* PlaylistModel.swift in Sources */,
 				9D508FF429C8916F00F9EE5F /* LibraryViewController.swift in Sources */,
 				9D50900029C9D2FD00F9EE5F /* NotificationCenterNames.swift in Sources */,
@@ -598,6 +625,7 @@
 				9D508FFE29C9A1E500F9EE5F /* FounderPageRouter.swift in Sources */,
 				9D6E93D129C327470044A642 /* DataManager.swift in Sources */,
 				9D6E93E829C874640044A642 /* MediaFileCell.swift in Sources */,
+				9D50900829CB0A5400F9EE5F /* ViewModel.swift in Sources */,
 				9D508FF229C87A0D00F9EE5F /* BindableTableView.swift in Sources */,
 				9D6E93E429C860D30044A642 /* ProgressCircleView.swift in Sources */,
 				9D6E93DB29C43C600044A642 /* VideoFounderViewModel.swift in Sources */,

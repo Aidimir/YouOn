@@ -19,25 +19,38 @@ protocol MusicPlayerDelegate {
 
 protocol MusicPlayerProtocol {
     var delegate: MusicPlayerDelegate? { get set }
-    func play(file: MediaFile, onFinished: @escaping () -> Void)
-    func pauseCurrent()
-    func playCurrent()
+    var storage: [MediaFile] { get set }
+    func playNext()
+    func playPrevious()
+    func play(index: Int)
 }
 
-class MusicPlayer: MusicPlayerProtocol {
+class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
+    
+    var storage: [MediaFile] = []
     
     var delegate: MusicPlayerDelegate?
     
+    private var index: Int?
+    
     private var player: AVAudioPlayer?
     
-    func play(file: MediaFile, onFinished: @escaping () -> Void) {
-        guard let url = FileManager.default.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(file.url) else{ return }
-        //guard let url = URL(string: musicFile.fullURL!) else {return}
+    override init() {
+        super.init()
+        setupCommandCenterCommands()
+    }
+    
+    func play(index: Int) {
+        self.index = index
+        let file = storage[self.index!]
+        
+        guard let url = FileManager.default.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(file.url) else { return }
         do {
             var nowPlayingInfo = [String : Any]()
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
             try AVAudioSession.sharedInstance().setActive(true)
             player = try AVAudioPlayer(contentsOf: url)
+            player?.delegate = self
             nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player!.currentTime
             nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player!.duration
             nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player!.rate
@@ -55,32 +68,56 @@ class MusicPlayer: MusicPlayerProtocol {
                     MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = self?.player!.currentTime
                 }
             }.resume()
-
+            
             MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
             startRemoteCommandsCenter()
-//            player!.delegate = self
+            //            player!.delegate = self
             player!.play()
         } catch {
             delegate?.errorHandler(error: error)
         }
-
     }
     
-    func pauseCurrent() {
-        player?.pause()
+    internal func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        playNext()
     }
     
-    func playCurrent() {
-        player?.play()
+    func playNext() {
+        if index != nil {
+            if index! + 1 <= storage.count - 1 {
+                play(index: index! + 1)
+            } else {
+                play(index: 0)
+                self.player?.pause()
+            }
+        }
+    }
+    
+    func playPrevious() {
+        if index != nil {
+            if player!.currentTime >= TimeInterval(3) {
+                play(index: index!)
+                return
+            }
+            
+            if index! - 1 >= 0 {
+                play(index: index! - 1)
+            } else {
+                play(index: storage.count - 1)
+            }
+        }
     }
     
     private func startRemoteCommandsCenter() {
-        if UIApplication.shared.responds(to: #selector(UIApplication.beginReceivingRemoteControlEvents)){
+        //LockScreen Media control registry
+        if UIApplication.shared.responds(to: #selector(UIApplication.beginReceivingRemoteControlEvents)) {
             UIApplication.shared.beginReceivingRemoteControlEvents()
             UIApplication.shared.beginBackgroundTask(expirationHandler: { () -> Void in
             })
         }
-        
+    }
+    
+    private func setupCommandCenterCommands() {
         let commandCenter = MPRemoteCommandCenter.shared()
         // Add handler for Play Command
         commandCenter.playCommand.addTarget { [unowned self] event in
@@ -106,12 +143,12 @@ class MusicPlayer: MusicPlayerProtocol {
         
         // Add handler for NextTrack Command
         commandCenter.nextTrackCommand.addTarget { [unowned self] event in
-            delegate?.onPlayNext()
+            playNext()
             return .success
         }
         // Add handler for PreviousTack Command
         commandCenter.previousTrackCommand.addTarget { [unowned self] event in
-            delegate?.onPlayPrevious()
+            playPrevious()
             return .success
         }
         
@@ -125,13 +162,5 @@ class MusicPlayer: MusicPlayerProtocol {
             }
             return .commandFailed
         }
-        //LockScreen Media control registry
-        if UIApplication.shared.responds(to: #selector(UIApplication.beginReceivingRemoteControlEvents)) {
-            UIApplication.shared.beginReceivingRemoteControlEvents()
-            UIApplication.shared.beginBackgroundTask(expirationHandler: { () -> Void in
-            })
-        }
-
     }
-    
 }

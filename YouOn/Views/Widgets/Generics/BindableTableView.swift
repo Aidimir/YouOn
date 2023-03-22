@@ -9,8 +9,13 @@ import Foundation
 import RxSwift
 import RxDataSources
 import SnapKit
+import RxCocoa
 
 class BindableTableViewController<T: SectionModelType>: UIViewController {
+//    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+////
+//    }
+    
     
     var items: RxSwift.Observable<[T]>
     
@@ -35,8 +40,22 @@ class BindableTableViewController<T: SectionModelType>: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    struct State<Item> {
+        var items: [Item] = []
+    }
+
+    func state<Item>(initialState: State<Item>, itemMoved: Observable<ItemMovedEvent>) -> Observable<State<Item>> {
+        itemMoved
+            .scan(into: initialState) { (state, itemMoved) in
+                state.items.move(from: itemMoved.sourceIndex.row, to: itemMoved.destinationIndex.row)
+            }
+            .startWith(initialState)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+//        tableView.rx.itemMoved = state(initialState: items, itemMoved: <#T##Observable<ItemMovedEvent>#>)
         
         for (key, value) in classesToRegister {
             tableView.register(value, forCellReuseIdentifier: key)
@@ -47,10 +66,7 @@ class BindableTableViewController<T: SectionModelType>: UIViewController {
         
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.left.equalTo(view.readableContentGuide.snp.left)
-            make.right.equalTo(view.readableContentGuide.snp.right)
-            make.top.equalTo(view.readableContentGuide.snp.top)
-            make.bottom.equalTo(view.readableContentGuide.snp.bottom)
+            make.size.equalToSuperview()
         }
     }
     

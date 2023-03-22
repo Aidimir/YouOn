@@ -17,6 +17,7 @@ protocol LibraryViewModelProtocol: CollectableViewModelProtocol where T == Secti
 }
 
 class LibraryViewModel: LibraryViewModelProtocol {
+    
     var saver: PlaylistSaverProtocol
     
     var router: LibraryPageRouterProtocol?
@@ -36,7 +37,7 @@ class LibraryViewModel: LibraryViewModelProtocol {
     }
     
     func didTapOnPlaylist(indexPath: IndexPath) {
-        if let pl = uiModels.value.first?.items[indexPath.row] as? Playlist {
+        if let pl = uiModels.value[indexPath.section].items[indexPath.row] as? Playlist {
             router?.moveToPlaylist(playlistID: pl.id)
         }
     }

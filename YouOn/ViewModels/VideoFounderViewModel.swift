@@ -7,10 +7,6 @@
 
 import Foundation
 
-protocol ViewModelProtocol {
-    func errorHandler(error: Error)
-}
-
 protocol VideoFounderViewModelDelegate {
     func downloadProgress(result: Double)
 }
@@ -24,7 +20,7 @@ protocol VideoFounderViewModelProtocol: ViewModelProtocol {
 }
 
 class VideoFounderViewModel: VideoFounderViewModelProtocol {
-    
+            
     var router: FounderRouterProtocol?
     
     var networkService: YTNetworkServiceProtocol
@@ -42,6 +38,10 @@ class VideoFounderViewModel: VideoFounderViewModelProtocol {
             self.delegate?.downloadProgress(result: progress)
         }, onCompleted: {
             NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
+            
+            if let allPlString = UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist), let playlistId = UUID(uuidString: allPlString) {
+                NotificationCenter.default.post(name: NotificationCenterNames.updatePlaylistWithID(id: playlistId), object: nil)
+            }
         }, errorHandler: errorHandler(error:))
     }
     

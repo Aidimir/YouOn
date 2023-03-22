@@ -13,10 +13,6 @@ import Kingfisher
 
 class MediaFileCell: UITableViewCell {
     
-    public var fadeLength = 20
-    
-    public var animationDuration = 6
-    
     private var controller: UIViewController?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -29,63 +25,48 @@ class MediaFileCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func setup(file: MediaFileUIProtocol, controller: UIViewController? = nil) {
+    public func setup(file: MediaFileUIProtocol, controller: UIViewController? = nil,
+                      foregroundColor: UIColor,
+                      backgroundColor: UIColor,
+                      imageCornerRadius: CGFloat = 0,
+                      fadeLength: CGFloat = 20,
+                      animationDuration: CGFloat = 6 ) {
         self.controller = controller
         
-        let nameLabel: MarqueeLabel = {
-            let label = MarqueeLabel(frame: .zero, duration: CGFloat(animationDuration), fadeLength: 0)
-            label.animationDelay = 2
-            label.fadeLength = 20
-            label.text = file.title
-            label.textColor = .white
-            label.font = .boldSystemFont(ofSize: 20)
-            return label
-        }()
+        let nameLabel = MarqueeLabel(frame: .zero, duration: animationDuration, fadeLength: 0)
+        nameLabel.animationDelay = 2
+        nameLabel.fadeLength = fadeLength
+        nameLabel.text = file.title
+        nameLabel.textColor = .white
+        nameLabel.font = .boldSystemFont(ofSize: 20)
         
-        let authorLabel: MarqueeLabel = {
-            let label = MarqueeLabel(frame: .zero, duration: CGFloat(animationDuration), fadeLength: 0)
-            label.animationDelay = 2
-            label.fadeLength = CGFloat(fadeLength)
-            label.text = file.author
-            label.textColor = .gray
-            label.font = .boldSystemFont(ofSize: 15)
-            return label
-        }()
+        let authorLabel = MarqueeLabel(frame: .zero, duration: animationDuration, fadeLength: 0)
+        authorLabel.animationDelay = 2
+        authorLabel.fadeLength = fadeLength
+        authorLabel.text = file.author
+        authorLabel.textColor = .gray
+        authorLabel.font = .boldSystemFont(ofSize: 15)
         
-        let durationLabel: UILabel = {
-            let label = UILabel()
-            let duration = file.duration.stringTime
-            label.text = duration
-            label.textAlignment = .right
-            label.textColor = .gray
-            return label
-        }()
+        let durationLabel = UILabel()
+        let duration = file.duration.stringTime
+        durationLabel.text = duration
+        durationLabel.textAlignment = .right
+        durationLabel.textColor = .gray
         
-        let view: UIView = {
-            let view = UIView()
-//            view.backgroundColor = UIColor(red: 0.33, green: 0.33, blue: 0.33, alpha: 1)
-            view.backgroundColor = .black
-            view.isUserInteractionEnabled = true
-            
-            return view
-        }()
+        let view = UIView()
+        view.backgroundColor = foregroundColor
+        view.isUserInteractionEnabled = true
         
-        let formattingIcon: UIImageView = {
-            let image = UIImage(named: "Dots")
-            let imgView = UIImageView(image: image)
-            imgView.contentMode = .scaleAspectFit
-            imgView.tintColor = .white
-            return imgView
-        }()
+        let image = UIImage(named: "Dots")
+        let formattingIcon = UIImageView(image: image)
+        formattingIcon.contentMode = .scaleAspectFit
+        formattingIcon.tintColor = .white
         
-        let imgView: UIImageView = {
-            let imgView = UIImageView(image: nil)
-            imgView.kf.setImage(with: file.imageURL)
-            imgView.contentMode = .scaleToFill
-            imgView.layer.cornerRadius = 15
-            imgView.layer.masksToBounds = true
-            return imgView
-        }()
+        let imgView = UIImageView(image: nil)
+        imgView.kf.setImage(with: file.imageURL)
+        imgView.contentMode = .scaleToFill
+        imgView.layer.cornerRadius = imageCornerRadius
+        imgView.layer.masksToBounds = true
         
         let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(onTap))
         gestureRecognizer.numberOfTapsRequired = 1
@@ -129,6 +110,8 @@ class MediaFileCell: UITableViewCell {
             make.right.height.top.bottom.equalTo(view)
             make.width.equalTo(view).multipliedBy(0.1)
         }
+        
+        contentView.backgroundColor = backgroundColor
     }
     
     @objc private func onTap(){

@@ -56,9 +56,7 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
         if let viewModel = viewModel {
             
             let cellsToRegister = ["PlaylistCell": PlaylistCell.self]
-            
-            let color = UIColor(red: 0.22, green: 0.22, blue: 0.22, alpha: 1)
-            
+                        
             let allPlTableView = AllPlaylistsTableView(heightForRow: view.frame.size.height / 6,
                                                        backgroundColor: backgroundColor,
                                                        tableViewColor: backgroundColor,

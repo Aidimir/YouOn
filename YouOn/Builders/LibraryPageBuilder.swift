@@ -15,6 +15,8 @@ protocol LibraryPageBuilderProtocol: BuilderProtocol {
 
 class LibraryPageBuilder: LibraryPageBuilderProtocol {
     
+    private let musicPlayer = MusicPlayer()
+
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     func createAlert(title: String? = "Error", error: Error?,
@@ -42,6 +44,14 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
     }
     
     func buildPlaylistController(playlistID: UUID) -> UIViewController {
-        return UIViewController()
+        let dataManager = MediaDataManager(appDelegate: appDelegate)
+        let saver = PlaylistSaver(dataManager: dataManager)
+        let viewModel = PlaylistViewModel(player: musicPlayer,
+                                          saver: saver,
+                                          router: nil,
+                                          id: playlistID)
+        let playlistController = PlaylistViewController()
+        playlistController.viewModel = viewModel
+        return playlistController
     }
 }
