@@ -36,7 +36,8 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
             
             let dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, MediaFileUIProtocol>> { _, tableView, indexPath, item in
                 let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as! MediaFileCell
-                cell.setup(file: item, controller: nil, foregroundColor: backgroundColor, backgroundColor: backgroundColor, imageCornerRadius: 30)
+                cell.setup(file: item, controller: nil, foregroundColor: backgroundColor, backgroundColor: backgroundColor, imageCornerRadius: 10)
+                cell.backgroundColor = .clear
                 return cell
             } titleForHeaderInSection: { source, sectionIndex in
                 return source[sectionIndex].model
@@ -57,9 +58,9 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
             //            <#code#>
             //        }
             
-            let playlistTableView = PlaylistTableView(heightForRow: view.frame.size.height / 7,
-                                                      backgroundColor: backgroundColor,
-                                                      tableViewColor: backgroundColor,
+            let playlistTableView = PlaylistTableView(heightForRow: view.frame.size.height / 10,
+                                                      backgroundColor: .clear,
+                                                      tableViewColor: .clear,
                                                       items: viewModel.uiModels.asObservable(),
                                                       classesToRegister: classesToRegister,
                                                       dataSource: dataSource)
@@ -68,11 +69,16 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
             
             tableViewController = playlistTableView
             
+            view.backgroundColor = backgroundColor
+            
             addChild(tableViewController!)
             
-            tableViewController!.view.frame = view.frame
-            
             view.addSubview(tableViewController!.view)
+            tableViewController!.view.snp.makeConstraints { make in
+                make.left.equalTo(view.readableContentGuide.snp.left)
+                make.right.equalToSuperview()
+                make.top.bottom.equalTo(view.readableContentGuide)
+            }
             
             tableViewController?.didMove(toParent: self)
         }

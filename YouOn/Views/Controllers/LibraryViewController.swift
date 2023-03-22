@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import RxDataSources
+import SnapKit
 import RxSwift
 
 protocol LibraryViewProtocol {
@@ -58,20 +59,23 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
             let cellsToRegister = ["PlaylistCell": PlaylistCell.self]
                         
             let allPlTableView = AllPlaylistsTableView(heightForRow: view.frame.size.height / 6,
-                                                       backgroundColor: backgroundColor,
-                                                       tableViewColor: backgroundColor,
+                                                       backgroundColor: .clear,
+                                                       tableViewColor: .clear,
                                                        items: viewModel.uiModels.asObservable(),
                                                        classesToRegister: cellsToRegister,
                                                        dataSource: dataSource)
             allPlTableView.delegate = self
             
             playlistsTableView = allPlTableView
+            
+            view.backgroundColor = backgroundColor
                         
             addChild(playlistsTableView!)
             
-            playlistsTableView!.view.frame = view.frame
-            
             view.addSubview(playlistsTableView!.view)
+            playlistsTableView?.view.snp.makeConstraints { make in
+                make.left.right.top.bottom.equalTo(view.readableContentGuide)
+            }
             
             playlistsTableView?.didMove(toParent: self)
         }
