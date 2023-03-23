@@ -37,6 +37,7 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
         let controller = LibraryViewController()
         let navController = UINavigationController(rootViewController: controller)
         navController.navigationBar.topItem?.title = nil
+        navController.navigationBar.tintColor = .white
         let router = LibraryPageRouter(builder: self, navigationController: navController)
         viewModel.router = router
         controller.viewModel = viewModel

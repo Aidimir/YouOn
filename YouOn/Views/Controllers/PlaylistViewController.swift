@@ -38,6 +38,7 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
                 let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as! MediaFileCell
                 cell.setup(file: item, controller: nil, foregroundColor: backgroundColor, backgroundColor: backgroundColor, imageCornerRadius: 10)
                 cell.backgroundColor = .clear
+                cell.selectionStyle = .none
                 return cell
             } titleForHeaderInSection: { source, sectionIndex in
                 return source[sectionIndex].model

@@ -25,11 +25,11 @@ protocol PlaylistViewModelProtocol: CollectableViewModelProtocol where T == Sect
 }
 
 class PlaylistViewModel: PlaylistViewModelProtocol {
-        
+    
     var router: RouterProtocol?
     
     var uiModels: RxRelay.BehaviorRelay<[SectionModel<String, MediaFileUIProtocol>]> = BehaviorRelay(value: [SectionModel(model: "", items: [MediaFileUIProtocol]() )])
-
+    
     var player: MusicPlayerProtocol
     
     var saver: PlaylistSaverProtocol?
@@ -51,12 +51,15 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     }
     
     @objc func fetchData() {
-        do {
-            if let mediaFiles = try saver?.fetchPlaylist(id: id)?.content {
-                uiModels.accept([SectionModel(model: "", items: mediaFiles)])
+        DispatchQueue.main.async { [ weak self ] in
+            guard let self = self else { return }
+            do {
+                if let mediaFiles = try self.saver?.fetchPlaylist(id: self.id)?.content {
+                    self.uiModels.accept([SectionModel(model: "", items: mediaFiles)])
+                }
+            } catch {
+                self.errorHandler(error: error)
             }
-        } catch {
-            errorHandler(error: error)
         }
     }
     

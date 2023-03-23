@@ -87,17 +87,17 @@ class MediaFileCell: UITableViewCell {
             make.width.equalToSuperview().multipliedBy(0.6)
         }
         
-        view.addSubview(authorLabel)
-        authorLabel.snp.makeConstraints { make in
-            make.centerX.height.width.equalTo(nameLabel)
-            make.bottom.equalTo(imgView)
-        }
-        
         view.addSubview(durationLabel)
         durationLabel.snp.makeConstraints { make in
             make.right.equalTo(nameLabel)
-            make.width.equalToSuperview().multipliedBy(0.1)
-            make.top.height.equalTo(authorLabel)
+            make.bottom.equalTo(imgView)
+        }
+        
+        view.addSubview(authorLabel)
+        authorLabel.snp.makeConstraints { make in
+            make.left.height.equalTo(nameLabel)
+            make.right.equalTo(durationLabel.snp.left).inset(10)
+            make.bottom.equalTo(imgView)
         }
         
         addSubview(view)

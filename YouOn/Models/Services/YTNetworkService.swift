@@ -43,7 +43,7 @@ class YTNetworkService: YTNetworkServiceProtocol {
             let mediaFile = MediaFile(url: fileName, title: video.title,
                                       id: video.identifier, duration: video.duration,
                                       author: video.author, videoURL: URL(string: linkString)!,
-                                      imageURL: video.thumbnailURLs?.first)
+                                      imageURL: video.thumbnailURLs?.last)
             do {
                 if manager.fileExists(atPath: url.appendingPathComponent(fileName).path) {
                     try manager.removeItem(at: url.appendingPathComponent(fileName))

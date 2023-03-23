@@ -25,10 +25,13 @@ class LibraryViewModel: LibraryViewModelProtocol {
     var uiModels: RxRelay.BehaviorRelay<[SectionModel<String, PlaylistUIProtocol>]> = BehaviorRelay(value: [SectionModel(model: "", items: [PlaylistUIProtocol]() )])
     
     @objc func fetchPlaylists() {
-        do {
-            try uiModels.accept([SectionModel(model: "", items: saver.fetchAllPlaylists())])
-        } catch {
-            errorHandler(error: error)
+        DispatchQueue.main.async { [ weak self ] in
+            guard let self = self else { return }
+            do {
+                try self.uiModels.accept([SectionModel(model: "", items: self.saver.fetchAllPlaylists())])
+            } catch {
+                self.errorHandler(error: error)
+            }
         }
     }
     

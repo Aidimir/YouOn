@@ -36,7 +36,9 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
         let dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, PlaylistUIProtocol>> { _, tableView, indexPath, item in
             let cell = tableView.dequeueReusableCell(withIdentifier: "PlaylistCell", for: indexPath) as! PlaylistCell
             cell.setup(uiModel: item, foregroundColor: .clear,
-                       backgroundColor: backgroundColor, cornerRadius: 30)
+                       backgroundColor: backgroundColor, cornerRadius: 10)
+            cell.backgroundColor = .clear
+            cell.selectionStyle = .none
             return cell
         } titleForHeaderInSection: { source, sectionIndex in
             return source[sectionIndex].model
