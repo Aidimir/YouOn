@@ -8,7 +8,7 @@
 import Foundation
 import Differentiator
 
-protocol MediaFileUIProtocol {
+protocol MediaFileUIProtocol: Any {
     var id: String { get }
     var title: String { get set }
     var duration: TimeInterval { get set }

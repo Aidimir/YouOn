@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import RxSwift
 import RxDataSources
+import RxRelay
 
 protocol AllPlaylistsTableViewDelegate {
     func didTapOnPlaylist(indexPath: IndexPath)
@@ -42,7 +43,7 @@ class AllPlaylistsTableView: BindableTableViewController<PlaylistSectionModel>, 
          dataSource: RxTableViewSectionedAnimatedDataSource<PlaylistSectionModel>) {
         self.heightForRow = heightForRow
         self.backgroundColor = backgroundColor
-        super.init(items: items, dataSource: dataSource, classesToRegister: classesToRegister)
+        super.init(items: items,dataSource: dataSource, classesToRegister: classesToRegister)
         tableView.backgroundColor = tableViewColor
         view.backgroundColor = backgroundColor
         tableView.separatorColor = .clear

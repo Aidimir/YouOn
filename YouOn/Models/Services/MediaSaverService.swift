@@ -11,14 +11,18 @@ protocol MediaSaverProtocol {
     func saveToAll(file: MediaFile) throws
     func removeFromAll(file: MediaFile) throws
     func fetchAllMedia() throws -> [MediaFile]
+    var fileManager: FileManager { get }
 }
 
 class MediaSaver: MediaSaverProtocol {
     
     var dataManager: MediaDataManagerProtocol
     
-    init(dataManager: MediaDataManagerProtocol) {
+    var fileManager: FileManager
+    
+    init(dataManager: MediaDataManagerProtocol, fileManager: FileManager) {
         self.dataManager = dataManager
+        self.fileManager = fileManager
     }
     
     func saveToAll(file: MediaFile) throws {
@@ -43,6 +47,11 @@ class MediaSaver: MediaSaverProtocol {
             let idStr = UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist)
             let id = UUID(uuidString: idStr!)!
             var playlist = try dataManager.fetchPlaylist(id: id)
+            
+            if let url = fileManager.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(file.url) {
+                try fileManager.removeItem(at: url)
+            }
+            
             playlist?.removeFileById(id: file.id)
             try dataManager.savePlaylist(data: playlist, id: id)
         }

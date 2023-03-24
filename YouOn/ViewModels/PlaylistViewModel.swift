@@ -21,6 +21,7 @@ protocol PlaylistViewModelProtocol: CollectableViewModelProtocol where T == Medi
     var router: RouterProtocol? { get set }
     var id: UUID { get set }
     func playSong(indexPath: IndexPath)
+    func removeFromPlaylist(indexPath: IndexPath)
     func saveStorage()
 }
 
@@ -54,8 +55,9 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
         DispatchQueue.main.async { [ weak self ] in
             guard let self = self else { return }
             do {
-                if let files = try self.saver?.fetchPlaylist(id: self.id)?.content {
-                    self.uiModels.accept(files)
+                if let playlist = try self.saver?.fetchPlaylist(id: self.id) {
+                    self.playlist = playlist
+                    self.uiModels.accept(playlist.content)
                 }
             } catch {
                 self.errorHandler(error: error)
@@ -74,14 +76,33 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
         if let content = uiModels.value as? [MediaFile] {
             playlist?.content = content
             do {
-                try saver?.savePlaylist(playlist: playlist!)
+                if let playlist = playlist {
+                    try saver?.savePlaylist(playlist: playlist)
+                }
             } catch {
                 errorHandler(error: error)
             }
         }
     }
     
+    func removeFromPlaylist(indexPath: IndexPath) {
+        if let defaultAllPlaylistId = UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist), defaultAllPlaylistId == playlist?.id.uuidString {
+            if let file = uiModels.value[indexPath.row] as? MediaFile {
+                do {
+                    try saver?.removeFromAll(file: file)
+                    uiModels.removeElement(at: indexPath.row)
+                } catch {
+                    errorHandler(error: error)
+                }
+            }
+        } else {
+            uiModels.removeElement(at: indexPath.row)
+        }
+        
+        saveStorage()
+    }
+    
     func errorHandler(error: Error) {
-//        
+        //
     }
 }

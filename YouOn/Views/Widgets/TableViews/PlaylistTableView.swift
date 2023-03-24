@@ -10,6 +10,8 @@ import UIKit
 import RxSwift
 import Differentiator
 import RxDataSources
+import RxRelay
+import RxCocoa
 
 protocol PlaylistTableViewProtocol {
     func onMediaFileTapped(indexPath: IndexPath)
@@ -17,11 +19,13 @@ protocol PlaylistTableViewProtocol {
 
 typealias MediaFilesSectionModel = AnimatableSectionModel<String, MediaFileUIModel>
 
-class PlaylistTableView: BindableTableViewController<MediaFilesSectionModel>, UITableViewDelegate {
+class PlaylistTableView: BindableTableViewController<MediaFilesSectionModel>, UITableViewDelegate, UITableViewDragDelegate {
     
     private var heightForRow: CGFloat
     
     private var backgroundColor: UIColor
+    
+    private var itemsAsRelay: BehaviorRelay<[MediaFileUIProtocol]>?
     
     let disposeBag = DisposeBag()
     
@@ -39,11 +43,21 @@ class PlaylistTableView: BindableTableViewController<MediaFilesSectionModel>, UI
          backgroundColor: UIColor,
          tableViewColor: UIColor,
          items: Observable<[MediaFilesSectionModel]>,
+         itemsAsRelay: BehaviorRelay<[MediaFileUIProtocol]>?,
+         onItemMoved: ((ItemMovedEvent) -> Void)? = nil,
+         onItemRemoved: ((IndexPath) -> Void)? = nil,
          classesToRegister: [String: AnyClass],
          dataSource: RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel>) {
         self.heightForRow = heightForRow
         self.backgroundColor = backgroundColor
-        super.init(items: items, dataSource: dataSource, classesToRegister: classesToRegister)
+        self.itemsAsRelay = itemsAsRelay
+        
+        super.init(items: items,
+                   onItemMoved: onItemMoved,
+                   onItemRemoved: onItemRemoved,
+                   dataSource: dataSource,
+                   classesToRegister: classesToRegister)
+        
         tableView.backgroundColor = tableViewColor
         view.backgroundColor = backgroundColor
     }
@@ -55,5 +69,12 @@ class PlaylistTableView: BindableTableViewController<MediaFilesSectionModel>, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
+        tableView.dragDelegate = self
+    }
+    
+    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        let dragItem = UIDragItem(itemProvider: NSItemProvider())
+        dragItem.localObject = itemsAsRelay?.value[indexPath.row]
+        return [dragItem]
     }
 }

@@ -9,11 +9,16 @@ import Foundation
 import RxSwift
 import RxDataSources
 import SnapKit
+import RxRelay
 import RxCocoa
 
 class BindableTableViewController<T: AnimatableSectionModelType>: UIViewController {
         
     var items: RxSwift.Observable<[T]>
+    
+    var onItemMoved: ((ItemMovedEvent) -> Void)?
+    
+    var onItemRemoved: ((IndexPath) -> Void)?
     
     let tableView = UITableView()
     
@@ -24,11 +29,15 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
     private let disposeBag = DisposeBag()
     
     init(items: RxSwift.Observable<[T]>,
+         onItemMoved: ((ItemMovedEvent) -> Void)? = nil,
+         onItemRemoved: ((IndexPath) -> Void)? = nil,
          dataSource: RxTableViewSectionedAnimatedDataSource<T>,
-         classesToRegister: [String: AnyClass]) {
+         classesToRegister: [String: AnyClass] ) {
         self.items = items
         self.dataSource = dataSource
         self.classesToRegister = classesToRegister
+        self.onItemMoved = onItemMoved
+        self.onItemRemoved = onItemRemoved
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -43,8 +52,27 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
             tableView.register(value, forCellReuseIdentifier: key)
         }
         
+        tableView.rx.itemDeleted
+            .asDriver()
+            .drive(onNext: onItemRemoved)
+            .disposed(by: disposeBag)
+        
+        tableView.rx.itemMoved
+            .asDriver()
+            .drive(onNext: onItemMoved)
+            .disposed(by: disposeBag)
+        
         items.bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
+        
+//        tableView.rx.itemMoved.asDriver()
+//            .drive(onNext: { [unowned self] source, destination in
+//                guard source != destination, itemsAsRelay != nil else { return }
+//                let item = self.itemsAsRelay!.value[source.row]
+//                tableView.backgroundColor = .red
+//                self.itemsAsRelay!.replaceElement(at: source.row, insertTo: destination.row, with: item)
+//            })
+//            .disposed(by: disposeBag)
         
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in

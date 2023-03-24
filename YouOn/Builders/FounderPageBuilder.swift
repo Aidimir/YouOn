@@ -18,6 +18,8 @@ protocol FounderBuilderProtocol: BuilderProtocol {
 
 class FounderPageBuilder: FounderBuilderProtocol {
     
+    private let fileManager = FileManager.default
+    
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     func createAlert(title: String? = "Error", error: Error?,
@@ -40,7 +42,7 @@ class FounderPageBuilder: FounderBuilderProtocol {
 //        } catch {
 //            print()
 //        }
-        let saver = MediaSaver(dataManager: dataManager)
+        let saver = MediaSaver(dataManager: dataManager, fileManager: fileManager)
         let networkService = YTNetworkService()
         networkService.saver = saver
         let viewModel = VideoFounderViewModel(networkService: networkService)

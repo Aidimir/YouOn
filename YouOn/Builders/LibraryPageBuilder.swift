@@ -15,6 +15,8 @@ protocol LibraryPageBuilderProtocol: BuilderProtocol {
 
 class LibraryPageBuilder: LibraryPageBuilderProtocol {
     
+    private let fileManager = FileManager.default
+    
     private let musicPlayer = MusicPlayer()
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -32,7 +34,7 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
     }
     
     func buildLibraryViewController() -> UIViewController {
-        let saver = PlaylistSaver(dataManager: MediaDataManager(appDelegate: appDelegate))
+        let saver = PlaylistSaver(dataManager: MediaDataManager(appDelegate: appDelegate), fileManager: fileManager)
         let viewModel = LibraryViewModel(saver: saver)
         let controller = LibraryViewController()
         
@@ -53,7 +55,8 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
     
     func buildPlaylistController(playlistID: UUID) -> UIViewController {
         let dataManager = MediaDataManager(appDelegate: appDelegate)
-        let saver = PlaylistSaver(dataManager: dataManager)
+        let saver = PlaylistSaver(dataManager: dataManager, fileManager: fileManager)
+        musicPlayer.fileManager = fileManager
         let viewModel = PlaylistViewModel(player: musicPlayer,
                                           saver: saver,
                                           router: nil,

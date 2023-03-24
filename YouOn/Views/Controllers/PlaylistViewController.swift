@@ -10,6 +10,7 @@ import UIKit
 import RxSwift
 import RxDataSources
 import SnapKit
+import RxCocoa
 
 protocol PlaylistViewProtocol {
     var viewModel: (any PlaylistViewModelProtocol)? { get set }
@@ -63,9 +64,12 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
                                                       backgroundColor: .clear,
                                                       tableViewColor: .clear,
                                                       items: viewModel.uiModels
-                                                        .asObservable()
-                                                        .map({ [AnimatableSectionModel(model: "",
-                                                                                       items: $0.map({ MediaFileUIModel(model: $0)}))] }),
+                .asObservable()
+                .map({ [AnimatableSectionModel(model: "",
+                                               items: $0.map({ MediaFileUIModel(model: $0)}))] }),
+                                                      itemsAsRelay: viewModel.uiModels,
+                                                      onItemMoved: onItemMoved(_:),
+                                                      onItemRemoved: onItemRemoved(_:),
                                                       classesToRegister: classesToRegister,
                                                       dataSource: dataSource)
             
@@ -86,5 +90,16 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
             
             tableViewController?.didMove(toParent: self)
         }
+    }
+    
+    private func onItemMoved(_ event: ItemMovedEvent) -> Void {
+        guard viewModel != nil, let item = viewModel?.uiModels.value[event.sourceIndex.row] else { return }
+        viewModel!.uiModels.replaceElement(at: event.sourceIndex.row, insertTo: event.destinationIndex.row, with: item)
+        viewModel?.saveStorage()
+    }
+    
+    private func onItemRemoved(_ indexPath: IndexPath) -> Void {
+        guard viewModel != nil else { return }
+        viewModel?.removeFromPlaylist(indexPath: indexPath)
     }
 }

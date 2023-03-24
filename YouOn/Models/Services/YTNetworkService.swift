@@ -11,6 +11,7 @@ import Alamofire
 
 protocol YTNetworkServiceProtocol {
     var saver: MediaSaverProtocol? { get set }
+    var fileManager: FileManager? { get set }
     func downloadVideo(linkString: String, completion: ((_ progress: Double) -> Void)?,
                        onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?)
@@ -21,14 +22,14 @@ protocol YTNetworkServiceProtocol {
 
 class YTNetworkService: YTNetworkServiceProtocol {
     
+    var fileManager: FileManager?
+    
     var saver: MediaSaverProtocol?
     
     func downloadVideo(linkString: String, completion: ((Double) -> Void)?,
                        onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?) {
-        let manager = FileManager.default
-        
-        guard let url = manager.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        guard let fileManager = fileManager, let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
         XCDYouTubeClient.default().getVideoWithIdentifier(linkString.getYoutubeID()) { video, error in
             guard let video = video, error == nil else {
                 if error != nil {
@@ -45,8 +46,8 @@ class YTNetworkService: YTNetworkServiceProtocol {
                                       author: video.author, videoURL: URL(string: linkString)!,
                                       imageURL: video.thumbnailURLs?.last)
             do {
-                if manager.fileExists(atPath: url.appendingPathComponent(fileName).path) {
-                    try manager.removeItem(at: url.appendingPathComponent(fileName))
+                if fileManager.fileExists(atPath: url.appendingPathComponent(fileName).path) {
+                    try fileManager.removeItem(at: url.appendingPathComponent(fileName))
                 }
                 
                 AF.request(video.streamURL!).downloadProgress(closure: { progress in
@@ -54,7 +55,7 @@ class YTNetworkService: YTNetworkServiceProtocol {
                 }).response(queue: .global()) { response in
                     switch (response.result) {
                     case .success(let data):
-                        manager.createFile(atPath: url.appendingPathComponent(fileName).path, contents: data)
+                        fileManager.createFile(atPath: url.appendingPathComponent(fileName).path, contents: data)
                         try? self.saver?.saveToAll(file: mediaFile)
                         onCompleted?()
                     case .failure(let error):

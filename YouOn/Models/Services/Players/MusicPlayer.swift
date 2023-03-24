@@ -20,12 +20,15 @@ protocol MusicPlayerDelegate {
 protocol MusicPlayerProtocol {
     var delegate: MusicPlayerDelegate? { get set }
     var storage: [MediaFile] { get set }
+    var fileManager: FileManager? { get set }
     func playNext()
     func playPrevious()
     func play(index: Int)
 }
 
 class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
+    
+    var fileManager: FileManager?
     
     var storage: [MediaFile] = []
     
@@ -44,7 +47,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
         self.index = index
         let file = storage[self.index!]
         
-        guard let url = FileManager.default.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(file.url) else { return }
+        guard let url = fileManager?.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(file.url) else { return }
         do {
             var nowPlayingInfo = [String : Any]()
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)

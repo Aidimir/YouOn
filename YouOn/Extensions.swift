@@ -7,6 +7,9 @@
 
 import Foundation
 import UIKit
+import RxRelay
+import RxCocoa
+import RxSwift
 
 extension String {
     func getYoutubeID() -> String? {
@@ -34,19 +37,19 @@ extension TimeInterval {
     private var milliseconds: Int {
         return Int((truncatingRemainder(dividingBy: 1)) * 1000)
     }
-
+    
     private var seconds: Int {
         return Int(self) % 60
     }
-
+    
     private var minutes: Int {
         return (Int(self) / 60 ) % 60
     }
-
+    
     private var hours: Int {
         return Int(self) / 3600
     }
-
+    
     var stringTime: String {
         if hours != 0 {
             return "\(hours)h \(minutes)m \(seconds)s"
@@ -98,4 +101,19 @@ extension Array
 
 extension UIColor {
     static let darkGray = UIColor(red: 0.22, green: 0.22, blue: 0.22, alpha: 1)
+}
+
+extension BehaviorRelay where Element: RangeReplaceableCollection {
+    func replaceElement(at index: Element.Index, insertTo insertIndex: Element.Index, with element: Element.Element) {
+        var newValue = value
+        newValue.remove(at: index)
+        newValue.insert(element, at: insertIndex)
+        accept(newValue)
+    }
+    
+    func removeElement(at index: Element.Index) {
+        var newValue = value
+        newValue.remove(at: index)
+        accept(newValue)
+    }
 }
