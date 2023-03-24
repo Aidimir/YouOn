@@ -35,9 +35,16 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
         let saver = PlaylistSaver(dataManager: MediaDataManager(appDelegate: appDelegate))
         let viewModel = LibraryViewModel(saver: saver)
         let controller = LibraryViewController()
+        
+        let navBarAppearance = UINavigationBarAppearance()
+        navBarAppearance.configureWithTransparentBackground()
+
         let navController = UINavigationController(rootViewController: controller)
+        navController.navigationBar.standardAppearance = navBarAppearance
+        navController.navigationBar.scrollEdgeAppearance = navBarAppearance
         navController.navigationBar.topItem?.title = nil
         navController.navigationBar.tintColor = .white
+        navController.navigationBar.tintAdjustmentMode = .normal
         let router = LibraryPageRouter(builder: self, navigationController: navController)
         viewModel.router = router
         controller.viewModel = viewModel

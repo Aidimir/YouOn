@@ -57,16 +57,3 @@ struct Playlist: Codable, PlaylistUIProtocol {
         content.removeAll(where: { $0.id == id })
     }
 }
-
-
-struct SectionOfPlaylistUI: SectionModelType {
-    init(original: SectionOfPlaylistUI, items: [Item]) {
-        self.items = items
-        self = original
-    }
-    
-    typealias Item = PlaylistUIProtocol
-    
-    var header: String?
-    var items: [Item]
-}

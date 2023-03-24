@@ -38,8 +38,10 @@ class MainBuilder: MainBuilderProtocol {
         let libraryC = libraryPageBuilder.buildLibraryViewController()
         let controller = UITabBarController()
         controller.tabBar.tintColor = .white
-        controller.tabBar.barTintColor = .black
-        controller.viewControllers = [founderC, libraryC]
+        controller.tabBar.barTintColor = .darkGray
+        controller.tabBar.backgroundColor = .darkGray
+        controller.tabBar.isTranslucent = false
+        controller.setViewControllers([founderC, libraryC], animated: true)
         return controller
     }
 }

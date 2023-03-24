@@ -28,7 +28,7 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let backgroundColor = UIColor(red: 0.22, green: 0.22, blue: 0.22, alpha: 1)
+        let backgroundColor = UIColor.darkGray
         
         let classesToRegister = ["MediaFileCell": MediaFileCell.self]
         

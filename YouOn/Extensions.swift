@@ -95,3 +95,7 @@ extension Array
         self.insert(self.remove(at: oldIndex), at: newIndex)
     }
 }
+
+extension UIColor {
+    static let darkGray = UIColor(red: 0.22, green: 0.22, blue: 0.22, alpha: 1)
+}

@@ -26,15 +26,3 @@ struct MediaFile: Codable, MediaFileUIProtocol {
     var videoDescription: String?
     var imageURL: URL?
 }
-
-struct SectionOfMediaFileUI: SectionModelType {
-    init(original: SectionOfMediaFileUI, items: [Item]) {
-        self.items = items
-        self = original
-    }
-    
-    typealias Item = MediaFileUIProtocol
-    
-    var header: String?
-    var items: [Item]
-}

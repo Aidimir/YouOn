@@ -37,7 +37,7 @@ class VideoFounderViewController: UIViewController,
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(red: 0.22, green: 0.22, blue: 0.22, alpha: 1)
+        view.backgroundColor = .darkGray
 
         textField = {
             let textField = UITextField()

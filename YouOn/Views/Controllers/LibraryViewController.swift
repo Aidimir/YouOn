@@ -31,7 +31,7 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let backgroundColor = UIColor(red: 0.22, green: 0.22, blue: 0.22, alpha: 1)
+        let backgroundColor = UIColor.darkGray
 
         let dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, PlaylistUIProtocol>> { _, tableView, indexPath, item in
             let cell = tableView.dequeueReusableCell(withIdentifier: "PlaylistCell", for: indexPath) as! PlaylistCell
