@@ -15,7 +15,9 @@ protocol PlaylistTableViewProtocol {
     func onMediaFileTapped(indexPath: IndexPath)
 }
 
-class PlaylistTableView: BindableTableViewController<SectionModel<String, MediaFileUIProtocol>>, UITableViewDelegate {
+typealias MediaFilesSectionModel = AnimatableSectionModel<String, MediaFileUIModel>
+
+class PlaylistTableView: BindableTableViewController<MediaFilesSectionModel>, UITableViewDelegate {
     
     private var heightForRow: CGFloat
     
@@ -36,9 +38,9 @@ class PlaylistTableView: BindableTableViewController<SectionModel<String, MediaF
     init(heightForRow: CGFloat,
          backgroundColor: UIColor,
          tableViewColor: UIColor,
-         items: Observable<[SectionModel<String, MediaFileUIProtocol>]>,
+         items: Observable<[MediaFilesSectionModel]>,
          classesToRegister: [String: AnyClass],
-         dataSource: RxTableViewSectionedReloadDataSource<SectionModel<String, MediaFileUIProtocol>>) {
+         dataSource: RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel>) {
         self.heightForRow = heightForRow
         self.backgroundColor = backgroundColor
         super.init(items: items, dataSource: dataSource, classesToRegister: classesToRegister)

@@ -15,7 +15,7 @@ protocol CollectableViewModelProtocol: ViewModelProtocol {
     var uiModels: BehaviorRelay<[T]> { get set }
 }
 
-protocol PlaylistViewModelProtocol: CollectableViewModelProtocol where T == SectionModel<String, MediaFileUIProtocol> {
+protocol PlaylistViewModelProtocol: CollectableViewModelProtocol where T == MediaFileUIProtocol {
     var player: MusicPlayerProtocol { get }
     var saver: PlaylistSaverProtocol? { get }
     var router: RouterProtocol? { get set }
@@ -28,7 +28,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     
     var router: RouterProtocol?
     
-    var uiModels: RxRelay.BehaviorRelay<[SectionModel<String, MediaFileUIProtocol>]> = BehaviorRelay(value: [SectionModel(model: "", items: [MediaFileUIProtocol]() )])
+    var uiModels: RxRelay.BehaviorRelay<[MediaFileUIProtocol]> = BehaviorRelay(value: [MediaFileUIProtocol]())
     
     var player: MusicPlayerProtocol
     
@@ -54,8 +54,8 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
         DispatchQueue.main.async { [ weak self ] in
             guard let self = self else { return }
             do {
-                if let mediaFiles = try self.saver?.fetchPlaylist(id: self.id)?.content {
-                    self.uiModels.accept([SectionModel(model: "", items: mediaFiles)])
+                if let files = try self.saver?.fetchPlaylist(id: self.id)?.content {
+                    self.uiModels.accept(files)
                 }
             } catch {
                 self.errorHandler(error: error)
@@ -64,21 +64,24 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     }
     
     func playSong(indexPath: IndexPath) {
-        if let mediaStorage = uiModels.value[indexPath.section].items as? [MediaFile] {
+        if let mediaStorage = uiModels.value as? [MediaFile] {
             player.storage = mediaStorage
             player.play(index: indexPath.row)
         }
     }
     
     func saveStorage() {
-        playlist?.content = uiModels.value.first?.items as! [MediaFile]
-        do {
-            try saver?.savePlaylist(playlist: playlist!)
-        } catch {
-            errorHandler(error: error)
+        if let content = uiModels.value as? [MediaFile] {
+            playlist?.content = content
+            do {
+                try saver?.savePlaylist(playlist: playlist!)
+            } catch {
+                errorHandler(error: error)
+            }
         }
     }
     
     func errorHandler(error: Error) {
+//        
     }
 }

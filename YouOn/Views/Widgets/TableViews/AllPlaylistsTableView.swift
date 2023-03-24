@@ -14,7 +14,9 @@ protocol AllPlaylistsTableViewDelegate {
     func didTapOnPlaylist(indexPath: IndexPath)
 }
 
-class AllPlaylistsTableView: BindableTableViewController<SectionModel<String, PlaylistUIProtocol>>, UITableViewDelegate {
+typealias PlaylistSectionModel = AnimatableSectionModel<String, PlaylistUIModel>
+
+class AllPlaylistsTableView: BindableTableViewController<PlaylistSectionModel>, UITableViewDelegate {
     
     private var heightForRow: CGFloat
     
@@ -35,9 +37,9 @@ class AllPlaylistsTableView: BindableTableViewController<SectionModel<String, Pl
     init(heightForRow: CGFloat,
          backgroundColor: UIColor,
          tableViewColor: UIColor,
-         items: Observable<[SectionModel<String, PlaylistUIProtocol>]>,
+         items: Observable<[PlaylistSectionModel]>,
          classesToRegister: [String: AnyClass],
-         dataSource: RxTableViewSectionedReloadDataSource<SectionModel<String, PlaylistUIProtocol>>) {
+         dataSource: RxTableViewSectionedAnimatedDataSource<PlaylistSectionModel>) {
         self.heightForRow = heightForRow
         self.backgroundColor = backgroundColor
         super.init(items: items, dataSource: dataSource, classesToRegister: classesToRegister)

@@ -9,7 +9,7 @@ import Foundation
 import Differentiator
 
 protocol PlaylistUIProtocol {
-    var id: UUID { get set }
+    var id: UUID { get }
     var title: String { get set }
     var imageURL: URL? { get }
     var isDeletable: Bool { get }
@@ -55,5 +55,30 @@ struct Playlist: Codable, PlaylistUIProtocol {
     
     mutating func removeFileById(id: String) {
         content.removeAll(where: { $0.id == id })
+    }
+}
+
+struct PlaylistUIModel: IdentifiableType, Equatable, PlaylistUIProtocol {
+    var id: UUID
+    
+    var identity: UUID {
+        get {
+            return id
+        }
+    }
+    
+    typealias Identity = UUID
+    
+    var title: String
+    var imageURL: URL?
+    var isDeletable: Bool
+    var tracksCountString: String
+    
+    init(model: PlaylistUIProtocol) {
+        self.id = model.id
+        self.title = model.title
+        self.imageURL = model.imageURL
+        self.isDeletable = model.isDeletable
+        self.tracksCountString = model.tracksCountString
     }
 }

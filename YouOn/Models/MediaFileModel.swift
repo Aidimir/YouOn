@@ -9,6 +9,7 @@ import Foundation
 import Differentiator
 
 protocol MediaFileUIProtocol {
+    var id: String { get }
     var title: String { get set }
     var duration: TimeInterval { get set }
     var author: String { get set }
@@ -25,4 +26,26 @@ struct MediaFile: Codable, MediaFileUIProtocol {
     var supportsVideo: Bool = false
     var videoDescription: String?
     var imageURL: URL?
+}
+
+struct MediaFileUIModel: IdentifiableType, Equatable, MediaFileUIProtocol {
+    var id: String
+    var title: String
+    var duration: TimeInterval
+    var author: String
+    var imageURL: URL?
+    
+    var identity: String {
+        get {
+            return id
+        }
+    }
+    
+    init(model: MediaFileUIProtocol) {
+        self.id = model.id
+        self.title = model.title
+        self.imageURL = model.imageURL
+        self.duration = model.duration
+        self.author = model.author
+    }
 }

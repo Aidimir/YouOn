@@ -34,7 +34,7 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
         
         if let viewModel = viewModel {
             
-            let dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, MediaFileUIProtocol>> { _, tableView, indexPath, item in
+            let dataSource = RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel> { _, tableView, indexPath, item in
                 let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as! MediaFileCell
                 cell.setup(file: item, controller: nil, foregroundColor: backgroundColor, backgroundColor: backgroundColor, imageCornerRadius: 10)
                 cell.backgroundColor = .clear
@@ -43,7 +43,7 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
             } titleForHeaderInSection: { source, sectionIndex in
                 return source[sectionIndex].model
             } canEditRowAtIndexPath: { source, indexPath in
-//                return dataSource.sectionModels[indexPath.section].items[indexPath.row]
+                //                return dataSource.sectionModels[indexPath.section].items[indexPath.row]
                 return true
             } canMoveRowAtIndexPath: { source, IndexPath in
                 return true
@@ -62,7 +62,10 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
             let playlistTableView = PlaylistTableView(heightForRow: view.frame.size.height / 10,
                                                       backgroundColor: .clear,
                                                       tableViewColor: .clear,
-                                                      items: viewModel.uiModels.asObservable(),
+                                                      items: viewModel.uiModels
+                                                        .asObservable()
+                                                        .map({ [AnimatableSectionModel(model: "",
+                                                                                       items: $0.map({ MediaFileUIModel(model: $0)}))] }),
                                                       classesToRegister: classesToRegister,
                                                       dataSource: dataSource)
             

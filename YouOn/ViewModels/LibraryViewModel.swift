@@ -9,7 +9,7 @@ import Foundation
 import RxRelay
 import Differentiator
 
-protocol LibraryViewModelProtocol: CollectableViewModelProtocol where T == SectionModel<String, PlaylistUIProtocol> {
+protocol LibraryViewModelProtocol: CollectableViewModelProtocol where T == PlaylistUIProtocol {
     var saver: PlaylistSaverProtocol { get set }
     var router: LibraryPageRouterProtocol? { get }
     func fetchPlaylists()
@@ -22,13 +22,13 @@ class LibraryViewModel: LibraryViewModelProtocol {
     
     var router: LibraryPageRouterProtocol?
     
-    var uiModels: RxRelay.BehaviorRelay<[SectionModel<String, PlaylistUIProtocol>]> = BehaviorRelay(value: [SectionModel(model: "", items: [PlaylistUIProtocol]() )])
+    var uiModels: RxRelay.BehaviorRelay<[PlaylistUIProtocol]> = BehaviorRelay(value: [PlaylistUIProtocol]())
     
     @objc func fetchPlaylists() {
         DispatchQueue.main.async { [ weak self ] in
             guard let self = self else { return }
             do {
-                try self.uiModels.accept([SectionModel(model: "", items: self.saver.fetchAllPlaylists())])
+                try self.uiModels.accept(self.saver.fetchAllPlaylists())
             } catch {
                 self.errorHandler(error: error)
             }
@@ -40,7 +40,7 @@ class LibraryViewModel: LibraryViewModelProtocol {
     }
     
     func didTapOnPlaylist(indexPath: IndexPath) {
-        if let pl = uiModels.value[indexPath.section].items[indexPath.row] as? Playlist {
+        if let pl = uiModels.value[indexPath.row] as? Playlist {
             router?.moveToPlaylist(playlistID: pl.id)
         }
     }

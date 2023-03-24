@@ -16,7 +16,7 @@ protocol LibraryViewProtocol {
 }
 
 class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylistsTableViewDelegate {
-        
+    
     var viewModel: (any LibraryViewModelProtocol)?
     
     private var playlistsTableView: UIViewController?
@@ -25,15 +25,15 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
         super.init(nibName: nil, bundle: nil)
         title = "Library"
         tabBarItem = UITabBarItem(title: title, image: UIImage(systemName: "books.vertical")?.withTintColor(.black), selectedImage: UIImage(systemName: "books.vertical.fill")?.withTintColor(.black))
-
+        
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let backgroundColor = UIColor.darkGray
-
-        let dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, PlaylistUIProtocol>> { _, tableView, indexPath, item in
+        
+        let dataSource = RxTableViewSectionedAnimatedDataSource<PlaylistSectionModel> { _, tableView, indexPath, item in
             let cell = tableView.dequeueReusableCell(withIdentifier: "PlaylistCell", for: indexPath) as! PlaylistCell
             cell.setup(uiModel: item, foregroundColor: .clear,
                        backgroundColor: backgroundColor, cornerRadius: 10)
@@ -59,11 +59,15 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
         if let viewModel = viewModel {
             
             let cellsToRegister = ["PlaylistCell": PlaylistCell.self]
-                        
+            
             let allPlTableView = AllPlaylistsTableView(heightForRow: view.frame.size.height / 6,
                                                        backgroundColor: .clear,
                                                        tableViewColor: .clear,
-                                                       items: viewModel.uiModels.asObservable(),
+                                                       items:
+                                                        viewModel.uiModels
+                                                        .asObservable()
+                                                        .map({ [AnimatableSectionModel(model: "",
+                                                                                       items: $0.map({ PlaylistUIModel(model: $0)}))] }),
                                                        classesToRegister: cellsToRegister,
                                                        dataSource: dataSource)
             allPlTableView.delegate = self
@@ -71,7 +75,7 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
             playlistsTableView = allPlTableView
             
             view.backgroundColor = backgroundColor
-                        
+            
             addChild(playlistsTableView!)
             
             view.addSubview(playlistsTableView!.view)
