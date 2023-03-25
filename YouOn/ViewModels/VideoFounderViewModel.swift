@@ -13,9 +13,9 @@ protocol VideoFounderViewModelDelegate {
 
 protocol VideoFounderViewModelProtocol: ViewModelProtocol {
     var searchFieldString: String { get set }
-    var networkService: YTNetworkServiceProtocol { get set }
     var delegate: VideoFounderViewModelDelegate? { get set }
     var router: FounderRouterProtocol? { get set }
+    init(networkService: YTNetworkServiceProtocol)
     func onSearchTap()
 }
 
@@ -23,11 +23,11 @@ class VideoFounderViewModel: VideoFounderViewModelProtocol {
             
     var router: FounderRouterProtocol?
     
-    var networkService: YTNetworkServiceProtocol
+    private let networkService: YTNetworkServiceProtocol
     
     public var searchFieldString: String = ""
     
-    init(networkService: YTNetworkServiceProtocol) {
+    required init(networkService: YTNetworkServiceProtocol) {
         self.networkService = networkService
     }
     
@@ -42,10 +42,10 @@ class VideoFounderViewModel: VideoFounderViewModelProtocol {
             if let allPlString = UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist), let playlistId = UUID(uuidString: allPlString) {
                 NotificationCenter.default.post(name: NotificationCenterNames.updatePlaylistWithID(id: playlistId), object: nil)
             }
-        }, errorHandler: errorHandler(error:))
+        }, errorHandler: errorHandler(_:))
     }
     
-    public func errorHandler(error: Error) {
+    public func errorHandler(_ error: Error) -> Void {
         router?.showAlert(title: "Download error", error: error, msgWithError: nil, action: nil)
     }
 }

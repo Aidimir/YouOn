@@ -16,13 +16,11 @@ protocol CollectableViewModelProtocol: ViewModelProtocol {
 }
 
 protocol PlaylistViewModelProtocol: CollectableViewModelProtocol where T == MediaFileUIProtocol {
-    var player: MusicPlayerProtocol { get }
-    var saver: PlaylistSaverProtocol? { get }
     var router: RouterProtocol? { get set }
-    var id: UUID { get set }
     func playSong(indexPath: IndexPath)
     func removeFromPlaylist(indexPath: IndexPath)
     func saveStorage()
+    init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol?, id: UUID)
 }
 
 class PlaylistViewModel: PlaylistViewModelProtocol {
@@ -31,19 +29,17 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     
     var uiModels: RxRelay.BehaviorRelay<[MediaFileUIProtocol]> = BehaviorRelay(value: [MediaFileUIProtocol]())
     
-    var player: MusicPlayerProtocol
+    private var player: MusicPlayerProtocol
     
-    var saver: PlaylistSaverProtocol?
+    private let saver: PlaylistSaverProtocol?
     
-    var id: UUID
+    private let id: UUID
     
     private var playlist: Playlist?
     
-    init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol?,
-         router: RouterProtocol?, id: UUID) {
+    required init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol?, id: UUID) {
         self.player = player
         self.saver = saver
-        self.router = router
         self.id = id
         fetchData()
         NotificationCenter.default.addObserver(self,
@@ -60,7 +56,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
                     self.uiModels.accept(playlist.content)
                 }
             } catch {
-                self.errorHandler(error: error)
+                self.errorHandler(error)
             }
         }
     }
@@ -80,7 +76,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
                     try saver?.savePlaylist(playlist: playlist)
                 }
             } catch {
-                errorHandler(error: error)
+                errorHandler(error)
             }
         }
     }
@@ -92,7 +88,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
                     try saver?.removeFromAll(file: file)
                     uiModels.removeElement(at: indexPath.row)
                 } catch {
-                    errorHandler(error: error)
+                    errorHandler(error)
                 }
             }
         } else {
@@ -102,7 +98,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
         saveStorage()
     }
     
-    func errorHandler(error: Error) {
-        //
+    func errorHandler(_ error: Error) {
+        router?.showAlert(title: "Download error", error: error, msgWithError: nil, action: nil)
     }
 }

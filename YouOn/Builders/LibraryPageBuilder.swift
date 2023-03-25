@@ -59,7 +59,6 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
         musicPlayer.fileManager = fileManager
         let viewModel = PlaylistViewModel(player: musicPlayer,
                                           saver: saver,
-                                          router: nil,
                                           id: playlistID)
         let playlistController = PlaylistViewController()
         playlistController.viewModel = viewModel

@@ -9,9 +9,8 @@ import Foundation
 import XCDYouTubeKit
 import Alamofire
 
-protocol YTNetworkServiceProtocol {
-    var saver: MediaSaverProtocol? { get set }
-    var fileManager: FileManager? { get set }
+protocol YTNetworkServiceProtocol: AnyObject {
+    init(saver: MediaSaverProtocol, fileManager: FileManager)
     func downloadVideo(linkString: String, completion: ((_ progress: Double) -> Void)?,
                        onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?)
@@ -22,14 +21,24 @@ protocol YTNetworkServiceProtocol {
 
 class YTNetworkService: YTNetworkServiceProtocol {
     
-    var fileManager: FileManager?
+    private let fileManager: FileManager
     
-    var saver: MediaSaverProtocol?
+    private let saver: MediaSaverProtocol
+    
+    required init(saver: MediaSaverProtocol, fileManager: FileManager) {
+        self.saver = saver
+        self.fileManager = fileManager
+    }
     
     func downloadVideo(linkString: String, completion: ((Double) -> Void)?,
                        onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?) {
-        guard let fileManager = fileManager, let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        guard let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            var errorTemp = NSError(domain: "Couldn't fetch file's url", code: -1, userInfo: nil)
+            errorHandler?(errorTemp)
+            return
+        }
+        
         XCDYouTubeClient.default().getVideoWithIdentifier(linkString.getYoutubeID()) { video, error in
             guard let video = video, error == nil else {
                 if error != nil {
@@ -46,8 +55,8 @@ class YTNetworkService: YTNetworkServiceProtocol {
                                       author: video.author, videoURL: URL(string: linkString)!,
                                       imageURL: video.thumbnailURLs?.last)
             do {
-                if fileManager.fileExists(atPath: url.appendingPathComponent(fileName).path) {
-                    try fileManager.removeItem(at: url.appendingPathComponent(fileName))
+                if self.fileManager.fileExists(atPath: url.appendingPathComponent(fileName).path) {
+                    try self.fileManager.removeItem(at: url.appendingPathComponent(fileName))
                 }
                 
                 AF.request(video.streamURL!).downloadProgress(closure: { progress in
@@ -55,8 +64,8 @@ class YTNetworkService: YTNetworkServiceProtocol {
                 }).response(queue: .global()) { response in
                     switch (response.result) {
                     case .success(let data):
-                        fileManager.createFile(atPath: url.appendingPathComponent(fileName).path, contents: data)
-                        try? self.saver?.saveToAll(file: mediaFile)
+                        self.fileManager.createFile(atPath: url.appendingPathComponent(fileName).path, contents: data)
+                        try? self.saver.saveToAll(file: mediaFile)
                         onCompleted?()
                     case .failure(let error):
                         errorHandler?(error)

@@ -43,8 +43,7 @@ class FounderPageBuilder: FounderBuilderProtocol {
 //            print()
 //        }
         let saver = MediaSaver(dataManager: dataManager, fileManager: fileManager)
-        let networkService = YTNetworkService()
-        networkService.saver = saver
+        let networkService = YTNetworkService(saver: saver, fileManager: fileManager)
         let viewModel = VideoFounderViewModel(networkService: networkService)
         let controller = VideoFounderViewController(viewModel: viewModel)
         let navController = UINavigationController(rootViewController: controller)

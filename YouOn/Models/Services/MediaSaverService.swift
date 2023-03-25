@@ -11,16 +11,16 @@ protocol MediaSaverProtocol {
     func saveToAll(file: MediaFile) throws
     func removeFromAll(file: MediaFile) throws
     func fetchAllMedia() throws -> [MediaFile]
-    var fileManager: FileManager { get }
+    init(dataManager: MediaDataManagerProtocol, fileManager: FileManager)
 }
 
 class MediaSaver: MediaSaverProtocol {
     
-    var dataManager: MediaDataManagerProtocol
+    let dataManager: MediaDataManagerProtocol
     
-    var fileManager: FileManager
+    let fileManager: FileManager
     
-    init(dataManager: MediaDataManagerProtocol, fileManager: FileManager) {
+    required init(dataManager: MediaDataManagerProtocol, fileManager: FileManager) {
         self.dataManager = dataManager
         self.fileManager = fileManager
     }

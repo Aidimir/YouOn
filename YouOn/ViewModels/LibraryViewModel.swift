@@ -10,15 +10,15 @@ import RxRelay
 import Differentiator
 
 protocol LibraryViewModelProtocol: CollectableViewModelProtocol where T == PlaylistUIProtocol {
-    var saver: PlaylistSaverProtocol { get set }
-    var router: LibraryPageRouterProtocol? { get }
+    var router: LibraryPageRouterProtocol? { get set }
     func fetchPlaylists()
     func didTapOnPlaylist(indexPath: IndexPath)
+    init(saver: PlaylistSaverProtocol)
 }
 
 class LibraryViewModel: LibraryViewModelProtocol {
     
-    var saver: PlaylistSaverProtocol
+    private let saver: PlaylistSaverProtocol
     
     var router: LibraryPageRouterProtocol?
     
@@ -30,13 +30,13 @@ class LibraryViewModel: LibraryViewModelProtocol {
             do {
                 try self.uiModels.accept(self.saver.fetchAllPlaylists())
             } catch {
-                self.errorHandler(error: error)
+                self.errorHandler(error)
             }
         }
     }
     
-    func errorHandler(error: Error) {
-        //
+    func errorHandler(_ error: Error) {
+        router?.showAlert(title: "Library error", error: error, msgWithError: nil, action: nil)
     }
     
     func didTapOnPlaylist(indexPath: IndexPath) {
@@ -45,7 +45,7 @@ class LibraryViewModel: LibraryViewModelProtocol {
         }
     }
     
-    init(saver: PlaylistSaverProtocol) {
+    required init(saver: PlaylistSaverProtocol) {
         self.saver = saver
         fetchPlaylists()
         NotificationCenter.default.addObserver(self,

@@ -8,5 +8,5 @@
 import Foundation
 
 protocol ViewModelProtocol {
-    func errorHandler(error: Error)
+    func errorHandler(_ error: Error)
 }
