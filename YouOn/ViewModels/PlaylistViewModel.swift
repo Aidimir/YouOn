@@ -99,6 +99,6 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     }
     
     func errorHandler(_ error: Error) {
-        router?.showAlert(title: "Download error", error: error, msgWithError: nil, action: nil)
+        router?.showAlert(title: "Media-file error", error: error, msgWithError: nil, action: nil)
     }
 }

@@ -37,7 +37,7 @@ class LibraryPageRouter: LibraryPageRouterProtocol {
     
     func showAlert(title: String, error: Error?, msgWithError: String?, action: (() -> Void)?) {
         var alert = builder.createAlert(title: title, error: error, msgWithError: msgWithError, action: action)
-        navigationController.pushViewController(alert, animated: true)
+        navigationController.present(alert, animated: true)
     }
     
     func popToRoot() {

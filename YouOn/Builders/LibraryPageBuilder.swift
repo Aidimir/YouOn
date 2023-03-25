@@ -18,6 +18,8 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
     private let fileManager = FileManager.default
     
     private let musicPlayer = MusicPlayer()
+    
+    private var router: LibraryPageRouter?
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -47,7 +49,7 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
         navController.navigationBar.topItem?.title = nil
         navController.navigationBar.tintColor = .white
         navController.navigationBar.tintAdjustmentMode = .normal
-        let router = LibraryPageRouter(builder: self, navigationController: navController)
+        router = LibraryPageRouter(builder: self, navigationController: navController)
         viewModel.router = router
         controller.viewModel = viewModel
         return navController
@@ -57,9 +59,12 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
         let dataManager = MediaDataManager(appDelegate: appDelegate)
         let saver = PlaylistSaver(dataManager: dataManager, fileManager: fileManager)
         musicPlayer.fileManager = fileManager
+        
         let viewModel = PlaylistViewModel(player: musicPlayer,
                                           saver: saver,
                                           id: playlistID)
+        viewModel.router = router
+        
         let playlistController = PlaylistViewController()
         playlistController.viewModel = viewModel
         return playlistController
