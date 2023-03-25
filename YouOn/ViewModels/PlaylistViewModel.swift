@@ -94,6 +94,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
         } else {
             uiModels.removeElement(at: indexPath.row)
         }
+        NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
         
         saveStorage()
     }

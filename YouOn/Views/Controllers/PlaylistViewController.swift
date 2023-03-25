@@ -50,16 +50,6 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
                 return true
             }
             
-            //        } titleForFooterInSection: { <#TableViewSectionedDataSource<SectionModelType>#>, <#Int#> in
-            //            <#code#>
-            //        } canEditRowAtIndexPath: { <#TableViewSectionedDataSource<SectionModelType>#>, <#IndexPath#> in
-            //            <#code#>
-            //        } sectionIndexTitles: { <#TableViewSectionedDataSource<SectionModelType>#> in
-            //            <#code#>
-            //        } sectionForSectionIndexTitle: { <#TableViewSectionedDataSource<SectionModelType>#>, title, index in
-            //            <#code#>
-            //        }
-            
             let playlistTableView = PlaylistTableView(heightForRow: view.frame.size.height / 10,
                                                       backgroundColor: .clear,
                                                       tableViewColor: .clear,

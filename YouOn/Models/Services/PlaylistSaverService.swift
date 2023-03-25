@@ -8,6 +8,7 @@
 import Foundation
 
 protocol PlaylistSaverProtocol: MediaSaverProtocol {
+    func createPlaylist(title: String) throws -> UUID
     func removePlaylist(playlist: Playlist) throws
     func fetchPlaylist(id: UUID) throws -> Playlist?
     func savePlaylist(playlist: Playlist) throws
@@ -15,6 +16,14 @@ protocol PlaylistSaverProtocol: MediaSaverProtocol {
 }
 
 class PlaylistSaver: MediaSaver, PlaylistSaverProtocol {
+    
+    func createPlaylist(title: String) throws -> UUID {
+        let id = UUID()
+        let playlist = Playlist(content: [MediaFile](), title: title, id: id)
+        try savePlaylist(playlist: playlist)
+        return id
+    }
+    
     func savePlaylist(playlist: Playlist) throws {
         try dataManager.savePlaylist(data: playlist, id: playlist.id)
     }

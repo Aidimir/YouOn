@@ -10,6 +10,7 @@ import UIKit
 import RxDataSources
 import SnapKit
 import RxSwift
+import RxCocoa
 
 protocol LibraryViewProtocol {
     var viewModel: (any LibraryViewModelProtocol)? { get set }
@@ -20,7 +21,7 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
     var viewModel: (any LibraryViewModelProtocol)?
     
     private var playlistsTableView: UIViewController?
-    
+        
     init() {
         super.init(nibName: nil, bundle: nil)
         title = "Library"
@@ -40,25 +41,20 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
             cell.backgroundColor = .clear
             cell.selectionStyle = .none
             return cell
-        } titleForHeaderInSection: { source, sectionIndex in
-            return source[sectionIndex].model
+        } canEditRowAtIndexPath: { [weak self] source, indexPath in
+            return self?.viewModel?.uiModels.value[indexPath.row].isDeletable ?? false
+        } canMoveRowAtIndexPath: { [weak self] source, indexPath in
+            return self?.viewModel?.uiModels.value[indexPath.row].isDeletable ?? false
         }
-        //        } titleForFooterInSection: { <#TableViewSectionedDataSource<SectionModelType>#>, <#Int#> in
-        //            <#code#>
-        //        } canEditRowAtIndexPath: { <#TableViewSectionedDataSource<SectionModelType>#>, <#IndexPath#> in
-        //            <#code#>
-        //        } canMoveRowAtIndexPath: { <#TableViewSectionedDataSource<SectionModelType>#>, <#IndexPath#> in
-        //            <#code#>
-        //        } sectionIndexTitles: { <#TableViewSectionedDataSource<SectionModelType>#> in
-        //            <#code#>
-        //        } sectionForSectionIndexTitle: { <#TableViewSectionedDataSource<SectionModelType>#>, title, index in
-        //            <#code#>
-        //        }
-        
         
         if let viewModel = viewModel {
             
             let cellsToRegister = ["PlaylistCell": PlaylistCell.self]
+            
+            let itemImage = UIImage(systemName: "plus")
+            let barItem = UIBarButtonItem(image: itemImage, style: .plain, target: self, action: #selector(addPlaylist))
+            barItem.tintColor = .black
+            navigationItem.rightBarButtonItem = barItem
             
             let allPlTableView = AllPlaylistsTableView(heightForRow: view.frame.size.height / 6,
                                                        backgroundColor: .clear,
@@ -68,6 +64,9 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
                                                         .asObservable()
                                                         .map({ [AnimatableSectionModel(model: "",
                                                                                        items: $0.map({ PlaylistUIModel(model: $0)}))] }),
+                                                       itemsAsRelay: viewModel.uiModels,
+                                                       onItemMoved: onItemMoved(_:),
+                                                       onItemRemoved: onItemRemoved(_:),
                                                        classesToRegister: cellsToRegister,
                                                        dataSource: dataSource)
             allPlTableView.delegate = self
@@ -77,12 +76,10 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
             view.backgroundColor = backgroundColor
             
             addChild(playlistsTableView!)
-            
             view.addSubview(playlistsTableView!.view)
             playlistsTableView?.view.snp.makeConstraints { make in
                 make.left.right.top.bottom.equalTo(view.readableContentGuide)
             }
-            
             playlistsTableView?.didMove(toParent: self)
         }
     }
@@ -91,7 +88,30 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
         viewModel?.didTapOnPlaylist(indexPath: indexPath)
     }
     
+    @objc private func addPlaylist() {
+        showInputDialog(title: "Add playlist", subtitle: nil, actionTitle: "Add", cancelTitle: "Cancel", inputPlaceholder: nil, inputKeyboardType: .default, cancelHandler: nil) { [weak self] text in
+            if text != nil {
+                if !text!.isEmpty {
+                    self?.viewModel?.addPlaylist(text!)
+                }
+            }
+        }
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func onItemMoved(_ event: ItemMovedEvent) -> Void {
+        guard viewModel != nil, let item = viewModel?.uiModels.value[event.sourceIndex.row] else { return }
+        viewModel!.uiModels.replaceElement(at: event.sourceIndex.row, insertTo: event.destinationIndex.row, with: item)
+        viewModel?.saveAllPlaylists()
+    }
+    
+    private func onItemRemoved(_ indexPath: IndexPath) -> Void {
+        guard viewModel != nil else { return }
+        if let canDelete = viewModel?.uiModels.value[indexPath.row].isDeletable, canDelete == true {
+            viewModel?.removePlaylist(indexPath: indexPath)
+        }
     }
 }

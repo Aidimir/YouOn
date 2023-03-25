@@ -13,6 +13,9 @@ protocol LibraryViewModelProtocol: CollectableViewModelProtocol where T == Playl
     var router: LibraryPageRouterProtocol? { get set }
     func fetchPlaylists()
     func didTapOnPlaylist(indexPath: IndexPath)
+    func addPlaylist(_ text: String)
+    func removePlaylist(indexPath: IndexPath)
+    func saveAllPlaylists()
     init(saver: PlaylistSaverProtocol)
 }
 
@@ -42,6 +45,39 @@ class LibraryViewModel: LibraryViewModelProtocol {
     func didTapOnPlaylist(indexPath: IndexPath) {
         if let pl = uiModels.value[indexPath.row] as? Playlist {
             router?.moveToPlaylist(playlistID: pl.id)
+        }
+    }
+    
+    func addPlaylist(_ text: String) {
+        do {
+            let result = try saver.createPlaylist(title: text)
+            fetchPlaylists()
+            router?.moveToPlaylist(playlistID: result)
+        } catch {
+            errorHandler(error)
+        }
+    }
+    
+    func saveAllPlaylists() {
+        do {
+            if let playlists = uiModels.value as? [Playlist] {
+                try playlists.forEach { pl in
+                    try saver.savePlaylist(playlist: pl)
+                }
+            }
+        } catch {
+            errorHandler(error)
+        }
+    }
+    
+    func removePlaylist(indexPath: IndexPath) {
+        do {
+            if let playlist = uiModels.value[indexPath.row] as? Playlist {
+                try saver.removePlaylist(playlist: playlist)
+                uiModels.removeElement(at: indexPath.row)
+            }
+        } catch {
+            errorHandler(error)
         }
     }
     
