@@ -12,6 +12,7 @@ protocol LibraryPageRouterProtocol: RouterProtocol {
     var builder: LibraryPageBuilderProtocol { get set }
     func initPlaylistsViewController()
     func moveToPlaylist(playlistID: UUID)
+    func moveToAddItemsToPlaylist(_ fromStorage: [MediaFile], saveAction: (([IndexPath]) -> Void)?)
 }
 
 class LibraryPageRouter: LibraryPageRouterProtocol {
@@ -33,6 +34,11 @@ class LibraryPageRouter: LibraryPageRouterProtocol {
     func moveToPlaylist(playlistID: UUID) {
         let controller = builder.buildPlaylistController(playlistID: playlistID)
         navigationController.pushViewController(controller, animated: true)
+    }
+    
+    func moveToAddItemsToPlaylist(_ fromStorage: [MediaFile], saveAction: (([IndexPath]) -> Void)?) {
+        let controller = builder.buildAddItemsToPlaylist(fromStorage, saveAction: saveAction)
+        navigationController.present(controller, animated: true)
     }
     
     func showAlert(title: String, error: Error?, msgWithError: String?, action: (() -> Void)?) {

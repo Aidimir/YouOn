@@ -16,7 +16,7 @@ protocol PlaylistViewProtocol {
     var viewModel: (any PlaylistViewModelProtocol)? { get set }
 }
 
-class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, PlaylistViewProtocol {
+class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, PlaylistViewProtocol, PlaylistViewModelDelegate {
     
     var viewModel: (any PlaylistViewModelProtocol)?
     
@@ -34,6 +34,8 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
         let classesToRegister = ["MediaFileCell": MediaFileCell.self]
         
         if let viewModel = viewModel {
+            
+            self.viewModel?.delegate = self
             
             let dataSource = RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel> { _, tableView, indexPath, item in
                 let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as! MediaFileCell
@@ -91,5 +93,18 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
     private func onItemRemoved(_ indexPath: IndexPath) -> Void {
         guard viewModel != nil else { return }
         viewModel?.removeFromPlaylist(indexPath: indexPath)
+    }
+    
+    @objc private func addFiles() {
+        viewModel?.moveToAddFilesController()
+    }
+    
+    func barItemIf(_ isAddable: Bool) {
+        if isAddable {
+            let itemImage = UIImage(systemName: "plus")
+            let barItem = UIBarButtonItem(image: itemImage, style: .plain, target: self, action: #selector(addFiles))
+            barItem.tintColor = .black
+            navigationItem.rightBarButtonItem = barItem
+        }
     }
 }

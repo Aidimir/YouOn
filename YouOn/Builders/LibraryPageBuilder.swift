@@ -11,6 +11,7 @@ import UIKit
 protocol LibraryPageBuilderProtocol: BuilderProtocol {
     func buildLibraryViewController() -> UIViewController
     func buildPlaylistController(playlistID: UUID) -> UIViewController
+    func buildAddItemsToPlaylist(_ fromStorage: [MediaFile], saveAction: (([IndexPath]) -> Void)?) -> UIViewController
 }
 
 class LibraryPageBuilder: LibraryPageBuilderProtocol {
@@ -68,5 +69,10 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
         let playlistController = PlaylistViewController()
         playlistController.viewModel = viewModel
         return playlistController
+    }
+    
+    func buildAddItemsToPlaylist(_ fromStorage: [MediaFile], saveAction: (([IndexPath]) -> Void)?) -> UIViewController {
+        let controller = SelectMediaFilesTableView(source: fromStorage, saveAction: saveAction)
+        return controller
     }
 }

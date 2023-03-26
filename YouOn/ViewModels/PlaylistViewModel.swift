@@ -15,17 +15,34 @@ protocol CollectableViewModelProtocol: ViewModelProtocol {
     var uiModels: BehaviorRelay<[T]> { get set }
 }
 
+protocol PlaylistViewModelDelegate {
+    func barItemIf(_ isAddable: Bool)
+}
+
 protocol PlaylistViewModelProtocol: CollectableViewModelProtocol where T == MediaFileUIProtocol {
-    var router: RouterProtocol? { get set }
+    var delegate: PlaylistViewModelDelegate? { get set }
+    var router: LibraryPageRouterProtocol? { get set }
     func playSong(indexPath: IndexPath)
     func removeFromPlaylist(indexPath: IndexPath)
     func saveStorage()
+    func moveToAddFilesController()
     init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol?, id: UUID)
 }
 
 class PlaylistViewModel: PlaylistViewModelProtocol {
     
-    var router: RouterProtocol?
+    var delegate: PlaylistViewModelDelegate?
+    
+    private var isAddable: Bool {
+        get {
+            if let isDefault = playlist?.isDefaultPlaylist {
+                return !isDefault
+            }
+            return false
+        }
+    }
+    
+    var router: LibraryPageRouterProtocol?
     
     var uiModels: RxRelay.BehaviorRelay<[MediaFileUIProtocol]> = BehaviorRelay(value: [MediaFileUIProtocol]())
     
@@ -36,6 +53,8 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     private let id: UUID
     
     private var playlist: Playlist?
+    
+    private var allFilesStorage: [MediaFile]?
     
     required init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol?, id: UUID) {
         self.player = player
@@ -53,6 +72,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
             do {
                 if let playlist = try self.saver?.fetchPlaylist(id: self.id) {
                     self.playlist = playlist
+                    self.delegate?.barItemIf(self.isAddable)
                     self.uiModels.accept(playlist.content)
                 }
             } catch {
@@ -97,6 +117,33 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
         NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
         
         saveStorage()
+    }
+    
+    func moveToAddFilesController() {
+        do {
+            if let storage = try saver?.fetchAllMedia() {
+                allFilesStorage = storage
+                router?.moveToAddItemsToPlaylist(storage, saveAction: addItems(indexes:))
+            }
+        } catch {
+            errorHandler(error)
+        }
+    }
+    
+    func addItems(indexes: [IndexPath]) {
+        do {
+            if let allFilesStorage = allFilesStorage, let playlist = playlist {
+                indexes.forEach { index in
+                    let item = allFilesStorage[index.row]
+                    self.playlist!.addFile(file: item)
+                    uiModels.accept([item] + uiModels.value)
+                }
+                try saver?.savePlaylist(playlist: self.playlist!)
+                NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
+            }
+        } catch {
+            errorHandler(error)
+        }
     }
     
     func errorHandler(_ error: Error) {

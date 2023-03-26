@@ -37,7 +37,7 @@ struct MediaFileUIModel: IdentifiableType, Equatable, MediaFileUIProtocol {
     
     var identity: String {
         get {
-            return id
+            return UUID().uuidString
         }
     }
     

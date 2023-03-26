@@ -26,7 +26,7 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
     
     var dataSource: RxTableViewSectionedAnimatedDataSource<T>
         
-    private let disposeBag = DisposeBag()
+    let disposeBag = DisposeBag()
     
     init(items: RxSwift.Observable<[T]>,
          onItemMoved: ((ItemMovedEvent) -> Void)? = nil,
@@ -64,16 +64,7 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
         
         items.bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
-        
-//        tableView.rx.itemMoved.asDriver()
-//            .drive(onNext: { [unowned self] source, destination in
-//                guard source != destination, itemsAsRelay != nil else { return }
-//                let item = self.itemsAsRelay!.value[source.row]
-//                tableView.backgroundColor = .red
-//                self.itemsAsRelay!.replaceElement(at: source.row, insertTo: destination.row, with: item)
-//            })
-//            .disposed(by: disposeBag)
-        
+
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.size.equalToSuperview()

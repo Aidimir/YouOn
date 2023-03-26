@@ -26,8 +26,6 @@ class AllPlaylistsTableView: BindableTableViewController<PlaylistSectionModel>, 
     
     private var itemsAsRelay: BehaviorRelay<[PlaylistUIProtocol]>?
     
-    let disposeBag = DisposeBag()
-    
     var delegate: AllPlaylistsTableViewDelegate?
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

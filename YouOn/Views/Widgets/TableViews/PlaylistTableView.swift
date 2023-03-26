@@ -27,8 +27,6 @@ class PlaylistTableView: BindableTableViewController<MediaFilesSectionModel>, UI
     
     private var itemsAsRelay: BehaviorRelay<[MediaFileUIProtocol]>?
     
-    let disposeBag = DisposeBag()
-    
     var delegate: PlaylistTableViewProtocol?
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -70,6 +68,13 @@ class PlaylistTableView: BindableTableViewController<MediaFilesSectionModel>, UI
         super.viewDidLoad()
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
         tableView.dragDelegate = self
+        
+//        tableView.rx.itemSelected
+//          .subscribe(onNext: { [weak self] indexPath in
+//            let cell = self?.tableView.cellForRow(at: indexPath) as? PlaylistCell
+//            cell.button.isEnabled = false
+//          }).disposed(by: disposeBag)
+
     }
     
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {

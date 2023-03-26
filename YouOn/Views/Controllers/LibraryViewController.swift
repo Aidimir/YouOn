@@ -42,9 +42,12 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
             cell.selectionStyle = .none
             return cell
         } canEditRowAtIndexPath: { [weak self] source, indexPath in
-            return self?.viewModel?.uiModels.value[indexPath.row].isDeletable ?? false
+            let itemIsDefault = self?.viewModel?.uiModels.value[indexPath.row].isDefaultPlaylist
+            return !(itemIsDefault ?? true)
         } canMoveRowAtIndexPath: { [weak self] source, indexPath in
-            return self?.viewModel?.uiModels.value[indexPath.row].isDeletable ?? false
+            let isMovingInFirstPlace = indexPath.row == 0
+            let itemIsDefault = self?.viewModel?.uiModels.value[indexPath.row].isDefaultPlaylist
+            return !isMovingInFirstPlace && !(itemIsDefault ?? true)
         }
         
         if let viewModel = viewModel {
@@ -110,7 +113,7 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
     
     private func onItemRemoved(_ indexPath: IndexPath) -> Void {
         guard viewModel != nil else { return }
-        if let canDelete = viewModel?.uiModels.value[indexPath.row].isDeletable, canDelete == true {
+        if let canDelete = viewModel?.uiModels.value[indexPath.row].isDefaultPlaylist, canDelete == true {
             viewModel?.removePlaylist(indexPath: indexPath)
         }
     }

@@ -57,20 +57,12 @@ class MediaFileCell: UITableViewCell {
         view.backgroundColor = foregroundColor
         view.isUserInteractionEnabled = true
         
-        let image = UIImage(named: "Dots")
-        let formattingIcon = UIImageView(image: image)
-        formattingIcon.contentMode = .scaleAspectFit
-        formattingIcon.tintColor = .white
-        
         let imgView = UIImageView(image: nil)
         imgView.kf.setImage(with: file.imageURL)
         imgView.contentMode = .scaleToFill
         imgView.layer.cornerRadius = imageCornerRadius
         imgView.layer.masksToBounds = true
         
-        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(onTap))
-        gestureRecognizer.numberOfTapsRequired = 1
-        formattingIcon.addGestureRecognizer(gestureRecognizer)
         
         view.addSubview(imgView)
         imgView.snp.makeConstraints { make in
@@ -103,24 +95,55 @@ class MediaFileCell: UITableViewCell {
         addSubview(view)
         view.frame = contentView.bounds
         
-        formattingIcon.isUserInteractionEnabled = true
-        
-        addSubview(formattingIcon)
-        formattingIcon.snp.makeConstraints { make in
-            make.right.height.top.bottom.equalTo(view)
-            make.width.equalTo(view).multipliedBy(0.1)
+        if controller != nil {
+            let image = UIImage(named: "Dots")
+            let formattingIcon = UIImageView(image: image)
+            formattingIcon.contentMode = .scaleAspectFit
+            formattingIcon.tintColor = .white
+            let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(onTap))
+            gestureRecognizer.numberOfTapsRequired = 1
+            formattingIcon.addGestureRecognizer(gestureRecognizer)
+            formattingIcon.isUserInteractionEnabled = true
+            
+            addSubview(formattingIcon)
+            formattingIcon.snp.makeConstraints { make in
+                make.right.height.top.bottom.equalTo(view)
+                make.width.equalTo(view).multipliedBy(0.1)
+            }
         }
         
         contentView.backgroundColor = backgroundColor
     }
     
     @objc private func onTap(){
-        controller?.modalPresentationStyle = .popover
-        controller?.popoverPresentationController?.delegate = self
-        controller?.popoverPresentationController?.sourceView = self
-        controller?.popoverPresentationController?.sourceRect = CGRect(x: self.bounds.maxX, y: self.bounds.minY, width: 0, height: 0)
-        controller?.preferredContentSize = CGSize(width: self.bounds.width/3, height: self.bounds.height)
-        getCurrentViewController()?.present(controller ?? UIViewController(), animated: true)
+//        controller?.modalPresentationStyle = .popover
+//        controller?.popoverPresentationController?.delegate = self
+//        controller?.popoverPresentationController?.sourceView = self
+//        controller?.popoverPresentationController?.sourceRect = CGRect(x: self.bounds.maxX, y: self.bounds.minY, width: 0, height: 0)
+//        controller?.preferredContentSize = CGSize(width: self.bounds.width/3, height: self.bounds.height)
+//        getCurrentViewController()?.present(controller ?? UIViewController(), animated: true)
+    }
+    
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+        if selected {
+            UIView.animate(withDuration: 0.2, animations: {
+                self.transform = CGAffineTransform(scaleX: 0.97, y: 0.97)
+            }, completion: { finished in
+                UIView.animate(withDuration: 0.2) {
+                    self.transform = .identity
+                }
+            })
+        }
+    }
+    
+    public func didSelect() {
+        self.tintColor = .green
+        self.accessoryType = .checkmark
+    }
+    
+    public func didDeselect() {
+        self.accessoryType = .none
     }
 }
 
