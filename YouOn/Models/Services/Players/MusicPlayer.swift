@@ -10,6 +10,7 @@ import AVFAudio
 import AVFoundation
 import UIKit
 import MediaPlayer
+import RxRelay
 
 protocol MusicPlayerDelegate {
     func onPlayNext()
@@ -21,6 +22,7 @@ protocol MusicPlayerDelegate {
 
 protocol MusicPlayerProtocol {
     var currentFile: MediaFile? { get }
+    var isPlaying: Bool { get }
     var delegate: MusicPlayerDelegate? { get set }
     var storage: [MediaFile] { get set }
     var fileManager: FileManager? { get set }
@@ -28,9 +30,17 @@ protocol MusicPlayerProtocol {
     func playPrevious()
     func play(index: Int)
     func playTapped()
+    func pause()
+    func continuePlay()
 }
 
 class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
+    
+    var isPlaying: Bool {
+        get {
+            return player?.isPlaying ?? false
+        }
+    }
     
     var currentFile: MediaFile? {
         get {
@@ -195,6 +205,20 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
                 player?.pause()
                 delegate?.onPause()
             }
+        }
+    }
+    
+    func pause() {
+        if player != nil {
+            player?.pause()
+            delegate?.onPause()
+        }
+    }
+    
+    func continuePlay() {
+        if player != nil {
+            player?.play()
+            delegate?.onPlay()
         }
     }
 }

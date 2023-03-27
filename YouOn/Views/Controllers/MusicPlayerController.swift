@@ -10,12 +10,15 @@ import SnapKit
 import UIKit
 import Kingfisher
 import MarqueeLabel
+import RxSwift
 
 protocol MusicPlayerViewProtocol {
     init(musicPlayer: MusicPlayerProtocol, imageCornerRadius: CGFloat, titleScrollingDuration: CGFloat)
 }
 
 class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, MusicPlayerDelegate {
+    
+    private let disposeBag = DisposeBag()
     
     var shortedPlayerView: ShortedPlayerView?
     
@@ -97,7 +100,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         nextButton.tintColor = .white
         nextButton.addTarget(self, action: #selector(didTapNext), for: .touchUpInside)
         
-        let playImage = UIImage(systemName: "pause.fill")
+        let playImage = musicPlayer.isPlaying ? UIImage(systemName: "pause.fill") : UIImage(systemName: "play.fill")
         playButton.setImage(playImage, for: .normal)
         playButton.tintColor = .white
         playButton.addTarget(self, action: #selector(didTapPlay), for: .touchUpInside)
@@ -153,13 +156,15 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     }
     
     func errorHandler(error: Error) {
-        //
+        let alert = UIAlertController(title: "Error",
+                                      message: error.localizedDescription,
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        
+        present(alert, animated: true)
     }
     
     func onPause() {
-        let image = UIImage(systemName: "play.fill")
-        playButton.setImage(image, for: .normal)
-        shortedPlayerView?.actionButton.setImage(image, for: .normal)
         updateViews()
     }
     
@@ -172,9 +177,6 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
                                                   onActionButtonTapped: musicPlayer.playTapped)
         }
         
-        let image = UIImage(systemName: "pause.fill")
-        playButton.setImage(image, for: .normal)
-        shortedPlayerView?.actionButton.setImage(image, for: .normal)
         updateViews()
     }
     
@@ -194,6 +196,13 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     private func updateViews() {
         songTitle.text = musicPlayer.currentFile?.title
         songAuthor.text = musicPlayer.currentFile?.author
+        let playImage = musicPlayer.isPlaying ? UIImage(systemName: "pause.fill") : UIImage(systemName: "play.fill")
+        playButton.setImage(playImage, for: .normal)
+        shortedPlayerView?.actionButton.setImage(playImage, for: .normal)
         songImageView.kf.setImage(with: musicPlayer.currentFile?.imageURL, placeholder: imagePlaceholder)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        updateViews()
     }
 }

@@ -39,8 +39,6 @@ class MainViewModel: MainViewModelProtocol {
     }
     
     @objc private func updateValue() {
-        print(player?.storage)
-        print(player?.currentFile)
         delegate?.onPlayerFileAppeared(title: player?.currentFile?.title, author: player?.currentFile?.author)
     }
     

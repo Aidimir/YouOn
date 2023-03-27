@@ -59,6 +59,5 @@ class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDel
         } else {
             shortedPlayerView?.updateValues(currentTitle: title, currentAuthor: author, currentProgress: 0)
         }
-        
     }
 }
