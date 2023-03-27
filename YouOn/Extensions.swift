@@ -11,6 +11,7 @@ import RxRelay
 import RxCocoa
 import RxSwift
 import MarqueeLabel
+import AVKit
 
 extension String {
     func getYoutubeID() -> String? {
@@ -158,5 +159,26 @@ extension UILabel {
         label.textColor = .white
         label.font = .mediumSizeBoldFont
         return label
+    }
+}
+
+extension Reactive where Base: AVPlayer {
+    public var status: Observable<AVPlayer.Status> {
+        return self.observe(AVPlayer.Status.self, #keyPath(AVPlayer.status))
+            .map { $0 ?? .unknown }
+    }
+}
+
+extension Reactive where Base: AVPlayerItem {
+    public var status: Observable<AVPlayerItem.Status> {
+        return self.observe(AVPlayerItem.Status.self, #keyPath(AVPlayerItem.status))
+            .map { $0 ?? .unknown }
+    }
+}
+
+extension Reactive where Base: AVPlayer {
+    public var isPlaying: Observable<Bool> {
+        return self.observe(Bool.self, #keyPath(AVPlayer.rate))
+            .map({ $0 ?? false })
     }
 }
