@@ -44,10 +44,6 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
         } canEditRowAtIndexPath: { [weak self] source, indexPath in
             let itemIsDefault = self?.viewModel?.uiModels.value[indexPath.row].isDefaultPlaylist
             return !(itemIsDefault ?? true)
-        } canMoveRowAtIndexPath: { [weak self] source, indexPath in
-            let isMovingInFirstPlace = indexPath.row == 0
-            let itemIsDefault = self?.viewModel?.uiModels.value[indexPath.row].isDefaultPlaylist
-            return !isMovingInFirstPlace && !(itemIsDefault ?? true)
         }
         
         if let viewModel = viewModel {

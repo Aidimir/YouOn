@@ -60,6 +60,8 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
     }
 
     override func viewDidLoad() {
+        view.backgroundColor = .gray
+        
         saveButton.addTarget(self, action: #selector(onSaveTap), for: .touchUpInside)
         saveButton.setTitle("Add", for: .normal)
         saveButton.tintColor = .green

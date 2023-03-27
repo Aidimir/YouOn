@@ -52,9 +52,9 @@ extension TimeInterval {
     
     var stringTime: String {
         if hours != 0 {
-            return "\(hours)h \(minutes): \(seconds)s"
+            return "\(hours)h \(minutes):\(seconds)s"
         } else if minutes != 0 {
-            return "\(minutes): \(seconds)"
+            return "\(minutes):\(seconds)"
         } else if milliseconds != 0 {
             return "\(seconds)s \(milliseconds)ms"
         } else {

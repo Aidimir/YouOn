@@ -129,7 +129,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     func moveToAddFilesController() {
         do {
             if let storage = try saver?.fetchAllMedia() {
-                allFilesStorage = storage.reversed()
+                allFilesStorage = storage
                 router?.moveToAddItemsToPlaylist(allFilesStorage!, saveAction: addItems(indexes:))
             }
         } catch {

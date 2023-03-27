@@ -18,7 +18,7 @@ protocol AllPlaylistsTableViewDelegate {
 
 typealias PlaylistSectionModel = AnimatableSectionModel<String, PlaylistUIModel>
 
-class AllPlaylistsTableView: BindableTableViewController<PlaylistSectionModel>, UITableViewDelegate, UITableViewDragDelegate {
+class AllPlaylistsTableView: BindableTableViewController<PlaylistSectionModel>, UITableViewDelegate {
     
     private var heightForRow: CGFloat
     
@@ -35,6 +35,7 @@ class AllPlaylistsTableView: BindableTableViewController<PlaylistSectionModel>, 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         delegate?.didTapOnPlaylist(indexPath: indexPath)
     }
+    
     
     init(heightForRow: CGFloat,
          backgroundColor: UIColor,
@@ -68,12 +69,5 @@ class AllPlaylistsTableView: BindableTableViewController<PlaylistSectionModel>, 
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
-        tableView.dragDelegate = self
-    }
-    
-    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        let dragItem = UIDragItem(itemProvider: NSItemProvider())
-        dragItem.localObject = itemsAsRelay?.value[indexPath.row]
-        return [dragItem]
     }
 }
