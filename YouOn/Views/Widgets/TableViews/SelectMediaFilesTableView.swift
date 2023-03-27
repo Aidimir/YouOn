@@ -33,7 +33,7 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as! MediaFileCell
-        cell.setup(file: source[indexPath.row], foregroundColor: .darkGray, backgroundColor: .darkGray)
+        cell.setup(file: source[indexPath.row], foregroundColor: .black, backgroundColor: .black)
         cell.backgroundColor = .clear
         cell.selectionStyle = .none
         return cell
@@ -60,7 +60,7 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
     }
 
     override func viewDidLoad() {
-        view.backgroundColor = .gray
+        view.backgroundColor = .black
         
         saveButton.addTarget(self, action: #selector(onSaveTap), for: .touchUpInside)
         saveButton.setTitle("Add", for: .normal)
@@ -69,7 +69,7 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
         tableView.register(MediaFileCell.self, forCellReuseIdentifier: "MediaFileCell")
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.backgroundColor = .darkGray
+        tableView.backgroundColor = .black
         tableView.allowsMultipleSelection = true
         tableView.separatorColor = .clear
         
