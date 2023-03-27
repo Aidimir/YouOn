@@ -91,7 +91,6 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     func playSong(indexPath: IndexPath) {
         if let mediaStorage = uiModels.value as? [MediaFile] {
             player.storage = mediaStorage
-            router?.openPlayer()
             player.play(index: indexPath.row)
         }
     }

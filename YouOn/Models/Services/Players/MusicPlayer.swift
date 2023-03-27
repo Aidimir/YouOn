@@ -32,7 +32,14 @@ protocol MusicPlayerProtocol {
 
 class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
     
-    var currentFile: MediaFile?
+    var currentFile: MediaFile? {
+        get {
+            if index != nil {
+                return storage[index!]
+            }
+            return nil
+        }
+    }
     
     var fileManager: FileManager?
     
@@ -44,6 +51,8 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
     
     private var player: AVAudioPlayer?
     
+    static let shared = MusicPlayer()
+    
     override init() {
         super.init()
         setupCommandCenterCommands()
@@ -52,7 +61,6 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
     func play(index: Int) {
         self.index = index
         let file = storage[self.index!]
-        currentFile = file
         
         guard let url = fileManager?.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(file.url) else { return }
         do {
@@ -83,6 +91,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
             startRemoteCommandsCenter()
             player!.play()
             delegate?.onPlay()
+            NotificationCenter.default.post(name: NotificationCenterNames.playedSong, object: nil)
         } catch {
             delegate?.errorHandler(error: error)
         }

@@ -12,25 +12,15 @@ protocol LibraryPageBuilderProtocol: BuilderProtocol {
     func buildLibraryViewController() -> UIViewController
     func buildPlaylistController(playlistID: UUID) -> UIViewController
     func buildAddItemsToPlaylist(_ fromStorage: [MediaFile], saveAction: (([IndexPath]) -> Void)?) -> UIViewController
-    var musicController: MusicPlayerViewController { get }
 }
 
 class LibraryPageBuilder: LibraryPageBuilderProtocol {
     
     private let fileManager = FileManager.default
     
-    private let musicPlayer = MusicPlayer()
-    
-    var musicController: MusicPlayerViewController
-    
     private var router: LibraryPageRouter?
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
-    init() {
-        musicPlayer.fileManager = fileManager
-        musicController = MusicPlayerViewController(musicPlayer: musicPlayer)
-    }
     
     func createAlert(title: String? = "Error", error: Error?,
                      msgWithError: String?, action: (() -> Void)? = nil) -> UIAlertController {
@@ -60,7 +50,7 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
         let dataManager = MediaDataManager(appDelegate: appDelegate)
         let saver = PlaylistSaver(dataManager: dataManager, fileManager: fileManager)
         
-        let viewModel = PlaylistViewModel(player: musicPlayer,
+        let viewModel = PlaylistViewModel(player: MusicPlayer.shared,
                                           saver: saver,
                                           id: playlistID)
         viewModel.router = router

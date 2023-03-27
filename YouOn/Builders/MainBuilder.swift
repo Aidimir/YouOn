@@ -9,9 +9,10 @@ import Foundation
 import UIKit
 
 protocol MainBuilderProtocol: BuilderProtocol {
-    func buildMainPage() -> UIViewController
+    func buildMainPage(router: MainRouterProtocol) -> UIViewController
     var founderPageBuilder: FounderBuilderProtocol { get }
     var libraryPageBuilder: LibraryPageBuilderProtocol { get }
+    var musicController: MusicPlayerViewController? { get }
 }
 
 class MainBuilder: MainBuilderProtocol {
@@ -20,6 +21,11 @@ class MainBuilder: MainBuilderProtocol {
     
     var libraryPageBuilder: LibraryPageBuilderProtocol = LibraryPageBuilder()
     
+    var musicController: MusicPlayerViewController?
+    
+    init() {
+        MusicPlayer.shared.fileManager = FileManager.default
+    }
     
     func createAlert(title: String? = "Error", error: Error?,
                      msgWithError: String?, action: (() -> Void)? = nil) -> UIAlertController {
@@ -33,15 +39,24 @@ class MainBuilder: MainBuilderProtocol {
         return alert
     }
     
-    func buildMainPage() -> UIViewController {
+    func buildMainPage(router: MainRouterProtocol) -> UIViewController {
+        musicController = MusicPlayerViewController(musicPlayer: MusicPlayer.shared)
+        
+        let mainViewModel = MainViewModel()
+        mainViewModel.router = router
+        mainViewModel.player = MusicPlayer.shared
+        let mainViewController = MainViewController(playerViewController: musicController!)
+        mainViewController.viewModel = mainViewModel
+        
         let founderC = founderPageBuilder.buildFounderPage()
         let libraryC = libraryPageBuilder.buildLibraryViewController()
-        let controller = UITabBarController()
-        controller.tabBar.tintColor = .white
-        controller.tabBar.barTintColor = .darkGray
-        controller.tabBar.backgroundColor = .darkGray
-        controller.tabBar.isTranslucent = false
-        controller.setViewControllers([founderC, libraryC], animated: true)
-        return controller
+        
+        mainViewController.tabBar.tintColor = .white
+        mainViewController.tabBar.barTintColor = .darkGray
+        mainViewController.tabBar.backgroundColor = .darkGray
+        mainViewController.tabBar.isTranslucent = false
+        mainViewController.setViewControllers([founderC, libraryC], animated: true)
+        
+        return mainViewController
     }
 }

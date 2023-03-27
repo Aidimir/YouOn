@@ -50,6 +50,8 @@
 		9DA0121629C3037A00962778 /* MediaSaverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA0121529C3037A00962778 /* MediaSaverService.swift */; };
 		9DC4CB5B29CF9E2B0045D7F7 /* SelectMediaFilesTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB5A29CF9E2B0045D7F7 /* SelectMediaFilesTableView.swift */; };
 		9DC4CB6229D1AD6F0045D7F7 /* MusicPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB6129D1AD6F0045D7F7 /* MusicPlayerController.swift */; };
+		9DC4CB6429D1D60F0045D7F7 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB6329D1D60F0045D7F7 /* MainViewController.swift */; };
+		9DC4CB6629D1F89A0045D7F7 /* ShortedPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB6529D1F89A0045D7F7 /* ShortedPlayerView.swift */; };
 		C7B93FF1C9326C7EFD75352C /* Pods_YouOn_YouOnUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6227F66CB4FEA90CFE430489 /* Pods_YouOn_YouOnUITests.framework */; };
 		E847D7C616F772C15E6A2083 /* Pods_YouOn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDB00ACF719B20B0C14EE296 /* Pods_YouOn.framework */; };
 /* End PBXBuildFile section */
@@ -125,6 +127,8 @@
 		9DA0121529C3037A00962778 /* MediaSaverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSaverService.swift; sourceTree = "<group>"; };
 		9DC4CB5A29CF9E2B0045D7F7 /* SelectMediaFilesTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectMediaFilesTableView.swift; sourceTree = "<group>"; };
 		9DC4CB6129D1AD6F0045D7F7 /* MusicPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicPlayerController.swift; sourceTree = "<group>"; };
+		9DC4CB6329D1D60F0045D7F7 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		9DC4CB6529D1F89A0045D7F7 /* ShortedPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortedPlayerView.swift; sourceTree = "<group>"; };
 		DDB00ACF719B20B0C14EE296 /* Pods_YouOn.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouOn.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -200,6 +204,7 @@
 				9D6E93E329C860D30044A642 /* ProgressCircleView.swift */,
 				9D6E93E529C873B40044A642 /* PlaylistCell.swift */,
 				9D6E93E729C874640044A642 /* MediaFileCell.swift */,
+				9DC4CB6529D1F89A0045D7F7 /* ShortedPlayerView.swift */,
 			);
 			path = Widgets;
 			sourceTree = "<group>";
@@ -210,6 +215,7 @@
 				9DC4CB5F29D1AD550045D7F7 /* FounderPage */,
 				9DC4CB5E29D1AD490045D7F7 /* LibraryPage */,
 				9DC4CB6129D1AD6F0045D7F7 /* MusicPlayerController.swift */,
+				9DC4CB6329D1D60F0045D7F7 /* MainViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -637,6 +643,7 @@
 				9D508FF629C893CF00F9EE5F /* LibraryViewModel.swift in Sources */,
 				9DA011D129C1B61E00962778 /* YouOn.xcdatamodeld in Sources */,
 				9D50900229CB03CE00F9EE5F /* PlaylistTableView.swift in Sources */,
+				9DC4CB6429D1D60F0045D7F7 /* MainViewController.swift in Sources */,
 				9DA0120529C22AA700962778 /* PlaylistModel.swift in Sources */,
 				9D508FF429C8916F00F9EE5F /* LibraryViewController.swift in Sources */,
 				9D50900029C9D2FD00F9EE5F /* NotificationCenterNames.swift in Sources */,
@@ -657,6 +664,7 @@
 				9DA011C729C1B61E00962778 /* AppDelegate.swift in Sources */,
 				9D6E93D329C328D60044A642 /* MediaDataManager.swift in Sources */,
 				9DA011C929C1B61E00962778 /* SceneDelegate.swift in Sources */,
+				9DC4CB6629D1F89A0045D7F7 /* ShortedPlayerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
