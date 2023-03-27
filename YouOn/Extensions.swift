@@ -10,6 +10,7 @@ import UIKit
 import RxRelay
 import RxCocoa
 import RxSwift
+import MarqueeLabel
 
 extension String {
     func getYoutubeID() -> String? {
@@ -145,5 +146,17 @@ extension UIFont {
     public static let mediumSizeFont = UIFont.systemFont(ofSize: 20, weight: .medium)
     
     public static let smallSizeFont = UIFont.systemFont(ofSize: 15, weight: .medium)
+}
 
+extension UILabel {
+    static func createScrollableLabel(fadeLength: CGFloat = 20,
+                               scrollingDuration: CGFloat = 6,
+                               animationDelay: CGFloat = 2) -> UILabel {
+        let label = MarqueeLabel(frame: .zero, duration: scrollingDuration, fadeLength: 0)
+        label.animationDelay = animationDelay
+        label.fadeLength = fadeLength
+        label.textColor = .white
+        label.font = .mediumSizeBoldFont
+        return label
+    }
 }

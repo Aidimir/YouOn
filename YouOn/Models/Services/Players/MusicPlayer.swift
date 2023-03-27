@@ -15,18 +15,24 @@ protocol MusicPlayerDelegate {
     func onPlayNext()
     func onPlayPrevious()
     func errorHandler(error: Error)
+    func onPause()
+    func onPlay()
 }
 
 protocol MusicPlayerProtocol {
+    var currentFile: MediaFile? { get }
     var delegate: MusicPlayerDelegate? { get set }
     var storage: [MediaFile] { get set }
     var fileManager: FileManager? { get set }
     func playNext()
     func playPrevious()
     func play(index: Int)
+    func playTapped()
 }
 
 class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
+    
+    var currentFile: MediaFile?
     
     var fileManager: FileManager?
     
@@ -46,6 +52,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
     func play(index: Int) {
         self.index = index
         let file = storage[self.index!]
+        currentFile = file
         
         guard let url = fileManager?.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(file.url) else { return }
         do {
@@ -74,8 +81,8 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
             
             MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
             startRemoteCommandsCenter()
-            //            player!.delegate = self
             player!.play()
+            delegate?.onPlay()
         } catch {
             delegate?.errorHandler(error: error)
         }
@@ -93,6 +100,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
                 play(index: 0)
                 self.player?.pause()
             }
+            delegate?.onPlayNext()
         }
     }
     
@@ -100,6 +108,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
         if index != nil {
             if player!.currentTime >= TimeInterval(3) {
                 play(index: index!)
+                delegate?.onPlayPrevious()
                 return
             }
             
@@ -108,6 +117,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
             } else {
                 play(index: storage.count - 1)
             }
+            delegate?.onPlayPrevious()
         }
     }
     
@@ -164,6 +174,18 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, AVAudioPlayerDelegate {
                 return .success
             }
             return .commandFailed
+        }
+    }
+    
+    func playTapped() {
+        if currentFile != nil && player != nil {
+            if !player!.isPlaying {
+                player?.play()
+                delegate?.onPlay()
+            } else {
+                player?.pause()
+                delegate?.onPause()
+            }
         }
     }
 }
