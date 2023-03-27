@@ -36,12 +36,6 @@ class FounderPageBuilder: FounderBuilderProtocol {
     
     func buildFounderPage() -> UIViewController {
         let dataManager = MediaDataManager(appDelegate: appDelegate)
-//        do {
-//            try dataManager.resetStorage()
-//            UserDefaults.standard.removeObject(forKey: UserDefaultKeys.defaultAllPlaylist)
-//        } catch {
-//            print()
-//        }
         let saver = MediaSaver(dataManager: dataManager, fileManager: fileManager)
         let networkService = YTNetworkService(saver: saver, fileManager: fileManager)
         let viewModel = VideoFounderViewModel(networkService: networkService)
@@ -50,7 +44,7 @@ class FounderPageBuilder: FounderBuilderProtocol {
         let router = FounderRouter(builder: self, navigationController: navController)
         viewModel.router = router
         navController.navigationBar.topItem?.title = nil
-        navController.navigationBar.tintColor = .white
+        navController.navigationBar.tintColor = .white        
         return navController
     }
 }

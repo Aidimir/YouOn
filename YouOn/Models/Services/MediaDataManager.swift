@@ -117,6 +117,10 @@ class MediaDataManager: DataManager, MediaDataManagerProtocol {
     }
     
     func fetchAllMedia() throws -> [MediaFile] {
+        if let userDefaultValue = UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist), let defaultAllPlaylist = try fetchPlaylist(id: UUID(uuidString: userDefaultValue)!) {
+            return defaultAllPlaylist.content
+        }
+        
         let context = appDelegate.persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<MediaEntity> = MediaEntity.fetchRequest()
         var mediaEntities: [MediaEntity]? = nil
@@ -133,7 +137,7 @@ class MediaDataManager: DataManager, MediaDataManagerProtocol {
                         }
                     }
                 }
-                                
+                
                 return content
             }
         } catch {

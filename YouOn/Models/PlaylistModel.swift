@@ -43,13 +43,13 @@ struct Playlist: Codable, PlaylistUIProtocol {
             if str != nil {
                 return id == UUID(uuidString: str!)
             } else {
-                return true
+                return false
             }
         }
     }
     
     mutating func addFile(file: MediaFile) {
-        if !isDefaultPlaylist {
+        if isDefaultPlaylist {
             content.removeAll(where: { $0.id == file.id})
         }
         content = [file] + content

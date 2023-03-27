@@ -52,13 +52,13 @@ extension TimeInterval {
     
     var stringTime: String {
         if hours != 0 {
-            return "\(hours)h \(minutes)m \(seconds)s"
+            return "\(hours)h \(minutes): \(seconds)s"
         } else if minutes != 0 {
-            return "\(minutes)m \(seconds)s"
+            return "\(minutes): \(seconds)"
         } else if milliseconds != 0 {
             return "\(seconds)s \(milliseconds)ms"
         } else {
-            return "\(seconds)s"
+            return "\(seconds)"
         }
     }
 }
@@ -87,15 +87,6 @@ extension UITextField {
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
         self.rightView = paddingView
         self.rightViewMode = .always
-    }
-}
-
-extension Array
-{
-    mutating func move(from oldIndex: Index, to newIndex: Index) {
-        if oldIndex == newIndex { return }
-        if abs(newIndex - oldIndex) == 1 { return self.swapAt(oldIndex, newIndex) }
-        self.insert(self.remove(at: oldIndex), at: newIndex)
     }
 }
 
@@ -144,4 +135,15 @@ extension UIViewController {
         
         self.present(alert, animated: true, completion: nil)
     }
+}
+
+extension UIFont {
+    public static let titleFont = UIFont.systemFont(ofSize: 24, weight: .semibold)
+    
+    public static let mediumSizeBoldFont = UIFont.systemFont(ofSize: 20, weight: .semibold)
+    
+    public static let mediumSizeFont = UIFont.systemFont(ofSize: 20, weight: .medium)
+    
+    public static let smallSizeFont = UIFont.systemFont(ofSize: 15, weight: .medium)
+
 }

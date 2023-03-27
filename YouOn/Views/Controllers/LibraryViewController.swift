@@ -56,7 +56,7 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
             
             let itemImage = UIImage(systemName: "plus")
             let barItem = UIBarButtonItem(image: itemImage, style: .plain, target: self, action: #selector(addPlaylist))
-            barItem.tintColor = .black
+            barItem.tintColor = .white
             navigationItem.rightBarButtonItem = barItem
             
             let allPlTableView = AllPlaylistsTableView(heightForRow: view.frame.size.height / 6,
@@ -81,7 +81,7 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
             addChild(playlistsTableView!)
             view.addSubview(playlistsTableView!.view)
             playlistsTableView?.view.snp.makeConstraints { make in
-                make.left.right.top.bottom.equalTo(view.readableContentGuide)
+                make.left.right.top.bottom.equalTo(view)
             }
             playlistsTableView?.didMove(toParent: self)
         }
@@ -113,7 +113,7 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
     
     private func onItemRemoved(_ indexPath: IndexPath) -> Void {
         guard viewModel != nil else { return }
-        if let canDelete = viewModel?.uiModels.value[indexPath.row].isDefaultPlaylist, canDelete == true {
+        if let isDefault = viewModel?.uiModels.value[indexPath.row].isDefaultPlaylist, isDefault == false {
             viewModel?.removePlaylist(indexPath: indexPath)
         }
     }

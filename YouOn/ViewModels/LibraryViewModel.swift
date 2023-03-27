@@ -52,7 +52,6 @@ class LibraryViewModel: LibraryViewModelProtocol {
         do {
             let result = try saver.createPlaylist(title: text)
             fetchPlaylists()
-            router?.moveToPlaylist(playlistID: result)
         } catch {
             errorHandler(error)
         }

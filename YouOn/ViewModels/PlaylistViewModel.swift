@@ -22,6 +22,7 @@ protocol PlaylistViewModelDelegate {
 protocol PlaylistViewModelProtocol: CollectableViewModelProtocol where T == MediaFileUIProtocol {
     var delegate: PlaylistViewModelDelegate? { get set }
     var router: LibraryPageRouterProtocol? { get set }
+    var title: String? { get }
     func playSong(indexPath: IndexPath)
     func removeFromPlaylist(indexPath: IndexPath)
     func saveStorage()
@@ -30,6 +31,12 @@ protocol PlaylistViewModelProtocol: CollectableViewModelProtocol where T == Medi
 }
 
 class PlaylistViewModel: PlaylistViewModelProtocol {
+    
+    var title: String? {
+        get {
+            return playlist?.title
+        }
+    }
     
     var delegate: PlaylistViewModelDelegate?
     
@@ -122,8 +129,8 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     func moveToAddFilesController() {
         do {
             if let storage = try saver?.fetchAllMedia() {
-                allFilesStorage = storage
-                router?.moveToAddItemsToPlaylist(storage, saveAction: addItems(indexes:))
+                allFilesStorage = storage.reversed()
+                router?.moveToAddItemsToPlaylist(allFilesStorage!, saveAction: addItems(indexes:))
             }
         } catch {
             errorHandler(error)
@@ -134,7 +141,8 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
         do {
             if let allFilesStorage = allFilesStorage, let playlist = playlist {
                 indexes.forEach { index in
-                    let item = allFilesStorage[index.row]
+                    var item = allFilesStorage[index.item]
+                    item.playlistSpecID = UUID()
                     self.playlist!.addFile(file: item)
                     uiModels.accept([item] + uiModels.value)
                 }

@@ -21,9 +21,9 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
     private let musicPlayer = MusicPlayer()
     
     private var router: LibraryPageRouter?
-
+    
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
+    
     func createAlert(title: String? = "Error", error: Error?,
                      msgWithError: String?, action: (() -> Void)? = nil) -> UIAlertController {
         let alert = UIAlertController(title: title,
@@ -41,13 +41,16 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
         let viewModel = LibraryViewModel(saver: saver)
         let controller = LibraryViewController()
         
-        let navBarAppearance = UINavigationBarAppearance()
-        navBarAppearance.configureWithTransparentBackground()
-
         let navController = UINavigationController(rootViewController: controller)
-        navController.navigationBar.standardAppearance = navBarAppearance
-        navController.navigationBar.scrollEdgeAppearance = navBarAppearance
-        navController.navigationBar.topItem?.title = nil
+        let scrollingAppearance = UINavigationBarAppearance()
+        scrollingAppearance.configureWithTransparentBackground()
+        scrollingAppearance.backgroundEffect = UIBlurEffect(style: .dark)
+        scrollingAppearance.backgroundColor = .clear
+        scrollingAppearance.titleTextAttributes = [.foregroundColor: UIColor.white, .font: UIFont.titleFont]
+        
+        navController.navigationBar.scrollEdgeAppearance = scrollingAppearance
+        navController.navigationBar.standardAppearance = scrollingAppearance
+        
         navController.navigationBar.tintColor = .white
         navController.navigationBar.tintAdjustmentMode = .normal
         router = LibraryPageRouter(builder: self, navigationController: navController)

@@ -58,7 +58,7 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
                                                       items: viewModel.uiModels
                 .asObservable()
                 .map({ [AnimatableSectionModel(model: "",
-                                               items: $0.map({ MediaFileUIModel(model: $0)}))] }),
+                                               items: $0.map({ MediaFileUIModel(model: $0) }))] }),
                                                       itemsAsRelay: viewModel.uiModels,
                                                       onItemMoved: onItemMoved(_:),
                                                       onItemRemoved: onItemRemoved(_:),
@@ -77,7 +77,7 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
             tableViewController!.view.snp.makeConstraints { make in
                 make.left.equalTo(view.readableContentGuide.snp.left)
                 make.right.equalToSuperview()
-                make.top.bottom.equalTo(view.readableContentGuide)
+                make.top.bottom.equalTo(view)
             }
             
             tableViewController?.didMove(toParent: self)
@@ -103,8 +103,9 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
         if isAddable {
             let itemImage = UIImage(systemName: "plus")
             let barItem = UIBarButtonItem(image: itemImage, style: .plain, target: self, action: #selector(addFiles))
-            barItem.tintColor = .black
+            barItem.tintColor = .white
             navigationItem.rightBarButtonItem = barItem
         }
+        title = viewModel?.title
     }
 }
