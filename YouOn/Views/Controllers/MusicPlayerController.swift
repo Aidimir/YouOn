@@ -17,12 +17,21 @@ protocol MusicPlayerViewProtocol: UIViewController {
     init(musicPlayer: MusicPlayerProtocol, imageCornerRadius: CGFloat, titleScrollingDuration: CGFloat)
 }
 
-class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, MusicPlayerDelegate {
+class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, MusicPlayerViewDelegate {
+    
+    var isSeekInProgress: Bool = false
+    
+    var isScrubbingFlag: Bool = false
+    
+    private var duration: Float?
     
     func updateProgress(progress: Double) {
         let floated = Float(progress)
-        if !floated.isNaN {
-            shortedPlayerView?.updateProgress(progress: Float(progress))
+        if !floated.isNaN && duration != nil {
+            shortedPlayerView?.updateProgress(progress: floated / duration!)
+            if !isScrubbingFlag {
+                changePlaybackPositionSlider.value = floated
+            }
         }
     }
         
@@ -34,8 +43,9 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         static let verticalPadding = 30
         static let horizontalPadding = 20
         static let smallButtonSize = 50
+        static let strokeWidth = 40
     }
-    
+        
     private let imagePlaceholder = UIImage(systemName: "music.note")
     
     private let dismissButton = UIButton()
@@ -58,7 +68,23 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     
     private lazy var playButton = UIButton()
     
-    private lazy var changePlaybackPositionSlider = UISlider()
+    private var progressBarHighlightedObserver: NSKeyValueObservation?
+    
+    private lazy var changePlaybackPositionSlider: UISlider = {
+        let bar = UISlider()
+        bar.minimumTrackTintColor = .darkGray
+        bar.maximumTrackTintColor = .white
+        bar.value = 0.0
+        bar.isContinuous = false
+        bar.addTarget(self, action: #selector(onSliderDragging), for: .valueChanged)
+        self.progressBarHighlightedObserver = bar.observe(\UISlider.isTracking, options: [.old, .new]) { (_, change) in
+            if let newValue = change.newValue {
+                self.isScrubbingFlag = newValue
+//                self.didChangeProgressBarDragging?(newValue, bar.value)
+            }
+        }
+        return bar
+    }()
     
     private var moreActionButtons = [UIButton]()
     
@@ -144,9 +170,16 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             make.left.right.equalTo(view.readableContentGuide)
         }
         
+        view.addSubview(changePlaybackPositionSlider)
+        changePlaybackPositionSlider.snp.makeConstraints { make in
+            make.left.right.equalTo(view.readableContentGuide)
+            make.top.equalTo(songAuthor.snp.bottom).offset(Constants.verticalPadding)
+            make.height.equalTo(Constants.strokeWidth)
+        }
+        
         view.addSubview(controlButtonsStack)
         controlButtonsStack.snp.makeConstraints { make in
-            make.top.equalTo(songAuthor.snp.bottom).offset(Constants.verticalPadding)
+            make.top.equalTo(changePlaybackPositionSlider.snp.bottom).offset(Constants.verticalPadding)
             make.left.right.equalTo(view.readableContentGuide)
             make.height.equalTo(view).dividedBy(10)
         }
@@ -206,5 +239,20 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             self.playButton.setImage(playImage, for: .normal)
             self.shortedPlayerView?.actionButton.setImage(playImage, for: .normal)
         }.disposed(by: disposeBag)
+        
+        musicPlayer.currentItemDuration.filter({ $0 != nil }).map({ $0! }).asDriver(onErrorJustReturn: 0).drive { val in
+            let floated = Float(val)
+            if !floated.isNaN {
+                self.duration = floated
+                self.changePlaybackPositionSlider.maximumValue = floated
+            }
+        }.disposed(by: disposeBag)
     }
+    
+    @objc private func onSliderDragging(sender: UISlider) {
+        if !isScrubbingFlag {
+            musicPlayer.seekTo(seconds: Double(sender.value))
+        }
+    }
+    
 }

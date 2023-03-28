@@ -14,7 +14,9 @@ import RxRelay
 import RxSwift
 import RxCocoa
 
-protocol MusicPlayerDelegate {
+protocol MusicPlayerViewDelegate {
+    var isScrubbingFlag: Bool { get set }
+    var isSeekInProgress: Bool { get set }
     func onItemChanged()
     func updateProgress(progress: Double)
     func errorHandler(error: Error)
@@ -23,9 +25,11 @@ protocol MusicPlayerDelegate {
 protocol MusicPlayerProtocol {
     var currentFile: MediaFileUIProtocol? { get }
     var isPlaying: Observable<Bool> { get }
-    var delegate: MusicPlayerDelegate? { get set }
+    var currentItemDuration: Observable<Double?> { get }
+    var delegate: MusicPlayerViewDelegate? { get set }
     var storage: [MediaFileUIProtocol] { get set }
     var fileManager: FileManager? { get set }
+    func seekTo(seconds: Double)
     func playNext()
     func playPrevious()
     func play(index: Int)
@@ -35,10 +39,16 @@ protocol MusicPlayerProtocol {
 }
 
 class MusicPlayer: NSObject, MusicPlayerProtocol {
-    
+
     var isPlaying: Observable<Bool> {
         get {
             return player.rx.isPlaying
+        }
+    }
+    
+    var currentItemDuration: Observable<Double?> {
+        get {
+            return player.rx.currentDuration
         }
     }
     
@@ -50,12 +60,12 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
             return nil
         }
     }
-        
+    
     var fileManager: FileManager?
     
     var storage: [MediaFileUIProtocol] = []
     
-    var delegate: MusicPlayerDelegate?
+    var delegate: MusicPlayerViewDelegate?
     
     private var index: Int?
     
@@ -69,8 +79,8 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
         super.init()
         setupCommandCenterCommands()
         player.addPeriodicTimeObserver(forInterval: CMTime(value: CMTimeValue(1), timescale: 2), queue: DispatchQueue.main) { [weak self] (progressTime) in
-            if let duration = self?.player.currentItem?.duration.seconds {
-                self?.delegate?.updateProgress(progress: progressTime.seconds / duration)
+            if !(self?.delegate?.isScrubbingFlag ?? false) && !(self?.delegate?.isSeekInProgress ?? false) {
+                self?.delegate?.updateProgress(progress: progressTime.seconds)
             }
         }
     }
@@ -213,6 +223,14 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
     
     func continuePlay() {
         player.rate = 1
+    }
+    
+    func seekTo(seconds: Double) {
+        delegate?.isSeekInProgress = true
+        let time = CMTime(seconds: seconds, preferredTimescale: 1000000)
+        player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] completed in
+            self?.delegate?.isSeekInProgress = false
+        }
     }
     
     private func setBindings() {
