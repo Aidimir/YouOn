@@ -12,12 +12,20 @@ import Kingfisher
 import MarqueeLabel
 import RxSwift
 
-protocol MusicPlayerViewProtocol {
+protocol MusicPlayerViewProtocol: UIViewController {
+    var shortedPlayerView: ShortedPlayerView? { get }
     init(musicPlayer: MusicPlayerProtocol, imageCornerRadius: CGFloat, titleScrollingDuration: CGFloat)
 }
 
 class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, MusicPlayerDelegate {
     
+    func updateProgress(progress: Double) {
+        let floated = Float(progress)
+        if !floated.isNaN {
+            shortedPlayerView?.updateProgress(progress: Float(progress))
+        }
+    }
+        
     private let disposeBag = DisposeBag()
     
     var shortedPlayerView: ShortedPlayerView?
@@ -62,6 +70,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         self.titleScrollingDuration = titleScrollingDuration
         super.init(nibName: nil, bundle: nil)
         self.musicPlayer.delegate = self
+        setBindings()
     }
     
     required init?(coder: NSCoder) {
@@ -142,7 +151,6 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             make.height.equalTo(view).dividedBy(10)
         }
         
-        setBindings()
     }
     
     @objc private func onDismissButtonTapped() {
@@ -165,6 +173,9 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
                                                   currentProgress: 0,
                                                   buttonIcon: UIImage(systemName: "pause.fill"),
                                                   onActionButtonTapped: musicPlayer.playTapped)
+        } else {
+            shortedPlayerView?.updateValues(currentTitle: musicPlayer.currentFile?.title, currentAuthor: musicPlayer.currentFile?.author)
+            shortedPlayerView?.updateProgress(progress: 0)
         }
         
         updateViews()
@@ -189,12 +200,8 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         songImageView.kf.setImage(with: musicPlayer.currentFile?.imageURL, placeholder: imagePlaceholder)
     }
     
-    override func viewDidLayoutSubviews() {
-        updateViews()
-    }
-    
     private func setBindings() {
-        musicPlayer.isPlaying.subscribe { value in
+        musicPlayer.isPlaying.asDriver(onErrorJustReturn: false).drive { value in
             let playImage = value ? UIImage(systemName: "pause.fill") : UIImage(systemName: "play.fill")
             self.playButton.setImage(playImage, for: .normal)
             self.shortedPlayerView?.actionButton.setImage(playImage, for: .normal)

@@ -21,11 +21,11 @@ class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDel
         }
     }
     
-    private let playerViewController: MusicPlayerViewController
+    private let playerViewController: MusicPlayerViewProtocol
     
     private var shortedPlayerView: ShortedPlayerView?
     
-    init(playerViewController: MusicPlayerViewController) {
+    init(playerViewController: MusicPlayerViewProtocol) {
         self.playerViewController = playerViewController
         super.init(nibName: nil, bundle: nil)
     }
@@ -46,7 +46,7 @@ class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDel
         if shortedPlayerView == nil {
             guard let shortedView = playerViewController.shortedPlayerView else { return }
             shortedPlayerView = shortedView
-            shortedPlayerView?.backgroundColor = .gray
+            shortedPlayerView?.backgroundColor = .darkGray
             let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(presentPlayer))
             shortedPlayerView?.addGestureRecognizer(gestureRecognizer)
 //            popup with animation
@@ -56,8 +56,6 @@ class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDel
                 make.left.right.equalToSuperview()
                 make.height.equalTo(tabBar).multipliedBy(0.8)
             })
-        } else {
-            shortedPlayerView?.updateValues(currentTitle: title, currentAuthor: author, currentProgress: 0)
         }
     }
 }

@@ -16,14 +16,15 @@ import RxCocoa
 
 protocol MusicPlayerDelegate {
     func onItemChanged()
+    func updateProgress(progress: Double)
     func errorHandler(error: Error)
 }
 
 protocol MusicPlayerProtocol {
-    var currentFile: MediaFile? { get }
+    var currentFile: MediaFileUIProtocol? { get }
     var isPlaying: Observable<Bool> { get }
     var delegate: MusicPlayerDelegate? { get set }
-    var storage: [MediaFile] { get set }
+    var storage: [MediaFileUIProtocol] { get set }
     var fileManager: FileManager? { get set }
     func playNext()
     func playPrevious()
@@ -41,7 +42,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
         }
     }
     
-    var currentFile: MediaFile? {
+    var currentFile: MediaFileUIProtocol? {
         get {
             if index != nil {
                 return storage[index!]
@@ -49,10 +50,10 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
             return nil
         }
     }
-    
+        
     var fileManager: FileManager?
     
-    var storage: [MediaFile] = []
+    var storage: [MediaFileUIProtocol] = []
     
     var delegate: MusicPlayerDelegate?
     
@@ -67,11 +68,16 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
     override init() {
         super.init()
         setupCommandCenterCommands()
+        player.addPeriodicTimeObserver(forInterval: CMTime(value: CMTimeValue(1), timescale: 2), queue: DispatchQueue.main) { [weak self] (progressTime) in
+            if let duration = self?.player.currentItem?.duration.seconds {
+                self?.delegate?.updateProgress(progress: progressTime.seconds / duration)
+            }
+        }
     }
     
     func play(index: Int) {
         self.index = index
-        let file = storage[self.index!]
+        guard let file = storage[self.index!] as? MediaFile else { return }
         
         guard let url = fileManager?.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(file.url) else { return }
         do {

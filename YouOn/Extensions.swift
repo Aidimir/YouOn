@@ -11,7 +11,9 @@ import RxRelay
 import RxCocoa
 import RxSwift
 import MarqueeLabel
-import AVKit
+import AVFAudio
+import AVFoundation
+import MediaPlayer
 
 extension String {
     func getYoutubeID() -> String? {
@@ -151,8 +153,8 @@ extension UIFont {
 
 extension UILabel {
     static func createScrollableLabel(fadeLength: CGFloat = 20,
-                               scrollingDuration: CGFloat = 6,
-                               animationDelay: CGFloat = 2) -> UILabel {
+                                      scrollingDuration: CGFloat = 6,
+                                      animationDelay: CGFloat = 2) -> UILabel {
         let label = MarqueeLabel(frame: .zero, duration: scrollingDuration, fadeLength: 0)
         label.animationDelay = animationDelay
         label.fadeLength = fadeLength
@@ -180,5 +182,10 @@ extension Reactive where Base: AVPlayer {
     public var isPlaying: Observable<Bool> {
         return self.observe(Bool.self, #keyPath(AVPlayer.rate))
             .map({ $0 ?? false })
+    }
+    
+    public var currentDuration: Observable<Double?> {
+        return self.observe(CMTime.self, #keyPath(AVPlayer.currentItem.duration))
+            .map({ $0?.seconds })
     }
 }
