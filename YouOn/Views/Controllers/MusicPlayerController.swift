@@ -19,6 +19,14 @@ protocol MusicPlayerViewProtocol: UIViewController {
 
 class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, MusicPlayerViewDelegate {
     
+    private var isShowingFirstTime: Bool = true
+    
+    var dismissAnimationDuration = 0.3
+    
+    var minimumScreenRatioToDismiss = 0.6
+    
+    var minimumVelocityToDismiss = CGFloat(1)
+        
     var isSeekInProgress: Bool = false
     
     var isScrubbingFlag: Bool = false
@@ -46,6 +54,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         static let horizontalPadding = 20
         static let smallButtonSize = 50
         static let strokeWidth = 40
+        static let mediumButtonSize = 75
     }
     
     private let imagePlaceholder = UIImage(systemName: "music.note")
@@ -136,32 +145,29 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         previousButton.setImage(backImage, for: .normal)
         previousButton.tintColor = .white
         previousButton.addTarget(self, action: #selector(didTapPrevious), for: .touchUpInside)
-        previousButton.contentVerticalAlignment = .fill
-        previousButton.contentHorizontalAlignment = .fill
         
         let nextImage = UIImage(systemName: "forward.fill")
         nextButton.setImage(nextImage, for: .normal)
         nextButton.tintColor = .white
         nextButton.addTarget(self, action: #selector(didTapNext), for: .touchUpInside)
-        nextButton.contentVerticalAlignment = .fill
-        nextButton.contentHorizontalAlignment = .fill
         
         let playImage = UIImage(systemName: "pause.fill")
         playButton.setImage(playImage, for: .normal)
         playButton.tintColor = .white
         playButton.addTarget(self, action: #selector(didTapPlay), for: .touchUpInside)
-        playButton.contentVerticalAlignment = .fill
-        playButton.contentHorizontalAlignment = .fill
+        playButton.backgroundColor = .black
+        playButton.clipsToBounds = true
+        playButton.frame = CGRect(x: 0, y: 0, width: Constants.mediumButtonSize, height: Constants.mediumButtonSize)
         
         let stackSubviews = [previousButton, playButton, nextButton]
         let controlButtonsStack = UIStackView(arrangedSubviews: stackSubviews)
-        controlButtonsStack.distribution = .fillEqually
+        controlButtonsStack.distribution = .equalCentering
         controlButtonsStack.axis = .horizontal
-        controlButtonsStack.spacing = CGFloat(view.frame.size.width / CGFloat(stackSubviews.count + 2))
+        controlButtonsStack.spacing = CGFloat(Constants.horizontalPadding)
         
         view.addSubview(dismissButton)
         dismissButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalToSuperview().offset(view.safeAreaInsets.top)
             make.left.equalTo(view.readableContentGuide)
             make.height.width.equalTo(Constants.smallButtonSize)
         }
@@ -208,14 +214,65 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         controlButtonsStack.snp.makeConstraints { make in
             make.centerX.equalTo(changePlaybackPositionSlider)
             make.centerY.equalTo(view.frame.maxY - (changePlaybackPositionSlider.frame.maxY * 5))
-            make.width.equalTo(view.readableContentGuide).multipliedBy(0.85)
-            make.height.equalTo(view.snp.height).dividedBy(20)
+            make.width.equalTo(view.readableContentGuide).multipliedBy(0.65)
+            make.height.equalTo(Constants.mediumButtonSize)
         }
         
+        let gestureRecognizer = UIPanGestureRecognizer(target: self,
+                                                       action: #selector(panGestureRecognizerHandler(_:)))
+        view.addGestureRecognizer(gestureRecognizer)
     }
     
     @objc private func onDismissButtonTapped() {
         dismiss(animated: true)
+    }
+    
+    @objc private func panGestureRecognizerHandler(_ sender: UIPanGestureRecognizer) {
+        func slideViewVerticallyTo(_ y: CGFloat) {
+            self.view.frame.origin = CGPoint(x: 0, y: y)
+        }
+
+        switch sender.state {
+
+        case .began, .changed:
+            // If pan started or is ongoing then
+            // slide the view to follow the finger
+            let translation = sender.translation(in: view)
+            let y = max(0, translation.y)
+            slideViewVerticallyTo(y)
+
+        case .ended:
+            // If pan ended, decide it we should close or reset the view
+            // based on the final position and the speed of the gesture
+            let translation = sender.translation(in: view)
+            let velocity = sender.velocity(in: view)
+            let closing = (translation.y > self.view.frame.size.height * minimumScreenRatioToDismiss) ||
+                          (velocity.y > minimumVelocityToDismiss)
+
+            if closing {
+                UIView.animate(withDuration: dismissAnimationDuration, animations: {
+                    // If closing, animate to the bottom of the view
+                    slideViewVerticallyTo(self.view.frame.size.height)
+                }, completion: { [weak self] (isCompleted) in
+                    if isCompleted {
+                        // Dismiss the view when it dissapeared
+                        self?.dismiss(animated: false, completion: nil)
+                    }
+                })
+            } else {
+                // If not closing, reset the view to the top
+                UIView.animate(withDuration: dismissAnimationDuration, animations: {
+                    slideViewVerticallyTo(0)
+                })
+            }
+
+        default:
+            // If gesture state is undefined, reset the view to the top
+            UIView.animate(withDuration: dismissAnimationDuration, animations: {
+                slideViewVerticallyTo(0)
+            })
+
+        }
     }
     
     func errorHandler(error: Error) {
@@ -281,5 +338,22 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     
     @objc private func onSliderDragging(sender: UISlider) {
         musicPlayer.seekTo(seconds: Double(sender.value))
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        playButton.snp.remakeConstraints { make in
+            make.width.height.equalTo(Constants.mediumButtonSize)
+        }
+        playButton.layer.cornerRadius = playButton.frame.height / 2
+        
+        if isShowingFirstTime {
+            dismissButton.snp.remakeConstraints { make in
+                make.top.equalToSuperview().offset(view.safeAreaInsets.top)
+                make.left.equalTo(view.readableContentGuide)
+                make.height.width.equalTo(Constants.smallButtonSize)
+            }
+            isShowingFirstTime = false
+        }
     }
 }

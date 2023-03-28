@@ -38,7 +38,7 @@ class MainRouter: MainRouterProtocol {
     
     func openPlayerViewController() {
         if let player = builder.musicController {
-            player.modalPresentationStyle = .fullScreen
+            player.modalPresentationStyle = .overCurrentContext
             navigationController.present(player, animated: true)
         }
     }
