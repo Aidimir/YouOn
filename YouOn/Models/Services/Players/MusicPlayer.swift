@@ -39,7 +39,7 @@ protocol MusicPlayerProtocol {
 }
 
 class MusicPlayer: NSObject, MusicPlayerProtocol {
-
+    
     var isPlaying: Observable<Bool> {
         get {
             return player.rx.isPlaying
@@ -79,9 +79,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
         super.init()
         setupCommandCenterCommands()
         player.addPeriodicTimeObserver(forInterval: CMTime(value: CMTimeValue(1), timescale: 2), queue: DispatchQueue.main) { [weak self] (progressTime) in
-            if !(self?.delegate?.isScrubbingFlag ?? false) && !(self?.delegate?.isSeekInProgress ?? false) {
-                self?.delegate?.updateProgress(progress: progressTime.seconds)
-            }
+            self?.delegate?.updateProgress(progress: progressTime.seconds)
         }
     }
     

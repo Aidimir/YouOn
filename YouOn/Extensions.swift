@@ -58,11 +58,15 @@ extension TimeInterval {
         if hours != 0 {
             return "\(hours)h \(minutes):\(seconds)s"
         } else if minutes != 0 {
+            if seconds < 10 {
+                return "\(minutes):0\(seconds)"
+            }
             return "\(minutes):\(seconds)"
-        } else if milliseconds != 0 {
-            return "\(seconds)s \(milliseconds)ms"
         } else {
-            return "\(seconds)"
+            if seconds < 10 {
+                return "0:0\(seconds)"
+            }
+            return "0:\(seconds)"
         }
     }
 }

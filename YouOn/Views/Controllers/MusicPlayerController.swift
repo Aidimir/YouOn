@@ -29,12 +29,14 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         let floated = Float(progress)
         if !floated.isNaN && duration != nil {
             shortedPlayerView?.updateProgress(progress: floated / duration!)
-            if !isScrubbingFlag {
+            if !isScrubbingFlag && !isSeekInProgress {
                 changePlaybackPositionSlider.value = floated
+                timeWent.text = progress.stringTime
+                timeLeft.text = (Double(duration!) - progress).stringTime
             }
         }
     }
-        
+    
     private let disposeBag = DisposeBag()
     
     var shortedPlayerView: ShortedPlayerView?
@@ -45,7 +47,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         static let smallButtonSize = 50
         static let strokeWidth = 40
     }
-        
+    
     private let imagePlaceholder = UIImage(systemName: "music.note")
     
     private let dismissButton = UIButton()
@@ -61,6 +63,10 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     private lazy var songTitle = UILabel.createScrollableLabel()
     
     private lazy var songAuthor = UILabel.createScrollableLabel()
+    
+    private lazy var timeWent = UILabel()
+    
+    private lazy var timeLeft = UILabel()
     
     private lazy var nextButton = UIButton()
     
@@ -80,7 +86,8 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         self.progressBarHighlightedObserver = bar.observe(\UISlider.isTracking, options: [.old, .new]) { (_, change) in
             if let newValue = change.newValue {
                 self.isScrubbingFlag = newValue
-//                self.didChangeProgressBarDragging?(newValue, bar.value)
+                self.timeWent.text = Double(bar.value).stringTime
+                self.timeLeft.text = Double(self.duration! - bar.value).stringTime
             }
         }
         return bar
@@ -129,20 +136,28 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         previousButton.setImage(backImage, for: .normal)
         previousButton.tintColor = .white
         previousButton.addTarget(self, action: #selector(didTapPrevious), for: .touchUpInside)
+        previousButton.contentVerticalAlignment = .fill
+        previousButton.contentHorizontalAlignment = .fill
         
         let nextImage = UIImage(systemName: "forward.fill")
         nextButton.setImage(nextImage, for: .normal)
         nextButton.tintColor = .white
         nextButton.addTarget(self, action: #selector(didTapNext), for: .touchUpInside)
+        nextButton.contentVerticalAlignment = .fill
+        nextButton.contentHorizontalAlignment = .fill
         
         let playImage = UIImage(systemName: "pause.fill")
         playButton.setImage(playImage, for: .normal)
         playButton.tintColor = .white
         playButton.addTarget(self, action: #selector(didTapPlay), for: .touchUpInside)
+        playButton.contentVerticalAlignment = .fill
+        playButton.contentHorizontalAlignment = .fill
         
-        let controlButtonsStack = UIStackView(arrangedSubviews: [previousButton, playButton, nextButton])
+        let stackSubviews = [previousButton, playButton, nextButton]
+        let controlButtonsStack = UIStackView(arrangedSubviews: stackSubviews)
         controlButtonsStack.distribution = .fillEqually
         controlButtonsStack.axis = .horizontal
+        controlButtonsStack.spacing = CGFloat(view.frame.size.width / CGFloat(stackSubviews.count + 2))
         
         view.addSubview(dismissButton)
         dismissButton.snp.makeConstraints { make in
@@ -166,7 +181,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         
         view.addSubview(songAuthor)
         songAuthor.snp.makeConstraints { make in
-            make.top.equalTo(songTitle.snp.bottom).offset(Constants.verticalPadding)
+            make.top.equalTo(songTitle.snp.bottom)
             make.left.right.equalTo(view.readableContentGuide)
         }
         
@@ -177,11 +192,24 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             make.height.equalTo(Constants.strokeWidth)
         }
         
+        view.addSubview(timeWent)
+        timeWent.snp.makeConstraints { make in
+            make.left.equalTo(changePlaybackPositionSlider)
+            make.top.equalTo(changePlaybackPositionSlider.snp.bottom)
+        }
+        
+        view.addSubview(timeLeft)
+        timeLeft.snp.makeConstraints { make in
+            make.right.equalTo(changePlaybackPositionSlider)
+            make.top.equalTo(changePlaybackPositionSlider.snp.bottom)
+        }
+        
         view.addSubview(controlButtonsStack)
         controlButtonsStack.snp.makeConstraints { make in
-            make.top.equalTo(changePlaybackPositionSlider.snp.bottom).offset(Constants.verticalPadding)
-            make.left.right.equalTo(view.readableContentGuide)
-            make.height.equalTo(view).dividedBy(10)
+            make.centerX.equalTo(changePlaybackPositionSlider)
+            make.centerY.equalTo(view.frame.maxY - (changePlaybackPositionSlider.frame.maxY * 5))
+            make.width.equalTo(view.readableContentGuide).multipliedBy(0.85)
+            make.height.equalTo(view.snp.height).dividedBy(20)
         }
         
     }
@@ -231,6 +259,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         songTitle.text = musicPlayer.currentFile?.title
         songAuthor.text = musicPlayer.currentFile?.author
         songImageView.kf.setImage(with: musicPlayer.currentFile?.imageURL, placeholder: imagePlaceholder)
+        timeWent.text = nil
     }
     
     private func setBindings() {
@@ -244,15 +273,13 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             let floated = Float(val)
             if !floated.isNaN {
                 self.duration = floated
+                self.timeLeft.text = val.stringTime
                 self.changePlaybackPositionSlider.maximumValue = floated
             }
         }.disposed(by: disposeBag)
     }
     
     @objc private func onSliderDragging(sender: UISlider) {
-        if !isScrubbingFlag {
-            musicPlayer.seekTo(seconds: Double(sender.value))
-        }
+        musicPlayer.seekTo(seconds: Double(sender.value))
     }
-    
 }
