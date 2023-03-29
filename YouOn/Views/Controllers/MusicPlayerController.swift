@@ -31,18 +31,6 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     
     private var duration: Float?
     
-    func updateProgress(progress: Double) {
-        let floated = Float(progress)
-        if !floated.isNaN && duration != nil {
-            popupItem.progress = floated / duration!
-            if !isScrubbingFlag && !isSeekInProgress {
-                changePlaybackPositionSlider.value = floated
-                timeWent.text = progress.stringTime
-                timeLeft.text = (Double(duration!) - progress).stringTime
-            }
-        }
-    }
-    
     private let disposeBag = DisposeBag()
     
     private enum Constants {
@@ -54,7 +42,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     }
     
     private let imagePlaceholder = UIImage(systemName: "music.note")
-        
+    
     private var musicPlayer: MusicPlayerProtocol
     
     private var imageCornerRadius: CGFloat
@@ -97,6 +85,26 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     }()
     
     private var moreActionButtons = [UIButton]()
+    
+    func updateProgress(progress: Double) {
+        let floated = Float(progress)
+        if !floated.isNaN && duration != nil {
+            popupItem.progress = floated / duration!
+            if !isScrubbingFlag && !isSeekInProgress {
+                changePlaybackPositionSlider.value = floated
+                timeWent.text = progress.stringTime
+                timeLeft.text = (Double(duration!) - progress).stringTime
+            }
+        }
+    }
+    
+    func updateDuration(duration: Double) {
+        let floated = Float(duration)
+        if !floated.isNaN {
+            self.duration = floated
+            changePlaybackPositionSlider.maximumValue = floated
+        }
+    }
     
     required init(musicPlayer: MusicPlayerProtocol,
                   imageCornerRadius: CGFloat = 10,
@@ -205,7 +213,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             make.height.equalTo(Constants.mediumButtonSize)
         }
     }
-        
+    
     func errorHandler(error: Error) {
         let alert = UIAlertController(title: "Error",
                                       message: error.localizedDescription,

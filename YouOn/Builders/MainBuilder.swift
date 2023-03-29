@@ -20,9 +20,19 @@ class MainBuilder: MainBuilderProtocol {
     
     var libraryPageBuilder: LibraryPageBuilderProtocol = LibraryPageBuilder()
     
-    private lazy var musicController = MusicPlayerViewController(musicPlayer: player)
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    private let player = MusicPlayer.shared
+    private let fileManager = FileManager.default
+    
+    private var musicController: MusicPlayerViewController?
+    
+    private lazy var player: MusicPlayer = {
+        let player = MusicPlayer.shared
+        let dataManager = PlayerDataManager(appDelegate: appDelegate)
+        player.dataManager = dataManager
+        player.fileManager = fileManager
+        return player
+    }()
         
     init() {
         MusicPlayer.shared.fileManager = FileManager.default
@@ -41,12 +51,12 @@ class MainBuilder: MainBuilderProtocol {
     }
     
     func buildMainPage(router: MainRouterProtocol) -> UITabBarController {
+        musicController = MusicPlayerViewController(musicPlayer: player)
         let mainViewModel = MainViewModel()
         mainViewModel.router = router
         mainViewModel.player = MusicPlayer.shared
-        let mainViewController = MainViewController(playerViewController: musicController)
+        let mainViewController = MainViewController(playerViewController: musicController!)
         mainViewController.viewModel = mainViewModel
-//        let mainViewController = UITabBarController()
         let founderC = founderPageBuilder.buildFounderPage()
         let libraryC = libraryPageBuilder.buildLibraryViewController()
         

@@ -16,7 +16,7 @@ protocol LibraryPageBuilderProtocol: BuilderProtocol {
 
 class LibraryPageBuilder: LibraryPageBuilderProtocol {
     
-    private let player = MusicPlayer.shared
+    private lazy var player = MusicPlayer.shared
         
     private let fileManager = FileManager.default
     

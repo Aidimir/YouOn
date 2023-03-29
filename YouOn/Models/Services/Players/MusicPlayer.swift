@@ -18,11 +18,13 @@ protocol MusicPlayerViewDelegate {
     var isScrubbingFlag: Bool { get set }
     var isSeekInProgress: Bool { get set }
     func onItemChanged()
+    func updateDuration(duration: Double)
     func updateProgress(progress: Double)
     func errorHandler(error: Error)
 }
 
 protocol MusicPlayerProtocol {
+    var dataManager: PlayerDataManagerProtocol? { get set }
     var currentFile: MediaFileUIProtocol? { get }
     var isPlaying: Observable<Bool> { get }
     var currentItemDuration: Observable<Double?> { get }
@@ -39,6 +41,26 @@ protocol MusicPlayerProtocol {
 }
 
 class MusicPlayer: NSObject, MusicPlayerProtocol {
+    
+    private var savedInfo: PlayerInfo?
+    
+    var dataManager: PlayerDataManagerProtocol? {
+        didSet {
+            let info = try? dataManager?.fetchSavedData()
+            savedInfo = info
+            if info != nil {
+                index = savedInfo!.currentIndex
+                storage = savedInfo!.storage
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                    self?.play(index: info!.currentIndex)
+                    self?.pause()
+                    self?.seekTo(seconds: info!.currentTime)
+                    self?.delegate?.updateDuration(duration: info!.duration)
+                    self?.delegate?.updateProgress(progress: info!.currentTime)
+                }
+            }
+        }
+    }
     
     var isPlaying: Observable<Bool> {
         get {
@@ -80,12 +102,16 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
         setupCommandCenterCommands()
         player.addPeriodicTimeObserver(forInterval: CMTime(value: CMTimeValue(1), timescale: 2), queue: DispatchQueue.main) { [weak self] (progressTime) in
             self?.delegate?.updateProgress(progress: progressTime.seconds)
+            self?.savedInfo?.currentTime = progressTime.seconds
+            if let savedInfo = self?.savedInfo {
+                try? self?.dataManager?.saveData(info: savedInfo)
+            }
         }
     }
     
     func play(index: Int) {
         self.index = index
-        guard let file = storage[self.index!] as? MediaFile else { return }
+        guard let file = storage[self.index!] as? MediaFile, let storage = storage as? [MediaFile] else { return }
         
         guard let url = fileManager?.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(file.url) else { return }
         do {
@@ -238,6 +264,11 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = self.player.currentItem?.duration.seconds
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = self.player.currentItem?.currentTime()
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] = self.currentFile?.title
+                
+                if let storage = self.storage as? [MediaFile],
+                   let item = self.player.currentItem {
+                    self.savedInfo = PlayerInfo(storage: storage , currentIndex: self.index!, currentTime: item.currentTime().seconds, duration: item.duration.seconds)
+                }
             }
         }.disposed(by: disposeBag)
     }

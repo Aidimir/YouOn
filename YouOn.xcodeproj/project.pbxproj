@@ -54,6 +54,8 @@
 		9DC4CB6629D1F89A0045D7F7 /* ShortedPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB6529D1F89A0045D7F7 /* ShortedPlayerView.swift */; };
 		9DC4CB7329D494DB0045D7F7 /* LNPopupController in Frameworks */ = {isa = PBXBuildFile; productRef = 9DC4CB7229D494DB0045D7F7 /* LNPopupController */; };
 		9DC4CB7429D494FA0045D7F7 /* LNPopupController in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 9DC4CB7229D494DB0045D7F7 /* LNPopupController */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9DC4CB7829D4C17C0045D7F7 /* PlayerDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7729D4C17C0045D7F7 /* PlayerDataManager.swift */; };
+		9DC4CB7A29D4C3250045D7F7 /* PlayerInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7929D4C3250045D7F7 /* PlayerInfoModel.swift */; };
 		C7B93FF1C9326C7EFD75352C /* Pods_YouOn_YouOnUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6227F66CB4FEA90CFE430489 /* Pods_YouOn_YouOnUITests.framework */; };
 		E847D7C616F772C15E6A2083 /* Pods_YouOn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDB00ACF719B20B0C14EE296 /* Pods_YouOn.framework */; };
 /* End PBXBuildFile section */
@@ -145,6 +147,8 @@
 		9DC4CB6129D1AD6F0045D7F7 /* MusicPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicPlayerController.swift; sourceTree = "<group>"; };
 		9DC4CB6329D1D60F0045D7F7 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		9DC4CB6529D1F89A0045D7F7 /* ShortedPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortedPlayerView.swift; sourceTree = "<group>"; };
+		9DC4CB7729D4C17C0045D7F7 /* PlayerDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDataManager.swift; sourceTree = "<group>"; };
+		9DC4CB7929D4C3250045D7F7 /* PlayerInfoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerInfoModel.swift; sourceTree = "<group>"; };
 		DDB00ACF719B20B0C14EE296 /* Pods_YouOn.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouOn.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -332,6 +336,7 @@
 				9DA0120B29C2345E00962778 /* Services */,
 				9DA0120229C2297F00962778 /* MediaFileModel.swift */,
 				9DA0120429C22AA700962778 /* PlaylistModel.swift */,
+				9DC4CB7929D4C3250045D7F7 /* PlayerInfoModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -350,11 +355,10 @@
 		9DA0120B29C2345E00962778 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				9DC4CB7629D4C1600045D7F7 /* DataManagers */,
 				9D6E93D729C438640044A642 /* Players */,
 				9DA0120C29C2346A00962778 /* YTNetworkService.swift */,
 				9DA0121529C3037A00962778 /* MediaSaverService.swift */,
-				9D6E93D029C327470044A642 /* DataManager.swift */,
-				9D6E93D229C328D60044A642 /* MediaDataManager.swift */,
 				9D508FF729C8960000F9EE5F /* PlaylistSaverService.swift */,
 			);
 			path = Services;
@@ -375,6 +379,16 @@
 				9D6E93E929C876740044A642 /* VideoFounderViewController.swift */,
 			);
 			path = FounderPage;
+			sourceTree = "<group>";
+		};
+		9DC4CB7629D4C1600045D7F7 /* DataManagers */ = {
+			isa = PBXGroup;
+			children = (
+				9D6E93D029C327470044A642 /* DataManager.swift */,
+				9D6E93D229C328D60044A642 /* MediaDataManager.swift */,
+				9DC4CB7729D4C17C0045D7F7 /* PlayerDataManager.swift */,
+			);
+			path = DataManagers;
 			sourceTree = "<group>";
 		};
 		B2D5C0075E60B034E8A3F0EB /* Frameworks */ = {
@@ -650,6 +664,7 @@
 			files = (
 				9DC4CB6229D1AD6F0045D7F7 /* MusicPlayerController.swift in Sources */,
 				9D6E93DD29C43DED0044A642 /* PlaylistViewModel.swift in Sources */,
+				9DC4CB7A29D4C3250045D7F7 /* PlayerInfoModel.swift in Sources */,
 				9D6E93E029C84DD40044A642 /* LibraryPageRouter.swift in Sources */,
 				9D508FFA29C8981500F9EE5F /* LibraryPageBuilder.swift in Sources */,
 				9DA011FF29C21C0D00962778 /* MainRouter.swift in Sources */,
@@ -668,6 +683,7 @@
 				9D508FF429C8916F00F9EE5F /* LibraryViewController.swift in Sources */,
 				9D50900029C9D2FD00F9EE5F /* NotificationCenterNames.swift in Sources */,
 				9D6E93EA29C876740044A642 /* VideoFounderViewController.swift in Sources */,
+				9DC4CB7829D4C17C0045D7F7 /* PlayerDataManager.swift in Sources */,
 				9DA0120329C2297F00962778 /* MediaFileModel.swift in Sources */,
 				9D508FF029C879DE00F9EE5F /* AllPlaylistsTableView.swift in Sources */,
 				9DA0121629C3037A00962778 /* MediaSaverService.swift in Sources */,
