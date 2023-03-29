@@ -21,14 +21,17 @@ class ShortedPlayerView: UIView {
     var actionButton = UIButton()
     let onActionButtonTapped: (() -> Void)?
     var buttonIcon: UIImage?
+    var isBlurred: Bool
     
     init(currentTitle: String?,
          currentAuthor: String?,
          currentProgress: Float,
          buttonIcon: UIImage?,
-         onActionButtonTapped: (() -> Void)?) {
+         onActionButtonTapped: (() -> Void)?,
+         isBlurred: Bool = true) {
         self.buttonIcon = buttonIcon
         self.onActionButtonTapped = onActionButtonTapped
+        self.isBlurred = isBlurred
         super.init(frame: .zero)
         addViews(currentTitle: currentTitle, currentAuthor: currentAuthor, currentProgress: currentProgress)
     }
@@ -79,6 +82,10 @@ class ShortedPlayerView: UIView {
             make.left.right.equalTo(titleLabel)
             make.top.equalTo(titleLabel.snp.bottom)
         }
+        
+//        if isBlurred {
+//            blurBackground(style: .dark)
+//        }
     }
     
     func updateValues(currentTitle: String?, currentAuthor: String?) {

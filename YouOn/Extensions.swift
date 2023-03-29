@@ -82,6 +82,18 @@ extension UIView {
         }
         return nil
     }
+    
+    func blurBackground(style: UIBlurEffect.Style) {
+        backgroundColor = .clear
+        let blur = UIBlurEffect(style: style)
+        let blurView = UIVisualEffectView(effect: blur)
+        
+        addSubview(blurView)
+        blurView.snp.makeConstraints { make in
+            make.size.equalTo(self)
+        }
+        sendSubviewToBack(blurView)
+    }
 }
 
 extension UITextField {

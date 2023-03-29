@@ -25,6 +25,11 @@ class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDel
     
     private var shortedPlayerView: ShortedPlayerView?
     
+    private lazy var blur = UIBlurEffect(style: .dark)
+    
+    private lazy var blurView = UIVisualEffectView(effect: blur)
+
+    
     init(playerViewController: MusicPlayerViewProtocol) {
         self.playerViewController = playerViewController
         super.init(nibName: nil, bundle: nil)
@@ -36,6 +41,13 @@ class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDel
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        view.addSubview(blurView)
+        blurView.snp.makeConstraints { make in
+            make.left.right.bottom.top.equalTo(tabBar)
+        }
+
+        view.bringSubviewToFront(tabBar)
     }
     
     @objc private func presentPlayer() {
@@ -46,16 +58,20 @@ class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDel
         if shortedPlayerView == nil {
             guard let shortedView = playerViewController.shortedPlayerView else { return }
             shortedPlayerView = shortedView
-            shortedPlayerView?.backgroundColor = .darkGray
             let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(presentPlayer))
             shortedPlayerView?.addGestureRecognizer(gestureRecognizer)
-//            popup with animation
+            //            popup with animation
             view.addSubview(shortedPlayerView!)
             shortedPlayerView!.snp.makeConstraints({ make in
                 make.bottom.equalTo(tabBar.snp.top)
                 make.left.right.equalToSuperview()
                 make.height.equalTo(tabBar).multipliedBy(0.8)
             })
+            
+            blurView.snp.remakeConstraints { make in
+                make.top.equalTo(shortedPlayerView!)
+                make.left.right.bottom.equalTo(tabBar)
+            }
         }
     }
 }

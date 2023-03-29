@@ -26,7 +26,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     var minimumScreenRatioToDismiss = 0.6
     
     var minimumVelocityToDismiss = CGFloat(1)
-        
+    
     var isSeekInProgress: Bool = false
     
     var isScrubbingFlag: Bool = false
@@ -231,24 +231,24 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         func slideViewVerticallyTo(_ y: CGFloat) {
             self.view.frame.origin = CGPoint(x: 0, y: y)
         }
-
+        
         switch sender.state {
-
+            
         case .began, .changed:
             // If pan started or is ongoing then
             // slide the view to follow the finger
             let translation = sender.translation(in: view)
             let y = max(0, translation.y)
             slideViewVerticallyTo(y)
-
+            
         case .ended:
             // If pan ended, decide it we should close or reset the view
             // based on the final position and the speed of the gesture
             let translation = sender.translation(in: view)
             let velocity = sender.velocity(in: view)
             let closing = (translation.y > self.view.frame.size.height * minimumScreenRatioToDismiss) ||
-                          (velocity.y > minimumVelocityToDismiss)
-
+            (velocity.y > minimumVelocityToDismiss)
+            
             if closing {
                 UIView.animate(withDuration: dismissAnimationDuration, animations: {
                     // If closing, animate to the bottom of the view
@@ -265,13 +265,13 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
                     slideViewVerticallyTo(0)
                 })
             }
-
+            
         default:
             // If gesture state is undefined, reset the view to the top
             UIView.animate(withDuration: dismissAnimationDuration, animations: {
                 slideViewVerticallyTo(0)
             })
-
+            
         }
     }
     
@@ -290,7 +290,8 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
                                                   currentAuthor: musicPlayer.currentFile?.author,
                                                   currentProgress: 0,
                                                   buttonIcon: UIImage(systemName: "pause.fill"),
-                                                  onActionButtonTapped: musicPlayer.playTapped)
+                                                  onActionButtonTapped: musicPlayer.playTapped,
+                                                  isBlurred: true)
         } else {
             shortedPlayerView?.updateValues(currentTitle: musicPlayer.currentFile?.title, currentAuthor: musicPlayer.currentFile?.author)
             shortedPlayerView?.updateProgress(progress: 0)

@@ -52,10 +52,10 @@ class MainBuilder: MainBuilderProtocol {
         let libraryC = libraryPageBuilder.buildLibraryViewController()
         
         mainViewController.tabBar.tintColor = .white
-        mainViewController.tabBar.barTintColor = .darkGray
-        mainViewController.tabBar.backgroundColor = .darkGray
-        mainViewController.tabBar.isTranslucent = false
+        mainViewController.tabBar.barTintColor = .clear
+        mainViewController.tabBar.backgroundColor = .clear
         mainViewController.setViewControllers([founderC, libraryC], animated: true)
+//        mainViewController.tabBar.blurBackground(style: .dark)
         
         return mainViewController
     }
