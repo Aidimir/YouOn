@@ -11,12 +11,15 @@ import RxDataSources
 import SnapKit
 import RxSwift
 import RxCocoa
+import LNPopupController
 
 protocol LibraryViewProtocol {
     var viewModel: (any LibraryViewModelProtocol)? { get set }
 }
 
 class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylistsTableViewDelegate {
+    
+    private let disposeBag = DisposeBag()
     
     var viewModel: (any LibraryViewModelProtocol)?
     

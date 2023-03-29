@@ -4,6 +4,9 @@
         <attribute name="file" optional="YES" attributeType="Binary"/>
         <attribute name="id" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="PlayerInfoEntity" representedClassName="PlayerInfoEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="jsonData" optional="YES" attributeType="Binary"/>
+    </entity>
     <entity name="PlaylistEntity" representedClassName="PlaylistEntity" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="playlistData" optional="YES" attributeType="Binary" customClassName="[String]"/>

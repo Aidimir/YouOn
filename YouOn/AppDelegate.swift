@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreData
+import LNPopupController
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -21,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.white, .font: UIFont.boldSystemFont(ofSize: 30)]
         UINavigationBar.appearance().barTintColor = .red
         UINavigationBar.appearance().standardAppearance = appearance
+        
         return true
     }
 

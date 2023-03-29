@@ -20,7 +20,7 @@ protocol LibraryViewModelProtocol: CollectableViewModelProtocol where T == Playl
 }
 
 class LibraryViewModel: LibraryViewModelProtocol {
-    
+        
     private let saver: PlaylistSaverProtocol
     
     var router: LibraryPageRouterProtocol?

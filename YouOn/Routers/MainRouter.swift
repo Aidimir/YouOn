@@ -31,7 +31,7 @@ class MainRouter: MainRouterProtocol {
     }
     
     func initStartViewController() {
-        let controller = builder.buildMainPage()
+        let controller = builder.buildMainPage(router: self)
         navigationController.viewControllers = [controller]
     }
     

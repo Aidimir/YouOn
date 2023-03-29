@@ -40,6 +40,9 @@ class DataManager: DataManagerProtocol {
         appDelegate.persistentContainer.loadPersistentStores {
             (store, error) in
         }
+        
+        UserDefaults.standard.removeObject(forKey: UserDefaultKeys.defaultAllPlaylist)
+        UserDefaults.standard.removeObject(forKey: UserDefaultKeys.isFirstLaunch)
     }
     
     required init(appDelegate: AppDelegate) {

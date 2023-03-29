@@ -16,9 +16,9 @@ protocol LibraryPageBuilderProtocol: BuilderProtocol {
 
 class LibraryPageBuilder: LibraryPageBuilderProtocol {
     
+    private lazy var player = MusicPlayer.shared
+        
     private let fileManager = FileManager.default
-    
-    private let musicPlayer = MusicPlayer()
     
     private var router: LibraryPageRouter?
     
@@ -41,18 +41,7 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
         let viewModel = LibraryViewModel(saver: saver)
         let controller = LibraryViewController()
         
-        let navController = UINavigationController(rootViewController: controller)
-        let scrollingAppearance = UINavigationBarAppearance()
-        scrollingAppearance.configureWithTransparentBackground()
-        scrollingAppearance.backgroundEffect = UIBlurEffect(style: .dark)
-        scrollingAppearance.backgroundColor = .clear
-        scrollingAppearance.titleTextAttributes = [.foregroundColor: UIColor.white, .font: UIFont.titleFont]
-        
-        navController.navigationBar.scrollEdgeAppearance = scrollingAppearance
-        navController.navigationBar.standardAppearance = scrollingAppearance
-        
-        navController.navigationBar.tintColor = .white
-        navController.navigationBar.tintAdjustmentMode = .normal
+        let navController = buildNavigationController(rootController: controller)
         router = LibraryPageRouter(builder: self, navigationController: navController)
         viewModel.router = router
         controller.viewModel = viewModel
@@ -62,9 +51,8 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
     func buildPlaylistController(playlistID: UUID) -> UIViewController {
         let dataManager = MediaDataManager(appDelegate: appDelegate)
         let saver = PlaylistSaver(dataManager: dataManager, fileManager: fileManager)
-        musicPlayer.fileManager = fileManager
         
-        let viewModel = PlaylistViewModel(player: musicPlayer,
+        let viewModel = PlaylistViewModel(player: player,
                                           saver: saver,
                                           id: playlistID)
         viewModel.router = router
@@ -77,5 +65,21 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
     func buildAddItemsToPlaylist(_ fromStorage: [MediaFile], saveAction: (([IndexPath]) -> Void)?) -> UIViewController {
         let controller = SelectMediaFilesTableView(source: fromStorage, saveAction: saveAction)
         return controller
+    }
+    
+    private func buildNavigationController(rootController: UIViewController) -> UINavigationController {
+        let navController = UINavigationController(rootViewController: rootController)
+        let scrollingAppearance = UINavigationBarAppearance()
+        scrollingAppearance.configureWithTransparentBackground()
+        scrollingAppearance.backgroundEffect = UIBlurEffect(style: .dark)
+        scrollingAppearance.backgroundColor = .clear
+        scrollingAppearance.titleTextAttributes = [.foregroundColor: UIColor.white, .font: UIFont.titleFont]
+        
+        navController.navigationBar.scrollEdgeAppearance = scrollingAppearance
+        navController.navigationBar.standardAppearance = scrollingAppearance
+        
+        navController.navigationBar.tintColor = .white
+        navController.navigationBar.tintAdjustmentMode = .normal
+        return navController
     }
 }

@@ -29,7 +29,7 @@ class MediaSaver: MediaSaverProtocol {
         try dataManager.saveMedia(data: file, id: file.id)
         if UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist) == nil {
             let id = UUID()
-            let pl = Playlist(content: [MediaFile](), title: "All", id: id)
+            let pl = Playlist(content: [file], title: "All", id: id)
             UserDefaults.standard.setValue(id.uuidString, forKey: UserDefaultKeys.defaultAllPlaylist)
             try dataManager.savePlaylist(data: pl, id: id)
         } else {

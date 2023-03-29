@@ -25,7 +25,7 @@ class LibraryPageRouter: LibraryPageRouterProtocol {
         self.builder = builder
         self.navigationController = navigationController
     }
-
+    
     func initPlaylistsViewController() {
         let controller = builder.buildLibraryViewController()
         navigationController.viewControllers = [controller]
@@ -42,7 +42,7 @@ class LibraryPageRouter: LibraryPageRouterProtocol {
     }
     
     func showAlert(title: String, error: Error?, msgWithError: String?, action: (() -> Void)?) {
-        var alert = builder.createAlert(title: title, error: error, msgWithError: msgWithError, action: action)
+        let alert = builder.createAlert(title: title, error: error, msgWithError: msgWithError, action: action)
         navigationController.present(alert, animated: true)
     }
     

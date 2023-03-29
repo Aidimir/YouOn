@@ -10,6 +10,10 @@ import UIKit
 import RxRelay
 import RxCocoa
 import RxSwift
+import MarqueeLabel
+import AVFAudio
+import AVFoundation
+import MediaPlayer
 
 extension String {
     func getYoutubeID() -> String? {
@@ -54,11 +58,15 @@ extension TimeInterval {
         if hours != 0 {
             return "\(hours)h \(minutes):\(seconds)s"
         } else if minutes != 0 {
+            if seconds < 10 {
+                return "\(minutes):0\(seconds)"
+            }
             return "\(minutes):\(seconds)"
-        } else if milliseconds != 0 {
-            return "\(seconds)s \(milliseconds)ms"
         } else {
-            return "\(seconds)"
+            if seconds < 10 {
+                return "0:0\(seconds)"
+            }
+            return "0:\(seconds)"
         }
     }
 }
@@ -73,6 +81,18 @@ extension UIView {
             return currentController
         }
         return nil
+    }
+    
+    func blurBackground(style: UIBlurEffect.Style) {
+        backgroundColor = .clear
+        let blur = UIBlurEffect(style: style)
+        let blurView = UIVisualEffectView(effect: blur)
+        
+        addSubview(blurView)
+        blurView.snp.makeConstraints { make in
+            make.size.equalTo(self)
+        }
+        sendSubviewToBack(blurView)
     }
 }
 
@@ -145,5 +165,51 @@ extension UIFont {
     public static let mediumSizeFont = UIFont.systemFont(ofSize: 20, weight: .medium)
     
     public static let smallSizeFont = UIFont.systemFont(ofSize: 15, weight: .medium)
+}
 
+extension UILabel {
+    static func createScrollableLabel(fadeLength: CGFloat = 20,
+                                      scrollingDuration: CGFloat = 6,
+                                      animationDelay: CGFloat = 2) -> UILabel {
+        let label = MarqueeLabel(frame: .zero, duration: scrollingDuration, fadeLength: 0)
+        label.animationDelay = animationDelay
+        label.fadeLength = fadeLength
+        label.textColor = .white
+        label.font = .mediumSizeBoldFont
+        return label
+    }
+}
+
+extension Reactive where Base: AVPlayer {
+    public var status: Observable<AVPlayer.Status> {
+        return self.observe(AVPlayer.Status.self, #keyPath(AVPlayer.status))
+            .map { $0 ?? .unknown }
+    }
+}
+
+extension Reactive where Base: AVPlayerItem {
+    public var status: Observable<AVPlayerItem.Status> {
+        return self.observe(AVPlayerItem.Status.self, #keyPath(AVPlayerItem.status))
+            .map { $0 ?? .unknown }
+    }
+}
+
+extension Reactive where Base: AVPlayer {
+    public var isPlaying: Observable<Bool> {
+        return self.observe(Bool.self, #keyPath(AVPlayer.rate))
+            .map({ $0 ?? false })
+    }
+    
+    public var currentDuration: Observable<Double?> {
+        return self.observe(CMTime.self, #keyPath(AVPlayer.currentItem.duration))
+            .map({ $0?.seconds })
+    }
+}
+
+extension Reactive where Base: UIProgressView {
+    public var progress: Observable<Float> {
+        return self.observe(Float.self, #keyPath(UIProgressView.progress))
+            .filter({ $0 != nil })
+            .map({ $0! })
+    }
 }
