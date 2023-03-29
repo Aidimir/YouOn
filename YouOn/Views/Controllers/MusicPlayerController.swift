@@ -117,8 +117,6 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.blurBackground(style: .systemChromeMaterialDark)
-        
         songImageView.contentMode = .scaleAspectFill
         songImageView.kf.setImage(with: musicPlayer.currentFile?.imageURL, placeholder: imagePlaceholder)
         songImageView.layer.cornerRadius = imageCornerRadius

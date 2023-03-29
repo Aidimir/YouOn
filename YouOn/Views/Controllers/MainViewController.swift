@@ -41,20 +41,35 @@ class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDel
     
     private let disposeBag = DisposeBag()
     
-    private lazy var blur = UIBlurEffect(style: .dark)
+    private lazy var blur = UIBlurEffect(style: .systemChromeMaterialDark)
     
     private lazy var blurView = UIVisualEffectView(effect: blur)
+    
+    override func viewWillLayoutSubviews() {
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.backgroundEffect = blur
+        tabBarAppearance.shadowImage = nil
+        tabBarAppearance.shadowColor = nil
+        tabBar.standardAppearance = tabBarAppearance
+        if #available(iOS 15.0, *) {
+            tabBar.scrollEdgeAppearance = tabBarAppearance
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+    }
+    
     func onPlayerFileAppeared(title: String?, author: String?) {        
         let popupAppearance = LNPopupBarAppearance()
-        popupAppearance.backgroundEffect = UIBlurEffect(style: .dark)
         popupAppearance.titleTextAttributes = [.font: UIFont.mediumSizeBoldFont, .foregroundColor: UIColor.white]
         popupAppearance.subtitleTextAttributes = [.font: UIFont.mediumSizeFont, .foregroundColor: UIColor.gray]
         
+        popupBar.inheritsAppearanceFromDockingView = true
         popupBar.standardAppearance = popupAppearance
         
         popupBar.progressViewStyle = .top

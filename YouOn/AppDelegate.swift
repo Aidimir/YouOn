@@ -23,14 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().barTintColor = .red
         UINavigationBar.appearance().standardAppearance = appearance
         
-        let tabBarAppearance = UITabBarAppearance()
-//        tabBarAppearance.configureWithTransparentBackground()
-        tabBarAppearance.backgroundEffect = UIBlurEffect(style: .dark)
-        
-        if #available(iOS 15.0, *) {
-            UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
-        }
-        UITabBar.appearance().standardAppearance = tabBarAppearance
         return true
     }
 
