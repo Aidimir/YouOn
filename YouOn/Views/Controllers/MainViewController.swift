@@ -1,61 +1,91 @@
-////
-////  MainViewController.swift
-////  YouOn
-////
-////  Created by Айдимир Магомедов on 27.03.2023.
-////
 //
-//import Foundation
-//import UIKit
-//import SnapKit
-//import LNPopupController
-//import RxSwift
-//import RxCocoa
+//  MainViewController.swift
+//  YouOn
 //
-//protocol MainViewProtocol {
-//    var viewModel: MainViewModelProtocol? { get set }
-//}
+//  Created by Айдимир Магомедов on 27.03.2023.
 //
-//class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDelegate {
-//
-//    var viewModel: MainViewModelProtocol? {
-//        didSet {
-//            viewModel?.delegate = self
-//        }
-//    }
-//
-//    private let disposeBag = DisposeBag()
-//
-//    private var shortedPlayerView: ShortedPlayerView?
-//
-//    private lazy var blur = UIBlurEffect(style: .dark)
-//
-//    private lazy var blurView = UIVisualEffectView(effect: blur)
-//
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//
-//        tabBar.blurBackground(style: .dark)
-//    }
-//
-//    func onPlayerFileAppeared(title: String?, author: String?) {
-//        if shortedPlayerView == nil {
-//            guard let shortedView = playerViewController.shortedPlayerView else { return }
-//            shortedPlayerView = shortedView
-//            let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(presentPlayer))
-//            shortedPlayerView?.addGestureRecognizer(gestureRecognizer)
-//            //            popup with animation
-//            view.addSubview(shortedPlayerView!)
-//            shortedPlayerView!.snp.makeConstraints({ make in
-//                make.bottom.equalTo(tabBar.snp.top)
-//                make.left.right.equalToSuperview()
-//                make.height.equalTo(tabBar).multipliedBy(0.8)
-//            })
-//
-//            blurView.snp.remakeConstraints { make in
-//                make.top.equalTo(shortedPlayerView!)
-//                make.left.right.bottom.equalTo(tabBar)
-//            }
-//        }
-//    }
-//}
+
+import Foundation
+import UIKit
+import SnapKit
+import LNPopupController
+import RxSwift
+import RxCocoa
+
+protocol MainViewProtocol {
+    init(playerViewController: MusicPlayerViewProtocol)
+    var viewModel: MainViewModelProtocol? { get set }
+}
+
+class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDelegate {
+    
+    private let playerViewController: MusicPlayerViewProtocol
+    
+    private var firstTimePopup = true
+    
+    required init(playerViewController: MusicPlayerViewProtocol) {
+        self.playerViewController = playerViewController
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    var viewModel: MainViewModelProtocol? {
+        didSet {
+            viewModel?.delegate = self
+        }
+    }
+    
+    private let disposeBag = DisposeBag()
+    
+    private lazy var blur = UIBlurEffect(style: .dark)
+    
+    private lazy var blurView = UIVisualEffectView(effect: blur)
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        tabBar.blurBackground(style: .dark)
+    }
+    
+    func onPlayerFileAppeared(title: String?, author: String?) {        
+        let popupAppearance = LNPopupBarAppearance()
+        popupAppearance.backgroundEffect = UIBlurEffect(style: .dark)
+        popupAppearance.titleTextAttributes = [.font: UIFont.mediumSizeBoldFont, .foregroundColor: UIColor.white]
+        popupAppearance.subtitleTextAttributes = [.font: UIFont.mediumSizeFont, .foregroundColor: UIColor.gray]
+        
+        popupBar.standardAppearance = popupAppearance
+        
+        popupBar.progressViewStyle = .top
+        popupContentView.popupCloseButtonStyle = .round
+        
+        popupBar.barStyle = .default
+        popupBar.progressView.tintColor = .white
+        presentPopupBar(withContentViewController: playerViewController, openPopup: false, animated: true, completion: nil)
+        
+        if firstTimePopup {
+            let swipeGestureRecognizerLeft = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
+            let swipeGestureRecognizerRight = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
+            swipeGestureRecognizerLeft.direction = .left
+            swipeGestureRecognizerRight.direction = .right
+            
+            popupBar.gestureRecognizers?.append(swipeGestureRecognizerLeft)
+            popupBar.gestureRecognizers?.append(swipeGestureRecognizerRight)
+            firstTimePopup = false
+        }
+
+    }
+    
+    @objc private func didSwipe(_ sender: UISwipeGestureRecognizer) {
+        if sender.direction == .left {
+            viewModel?.onPopupLeftSwipe()
+        }
+        if sender.direction == .right {
+            viewModel?.onPopupRightSwipe()
+        }
+    }
+
+}

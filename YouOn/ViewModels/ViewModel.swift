@@ -16,6 +16,8 @@ protocol MainViewModelDelegate {
 }
 
 protocol MainViewModelProtocol: ViewModelProtocol {
+    func onPopupRightSwipe()
+    func onPopupLeftSwipe()
     var player: MusicPlayerProtocol? { get }
     var router: MainRouterProtocol? { get }
     var delegate: MainViewModelDelegate? { get set }
@@ -39,5 +41,13 @@ class MainViewModel: MainViewModelProtocol {
     
     func errorHandler(_ error: Error) {
         router?.showAlert(title: "Error", error: error, msgWithError: nil, action: nil)
+    }
+    
+    func onPopupRightSwipe() {
+        player?.playPrevious()
+    }
+    
+    func onPopupLeftSwipe() {
+        player?.playNext()
     }
 }

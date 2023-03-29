@@ -14,7 +14,6 @@ import RxSwift
 import LNPopupController
 
 protocol MusicPlayerViewProtocol: UIViewController {
-    var shortedPlayerView: ShortedPlayerView? { get }
     init(musicPlayer: MusicPlayerProtocol, imageCornerRadius: CGFloat, titleScrollingDuration: CGFloat)
 }
 
@@ -35,7 +34,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     func updateProgress(progress: Double) {
         let floated = Float(progress)
         if !floated.isNaN && duration != nil {
-            shortedPlayerView?.updateProgress(progress: floated / duration!)
+            popupItem.progress = floated / duration!
             if !isScrubbingFlag && !isSeekInProgress {
                 changePlaybackPositionSlider.value = floated
                 timeWent.text = progress.stringTime
@@ -45,8 +44,6 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     }
     
     private let disposeBag = DisposeBag()
-    
-    var shortedPlayerView: ShortedPlayerView?
     
     private enum Constants {
         static let verticalPadding = 30
@@ -84,7 +81,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     
     private lazy var changePlaybackPositionSlider: UISlider = {
         let bar = UISlider()
-        bar.minimumTrackTintColor = .darkGray
+        bar.minimumTrackTintColor = .black
         bar.maximumTrackTintColor = .white
         bar.value = 0.0
         bar.isContinuous = false
@@ -120,11 +117,16 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.blurBackground(style: .systemChromeMaterialDark)
+        
         songImageView.contentMode = .scaleAspectFill
         songImageView.kf.setImage(with: musicPlayer.currentFile?.imageURL, placeholder: imagePlaceholder)
         songImageView.layer.cornerRadius = imageCornerRadius
         songImageView.tintColor = .gray
         songImageView.clipsToBounds = true
+        
+        timeLeft.textColor = .white
+        timeWent.textColor = .white
         
         songTitle.text = musicPlayer.currentFile?.title
         
@@ -141,6 +143,9 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         nextButton.setImage(nextImage, for: .normal)
         nextButton.tintColor = .white
         nextButton.addTarget(self, action: #selector(didTapNext), for: .touchUpInside)
+        
+        let pauseButtonItem = UIBarButtonItem(image: UIImage(systemName: "pause.fill"), style: .plain, target: self, action: #selector(didTapPlay))
+        popupItem.trailingBarButtonItems = [pauseButtonItem]
         
         let playImage = UIImage(systemName: "pause.fill")
         playButton.setImage(playImage, for: .normal)
@@ -159,7 +164,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         view.addSubview(songImageView)
         songImageView.snp.makeConstraints { make in
             make.left.right.equalTo(view.readableContentGuide)
-            make.top.equalToSuperview().offset(view.safeAreaInsets.top + Constants.smallButtonSize)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(Constants.verticalPadding)
             make.height.equalTo(view).dividedBy(3)
         }
         
@@ -213,19 +218,55 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     }
     
     func onItemChanged() {
-        if shortedPlayerView == nil {
-            shortedPlayerView = ShortedPlayerView(currentTitle: musicPlayer.currentFile?.title,
-                                                  currentAuthor: musicPlayer.currentFile?.author,
-                                                  currentProgress: 0,
-                                                  buttonIcon: UIImage(systemName: "pause.fill"),
-                                                  onActionButtonTapped: musicPlayer.playTapped,
-                                                  isBlurred: true)
-        } else {
-            shortedPlayerView?.updateValues(currentTitle: musicPlayer.currentFile?.title, currentAuthor: musicPlayer.currentFile?.author)
-            shortedPlayerView?.updateProgress(progress: 0)
-        }
-        
         updateViews()
+    }
+    
+    private func updateViews() {
+        songTitle.text = musicPlayer.currentFile?.title
+        songAuthor.text = musicPlayer.currentFile?.author
+        songImageView.kf.setImage(with: musicPlayer.currentFile?.imageURL, placeholder: imagePlaceholder) { res in
+            switch res {
+            case .success(let img):
+                self.popupItem.image = img.image
+            case .failure(_):
+                self.popupItem.image = nil
+            }
+        }
+        timeWent.text = nil
+        popupItem.title = musicPlayer.currentFile?.title
+        popupItem.subtitle = musicPlayer.currentFile?.author
+    }
+    
+    private func setBindings() {
+        musicPlayer.isPlaying.asDriver(onErrorJustReturn: false).drive { [weak self] value in
+            let playImage = value ? UIImage(systemName: "pause.fill") : UIImage(systemName: "play.fill")
+            self?.playButton.setImage(playImage, for: .normal)
+            self?.popupItem.trailingBarButtonItems?.first?.image = playImage
+        }.disposed(by: disposeBag)
+        
+        musicPlayer.currentItemDuration.filter({ $0 != nil }).map({ $0! }).asDriver(onErrorJustReturn: 0).drive { [weak self] val in
+            let floated = Float(val)
+            if !floated.isNaN {
+                self?.duration = floated
+                self?.timeLeft.text = val.stringTime
+                self?.changePlaybackPositionSlider.maximumValue = floated
+            }
+        }.disposed(by: disposeBag)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        playButton.snp.remakeConstraints { make in
+            make.width.height.equalTo(Constants.mediumButtonSize)
+        }
+        playButton.layer.cornerRadius = playButton.frame.height / 2
+    }
+}
+
+extension MusicPlayerViewController {
+    
+    @objc private func onSliderDragging(sender: UISlider) {
+        musicPlayer.seekTo(seconds: Double(sender.value))
     }
     
     @objc private func didTapPrevious() {
@@ -239,41 +280,5 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     @objc private func didTapPlay() {
         musicPlayer.playTapped()
         updateViews()
-    }
-    
-    private func updateViews() {
-        songTitle.text = musicPlayer.currentFile?.title
-        songAuthor.text = musicPlayer.currentFile?.author
-        songImageView.kf.setImage(with: musicPlayer.currentFile?.imageURL, placeholder: imagePlaceholder)
-        timeWent.text = nil
-    }
-    
-    private func setBindings() {
-        musicPlayer.isPlaying.asDriver(onErrorJustReturn: false).drive { value in
-            let playImage = value ? UIImage(systemName: "pause.fill") : UIImage(systemName: "play.fill")
-            self.playButton.setImage(playImage, for: .normal)
-            self.shortedPlayerView?.actionButton.setImage(playImage, for: .normal)
-        }.disposed(by: disposeBag)
-        
-        musicPlayer.currentItemDuration.filter({ $0 != nil }).map({ $0! }).asDriver(onErrorJustReturn: 0).drive { val in
-            let floated = Float(val)
-            if !floated.isNaN {
-                self.duration = floated
-                self.timeLeft.text = val.stringTime
-                self.changePlaybackPositionSlider.maximumValue = floated
-            }
-        }.disposed(by: disposeBag)
-    }
-    
-    @objc private func onSliderDragging(sender: UISlider) {
-        musicPlayer.seekTo(seconds: Double(sender.value))
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        playButton.snp.remakeConstraints { make in
-            make.width.height.equalTo(Constants.mediumButtonSize)
-        }
-        playButton.layer.cornerRadius = playButton.frame.height / 2
     }
 }

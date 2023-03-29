@@ -93,10 +93,5 @@ class LibraryViewModel: LibraryViewModelProtocol {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(fetchPlaylists),
                                                name: NotificationCenterNames.updatedPlaylists,                                           object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updatePlayer), name: NotificationCenterNames.playedSong, object: nil)
-    }
-    
-    @objc private func updatePlayer() {
-        delegate?.onPlayerFileAppeared()
     }
 }

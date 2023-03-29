@@ -22,34 +22,31 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
     private let disposeBag = DisposeBag()
     
     func onPlayerFileAppeared() {
-        if playerViewController.shortedPlayerView != nil {
-            playerViewController.popupItem.title = playerViewController.shortedPlayerView!.titleLabel.text
-            playerViewController.popupItem.subtitle = playerViewController.shortedPlayerView!.authorLabel.text
-            
-            playerViewController.shortedPlayerView!.progressBar.rx.progress.subscribe { val in
-                self.playerViewController.popupItem.progress = val
-            }.disposed(by: disposeBag)
-            
-//            let pauseButtonItem = UIBarButtonItem(image: UIImage(systemName: "play"), style: .plain, target: self, action: #selector(nextItem))
-            
-            let popupAppearance = LNPopupBarAppearance()
-            popupAppearance.backgroundEffect = UIBlurEffect(style: .dark)
-            popupAppearance.titleTextAttributes = [.font: UIFont.mediumSizeBoldFont, .foregroundColor: UIColor.white]
-            popupAppearance.subtitleTextAttributes = [.font: UIFont.mediumSizeFont, .foregroundColor: UIColor.gray]
-            
-            navigationController?.tabBarController?.popupBar.standardAppearance = popupAppearance
-            
-            navigationController?.tabBarController?.popupBar.progressViewStyle = .top
-            navigationController?.tabBarController?.popupContentView.popupCloseButtonStyle = .round
-            
-            navigationController?.tabBarController?.popupBar.barStyle = .default
-            navigationController?.tabBarController?.popupBar.progressView.tintColor = .white
-            navigationController?.tabBarController?.presentPopupBar(withContentViewController: self.playerViewController, openPopup: false, animated: true, completion: nil)
-        }
+//        if playerViewController.shortedPlayerView != nil {
+//            playerViewController.popupItem.title = playerViewController.shortedPlayerView!.titleLabel.text
+//            playerViewController.popupItem.subtitle = playerViewController.shortedPlayerView!.authorLabel.text
+//            
+//            playerViewController.shortedPlayerView!.progressBar.rx.progress.subscribe { val in
+//                self.playerViewController.popupItem.progress = val
+//            }.disposed(by: disposeBag)
+//            
+////            let pauseButtonItem = UIBarButtonItem(image: UIImage(systemName: "play"), style: .plain, target: self, action: #selector(nextItem))
+//            
+//            let popupAppearance = LNPopupBarAppearance()
+//            popupAppearance.backgroundEffect = UIBlurEffect(style: .dark)
+//            popupAppearance.titleTextAttributes = [.font: UIFont.mediumSizeBoldFont, .foregroundColor: UIColor.white]
+//            popupAppearance.subtitleTextAttributes = [.font: UIFont.mediumSizeFont, .foregroundColor: UIColor.gray]
+//            
+//            navigationController?.tabBarController?.popupBar.standardAppearance = popupAppearance
+//            
+//            navigationController?.tabBarController?.popupBar.progressViewStyle = .top
+//            navigationController?.tabBarController?.popupContentView.popupCloseButtonStyle = .round
+//            
+//            navigationController?.tabBarController?.popupBar.barStyle = .default
+//            navigationController?.tabBarController?.popupBar.progressView.tintColor = .white
+//            navigationController?.tabBarController?.presentPopupBar(withContentViewController: self.playerViewController, openPopup: false, animated: true, completion: nil)
+//        }
     }
-    
-    private let playerViewController: MusicPlayerViewProtocol
-
     
     var viewModel: (any LibraryViewModelProtocol)? {
         didSet {
@@ -59,8 +56,7 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
     
     private var playlistsTableView: UIViewController?
         
-    init(playerViewController: MusicPlayerViewProtocol) {
-        self.playerViewController = playerViewController
+    init() {
         super.init(nibName: nil, bundle: nil)
         title = "Library"
         tabBarItem = UITabBarItem(title: title, image: UIImage(systemName: "books.vertical")?.withTintColor(.black), selectedImage: UIImage(systemName: "books.vertical.fill")?.withTintColor(.black))
