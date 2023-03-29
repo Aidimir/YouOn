@@ -47,8 +47,6 @@ class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDel
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        tabBar.blurBackground(style: .dark)
     }
     
     func onPlayerFileAppeared(title: String?, author: String?) {        
