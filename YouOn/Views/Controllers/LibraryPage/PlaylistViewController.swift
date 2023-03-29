@@ -46,7 +46,6 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
             } titleForHeaderInSection: { source, sectionIndex in
                 return source[sectionIndex].model
             } canEditRowAtIndexPath: { source, indexPath in
-                //                return dataSource.sectionModels[indexPath.section].items[indexPath.row]
                 return true
             } canMoveRowAtIndexPath: { source, IndexPath in
                 return true

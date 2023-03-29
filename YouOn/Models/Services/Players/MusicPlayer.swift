@@ -191,7 +191,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
     
     private func setupCommandCenterCommands() {
         let commandCenter = MPRemoteCommandCenter.shared()
-        // Add handler for Play Command
+
         commandCenter.playCommand.addTarget { [unowned self] event in
             if self.player.rate == 0 {
                 self.player.rate = 1
@@ -200,7 +200,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
             }
             return .commandFailed
         }
-        // Add handler for Pause Command
+
         commandCenter.pauseCommand.addTarget { [unowned self] event in
             if self.player.rate == 1 {
                 self.player.rate = 0
@@ -209,12 +209,12 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
             return .commandFailed
         }
         
-        // Add handler for NextTrack Command
+
         commandCenter.nextTrackCommand.addTarget { [unowned self] event in
             playNext()
             return .success
         }
-        // Add handler for PreviousTack Command
+
         commandCenter.previousTrackCommand.addTarget { [unowned self] event in
             playPrevious()
             return .success

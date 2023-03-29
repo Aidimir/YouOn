@@ -20,7 +20,6 @@ class VideoFounderViewController: UIViewController,
     
     func downloadProgress(result: Double) {
         currentDownload!.currentProgress = result
-        //        currentDownload!.updateProgress()
     }
     
     private var textField: UITextField!
@@ -82,7 +81,6 @@ class VideoFounderViewController: UIViewController,
         viewModel.searchFieldString = textField.text!
         viewModel.onSearchTap()
         currentDownload?.removeFromSuperview()
-        // frame init is required here, because shapeLayer works only with frame init ( frame size should be the same as autolayout size
         currentDownload = ProgressCircleView(currentProgress: 0, fillColor: UIColor.clear.cgColor, frame: .zero, updateTimeInterval: 0.1)
         currentDownload!.strokeColor = UIColor.green.cgColor
         
