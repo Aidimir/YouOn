@@ -9,10 +9,9 @@ import Foundation
 import UIKit
 
 protocol MainBuilderProtocol: BuilderProtocol {
-    func buildMainPage(router: MainRouterProtocol) -> UIViewController
+    func buildMainPage(router: MainRouterProtocol) -> UITabBarController
     var founderPageBuilder: FounderBuilderProtocol { get }
     var libraryPageBuilder: LibraryPageBuilderProtocol { get }
-    var musicController: MusicPlayerViewController? { get }
 }
 
 class MainBuilder: MainBuilderProtocol {
@@ -20,9 +19,7 @@ class MainBuilder: MainBuilderProtocol {
     var founderPageBuilder: FounderBuilderProtocol = FounderPageBuilder()
     
     var libraryPageBuilder: LibraryPageBuilderProtocol = LibraryPageBuilder()
-    
-    var musicController: MusicPlayerViewController?
-    
+        
     init() {
         MusicPlayer.shared.fileManager = FileManager.default
     }
@@ -39,15 +36,15 @@ class MainBuilder: MainBuilderProtocol {
         return alert
     }
     
-    func buildMainPage(router: MainRouterProtocol) -> UIViewController {
-        musicController = MusicPlayerViewController(musicPlayer: MusicPlayer.shared)
+    func buildMainPage(router: MainRouterProtocol) -> UITabBarController {
+//        musicController = MusicPlayerViewController(musicPlayer: MusicPlayer.shared)
         
-        let mainViewModel = MainViewModel()
-        mainViewModel.router = router
-        mainViewModel.player = MusicPlayer.shared
-        let mainViewController = MainViewController(playerViewController: musicController!)
-        mainViewController.viewModel = mainViewModel
-        
+//        let mainViewModel = MainViewModel()
+//        mainViewModel.router = router
+//        mainViewModel.player = MusicPlayer.shared
+//        let mainViewController = MainViewController(playerViewController: musicController!)
+//        mainViewController.viewModel = mainViewModel
+        let mainViewController = UITabBarController()
         let founderC = founderPageBuilder.buildFounderPage()
         let libraryC = libraryPageBuilder.buildLibraryViewController()
         
@@ -55,7 +52,6 @@ class MainBuilder: MainBuilderProtocol {
         mainViewController.tabBar.barTintColor = .clear
         mainViewController.tabBar.backgroundColor = .clear
         mainViewController.setViewControllers([founderC, libraryC], animated: true)
-//        mainViewController.tabBar.blurBackground(style: .dark)
         
         return mainViewController
     }

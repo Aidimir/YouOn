@@ -44,7 +44,7 @@ class FounderPageBuilder: FounderBuilderProtocol {
         let router = FounderRouter(builder: self, navigationController: navController)
         viewModel.router = router
         navController.navigationBar.topItem?.title = nil
-        navController.navigationBar.tintColor = .white        
+        navController.navigationBar.tintColor = .white
         return navController
     }
 }

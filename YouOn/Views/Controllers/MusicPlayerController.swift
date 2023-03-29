@@ -11,6 +11,7 @@ import UIKit
 import Kingfisher
 import MarqueeLabel
 import RxSwift
+import LNPopupController
 
 protocol MusicPlayerViewProtocol: UIViewController {
     var shortedPlayerView: ShortedPlayerView? { get }
@@ -18,8 +19,6 @@ protocol MusicPlayerViewProtocol: UIViewController {
 }
 
 class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, MusicPlayerViewDelegate {
-    
-    private var isShowingFirstTime: Bool = true
     
     var dismissAnimationDuration = 0.3
     
@@ -52,15 +51,13 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     private enum Constants {
         static let verticalPadding = 30
         static let horizontalPadding = 20
-        static let smallButtonSize = 50
+        static let smallButtonSize: CGFloat = 50
         static let strokeWidth = 40
         static let mediumButtonSize = 75
     }
     
     private let imagePlaceholder = UIImage(systemName: "music.note")
-    
-    private let dismissButton = UIButton()
-    
+        
     private var musicPlayer: MusicPlayerProtocol
     
     private var imageCornerRadius: CGFloat
@@ -111,6 +108,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         self.imageCornerRadius = imageCornerRadius
         self.titleScrollingDuration = titleScrollingDuration
         super.init(nibName: nil, bundle: nil)
+        popupContentView.backgroundColor = .red
         self.musicPlayer.delegate = self
         setBindings()
     }
@@ -121,13 +119,6 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .lightGray
-        
-        let dismissArrowImage = UIImage(systemName: "chevron.down")
-        dismissButton.setImage(dismissArrowImage, for: .normal)
-        dismissButton.addTarget(self, action: #selector(onDismissButtonTapped), for: .touchUpInside)
-        dismissButton.tintColor = .white
         
         songImageView.contentMode = .scaleAspectFill
         songImageView.kf.setImage(with: musicPlayer.currentFile?.imageURL, placeholder: imagePlaceholder)
@@ -165,17 +156,10 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         controlButtonsStack.axis = .horizontal
         controlButtonsStack.spacing = CGFloat(Constants.horizontalPadding)
         
-        view.addSubview(dismissButton)
-        dismissButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(view.safeAreaInsets.top)
-            make.left.equalTo(view.readableContentGuide)
-            make.height.width.equalTo(Constants.smallButtonSize)
-        }
-        
         view.addSubview(songImageView)
         songImageView.snp.makeConstraints { make in
             make.left.right.equalTo(view.readableContentGuide)
-            make.top.equalTo(dismissButton.snp.bottom).offset(Constants.verticalPadding)
+            make.top.equalToSuperview().offset(view.safeAreaInsets.top + Constants.smallButtonSize)
             make.height.equalTo(view).dividedBy(3)
         }
         
@@ -217,64 +201,8 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             make.width.equalTo(view.readableContentGuide).multipliedBy(0.65)
             make.height.equalTo(Constants.mediumButtonSize)
         }
+    }
         
-        let gestureRecognizer = UIPanGestureRecognizer(target: self,
-                                                       action: #selector(panGestureRecognizerHandler(_:)))
-        view.addGestureRecognizer(gestureRecognizer)
-    }
-    
-    @objc private func onDismissButtonTapped() {
-        dismiss(animated: true)
-    }
-    
-    @objc private func panGestureRecognizerHandler(_ sender: UIPanGestureRecognizer) {
-        func slideViewVerticallyTo(_ y: CGFloat) {
-            self.view.frame.origin = CGPoint(x: 0, y: y)
-        }
-        
-        switch sender.state {
-            
-        case .began, .changed:
-            // If pan started or is ongoing then
-            // slide the view to follow the finger
-            let translation = sender.translation(in: view)
-            let y = max(0, translation.y)
-            slideViewVerticallyTo(y)
-            
-        case .ended:
-            // If pan ended, decide it we should close or reset the view
-            // based on the final position and the speed of the gesture
-            let translation = sender.translation(in: view)
-            let velocity = sender.velocity(in: view)
-            let closing = (translation.y > self.view.frame.size.height * minimumScreenRatioToDismiss) ||
-            (velocity.y > minimumVelocityToDismiss)
-            
-            if closing {
-                UIView.animate(withDuration: dismissAnimationDuration, animations: {
-                    // If closing, animate to the bottom of the view
-                    slideViewVerticallyTo(self.view.frame.size.height)
-                }, completion: { [weak self] (isCompleted) in
-                    if isCompleted {
-                        // Dismiss the view when it dissapeared
-                        self?.dismiss(animated: false, completion: nil)
-                    }
-                })
-            } else {
-                // If not closing, reset the view to the top
-                UIView.animate(withDuration: dismissAnimationDuration, animations: {
-                    slideViewVerticallyTo(0)
-                })
-            }
-            
-        default:
-            // If gesture state is undefined, reset the view to the top
-            UIView.animate(withDuration: dismissAnimationDuration, animations: {
-                slideViewVerticallyTo(0)
-            })
-            
-        }
-    }
-    
     func errorHandler(error: Error) {
         let alert = UIAlertController(title: "Error",
                                       message: error.localizedDescription,
@@ -347,14 +275,5 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             make.width.height.equalTo(Constants.mediumButtonSize)
         }
         playButton.layer.cornerRadius = playButton.frame.height / 2
-        
-        if isShowingFirstTime {
-            dismissButton.snp.remakeConstraints { make in
-                make.top.equalToSuperview().offset(view.safeAreaInsets.top)
-                make.left.equalTo(view.readableContentGuide)
-                make.height.width.equalTo(Constants.smallButtonSize)
-            }
-            isShowingFirstTime = false
-        }
     }
 }

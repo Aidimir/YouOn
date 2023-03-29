@@ -9,12 +9,17 @@ import Foundation
 import UIKit
 
 protocol LibraryPageBuilderProtocol: BuilderProtocol {
+    var musicController: MusicPlayerViewController { get }
     func buildLibraryViewController() -> UIViewController
     func buildPlaylistController(playlistID: UUID) -> UIViewController
     func buildAddItemsToPlaylist(_ fromStorage: [MediaFile], saveAction: (([IndexPath]) -> Void)?) -> UIViewController
 }
 
 class LibraryPageBuilder: LibraryPageBuilderProtocol {
+    
+    lazy var musicController: MusicPlayerViewController = MusicPlayerViewController(musicPlayer: player)
+    
+    private let player: MusicPlayer = MusicPlayer.shared
     
     private let fileManager = FileManager.default
     
@@ -35,9 +40,10 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
     }
     
     func buildLibraryViewController() -> UIViewController {
+        musicController = MusicPlayerViewController(musicPlayer: player)
         let saver = PlaylistSaver(dataManager: MediaDataManager(appDelegate: appDelegate), fileManager: fileManager)
         let viewModel = LibraryViewModel(saver: saver)
-        let controller = LibraryViewController()
+        let controller = LibraryViewController(playerViewController: musicController)
         
         let navController = buildNavigationController(rootController: controller)
         router = LibraryPageRouter(builder: self, navigationController: navController)
@@ -50,7 +56,7 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
         let dataManager = MediaDataManager(appDelegate: appDelegate)
         let saver = PlaylistSaver(dataManager: dataManager, fileManager: fileManager)
         
-        let viewModel = PlaylistViewModel(player: MusicPlayer.shared,
+        let viewModel = PlaylistViewModel(player: player,
                                           saver: saver,
                                           id: playlistID)
         viewModel.router = router

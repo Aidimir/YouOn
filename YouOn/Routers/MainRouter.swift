@@ -17,7 +17,6 @@ protocol RouterProtocol {
 protocol MainRouterProtocol: RouterProtocol {
     var builder: MainBuilderProtocol { get set }
     func initStartViewController()
-    func openPlayerViewController()
 }
 
 class MainRouter: MainRouterProtocol {
@@ -34,13 +33,6 @@ class MainRouter: MainRouterProtocol {
     func initStartViewController() {
         let controller = builder.buildMainPage(router: self)
         navigationController.viewControllers = [controller]
-    }
-    
-    func openPlayerViewController() {
-        if let player = builder.musicController {
-            player.modalPresentationStyle = .overCurrentContext
-            navigationController.present(player, animated: true)
-        }
     }
     
     func showAlert(title: String, error: Error?, msgWithError: String?, action: (() -> Void)?) {

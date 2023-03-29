@@ -205,3 +205,11 @@ extension Reactive where Base: AVPlayer {
             .map({ $0?.seconds })
     }
 }
+
+extension Reactive where Base: UIProgressView {
+    public var progress: Observable<Float> {
+        return self.observe(Float.self, #keyPath(UIProgressView.progress))
+            .filter({ $0 != nil })
+            .map({ $0! })
+    }
+}

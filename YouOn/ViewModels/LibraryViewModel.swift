@@ -9,6 +9,10 @@ import Foundation
 import RxRelay
 import Differentiator
 
+protocol LibraryViewModelDelegate: UIViewController {
+    func onPlayerFileAppeared()
+}
+
 protocol LibraryViewModelProtocol: CollectableViewModelProtocol where T == PlaylistUIProtocol {
     var router: LibraryPageRouterProtocol? { get set }
     func fetchPlaylists()
@@ -16,10 +20,13 @@ protocol LibraryViewModelProtocol: CollectableViewModelProtocol where T == Playl
     func addPlaylist(_ text: String)
     func removePlaylist(indexPath: IndexPath)
     func saveAllPlaylists()
+    var delegate: LibraryViewModelDelegate? { get set }
     init(saver: PlaylistSaverProtocol)
 }
 
 class LibraryViewModel: LibraryViewModelProtocol {
+    
+    var delegate: LibraryViewModelDelegate?
     
     private let saver: PlaylistSaverProtocol
     
@@ -86,5 +93,10 @@ class LibraryViewModel: LibraryViewModelProtocol {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(fetchPlaylists),
                                                name: NotificationCenterNames.updatedPlaylists,                                           object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updatePlayer), name: NotificationCenterNames.playedSong, object: nil)
+    }
+    
+    @objc private func updatePlayer() {
+        delegate?.onPlayerFileAppeared()
     }
 }

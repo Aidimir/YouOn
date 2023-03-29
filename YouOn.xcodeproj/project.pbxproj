@@ -52,6 +52,8 @@
 		9DC4CB6229D1AD6F0045D7F7 /* MusicPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB6129D1AD6F0045D7F7 /* MusicPlayerController.swift */; };
 		9DC4CB6429D1D60F0045D7F7 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB6329D1D60F0045D7F7 /* MainViewController.swift */; };
 		9DC4CB6629D1F89A0045D7F7 /* ShortedPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB6529D1F89A0045D7F7 /* ShortedPlayerView.swift */; };
+		9DC4CB7329D494DB0045D7F7 /* LNPopupController in Frameworks */ = {isa = PBXBuildFile; productRef = 9DC4CB7229D494DB0045D7F7 /* LNPopupController */; };
+		9DC4CB7429D494FA0045D7F7 /* LNPopupController in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 9DC4CB7229D494DB0045D7F7 /* LNPopupController */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		C7B93FF1C9326C7EFD75352C /* Pods_YouOn_YouOnUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6227F66CB4FEA90CFE430489 /* Pods_YouOn_YouOnUITests.framework */; };
 		E847D7C616F772C15E6A2083 /* Pods_YouOn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDB00ACF719B20B0C14EE296 /* Pods_YouOn.framework */; };
 /* End PBXBuildFile section */
@@ -72,6 +74,20 @@
 			remoteInfo = YouOn;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		9DC4CB7529D494FA0045D7F7 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				9DC4CB7429D494FA0045D7F7 /* LNPopupController in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0F425F0CBFB6198A89E21BA3 /* Pods_YouOnTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouOnTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -138,6 +154,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E847D7C616F772C15E6A2083 /* Pods_YouOn.framework in Frameworks */,
+				9DC4CB7329D494DB0045D7F7 /* LNPopupController in Frameworks */,
 				9D508FEE29C8789300F9EE5F /* XCDYouTubeKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -395,6 +412,7 @@
 				9DA011C029C1B61E00962778 /* Frameworks */,
 				9DA011C129C1B61E00962778 /* Resources */,
 				56BC0DA3C54F2DE1B9C49271 /* [CP] Embed Pods Frameworks */,
+				9DC4CB7529D494FA0045D7F7 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -403,6 +421,7 @@
 			name = YouOn;
 			packageProductDependencies = (
 				9D508FED29C8789300F9EE5F /* XCDYouTubeKit */,
+				9DC4CB7229D494DB0045D7F7 /* LNPopupController */,
 			);
 			productName = YouOn;
 			productReference = 9DA011C329C1B61E00962778 /* YouOn.app */;
@@ -481,6 +500,7 @@
 			mainGroup = 9DA011BA29C1B61E00962778;
 			packageReferences = (
 				9D508FEC29C8789200F9EE5F /* XCRemoteSwiftPackageReference "XCDYouTubeKit" */,
+				9DC4CB7129D494DB0045D7F7 /* XCRemoteSwiftPackageReference "LNPopupController" */,
 			);
 			productRefGroup = 9DA011C429C1B61E00962778 /* Products */;
 			projectDirPath = "";
@@ -1026,6 +1046,14 @@
 				kind = branch;
 			};
 		};
+		9DC4CB7129D494DB0045D7F7 /* XCRemoteSwiftPackageReference "LNPopupController" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/LeoNatan/LNPopupController.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1033,6 +1061,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9D508FEC29C8789200F9EE5F /* XCRemoteSwiftPackageReference "XCDYouTubeKit" */;
 			productName = XCDYouTubeKit;
+		};
+		9DC4CB7229D494DB0045D7F7 /* LNPopupController */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9DC4CB7129D494DB0045D7F7 /* XCRemoteSwiftPackageReference "LNPopupController" */;
+			productName = LNPopupController;
 		};
 /* End XCSwiftPackageProductDependency section */
 

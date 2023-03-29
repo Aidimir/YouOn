@@ -19,7 +19,6 @@ protocol MainViewModelProtocol: ViewModelProtocol {
     var player: MusicPlayerProtocol? { get }
     var router: MainRouterProtocol? { get }
     var delegate: MainViewModelDelegate? { get set }
-    func presentPlayer()
 }
 
 class MainViewModel: MainViewModelProtocol {
@@ -32,10 +31,6 @@ class MainViewModel: MainViewModelProtocol {
     
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(updateValue), name: NotificationCenterNames.playedSong, object: nil)
-    }
-    
-    func presentPlayer() {
-        router?.openPlayerViewController()
     }
     
     @objc private func updateValue() {
