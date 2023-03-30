@@ -18,14 +18,13 @@ protocol VideoFounderViewProtocol {
 
 class VideoFounderViewController: UIViewController,
                                   UITextFieldDelegate,
-                                  VideoFounderViewProtocol,
-                                  DownloadsTableViewDelegate {
+                                  VideoFounderViewProtocol {
     
-    func onDownloadTapped(indexPath: IndexPath) {
-//
-    }
-    
-    private lazy var spinner = UIActivityIndicatorView()
+    private lazy var spinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView(style: .medium)
+        spinner.color = .white
+        return spinner
+    }()
     
     private var searchField: UITextField!
     
@@ -50,7 +49,9 @@ class VideoFounderViewController: UIViewController,
         let dataSource = RxTableViewSectionedAnimatedDataSource<DownloadsSectionModel> { _, tableView, indexPath, item in
             let cell = tableView.dequeueReusableCell(withIdentifier: "DownloadCell", for: indexPath) as! DownloadCell
             let progressCircleView = ProgressCircleView()
-            cell.setup(model: item, progressCircleView: progressCircleView, circleRadiusSize: cell.frame.height / 2)
+            cell.setup(model: item, progressCircleView: progressCircleView, circleRadiusSize: cell.frame.height / 2) { [weak self] in
+                self?.viewModel.cancelDownloading(downloadModel: item)
+            }
             cell.backgroundColor = .black
             cell.layer.cornerRadius = 15
             cell.clipsToBounds = true
@@ -59,7 +60,7 @@ class VideoFounderViewController: UIViewController,
         } canEditRowAtIndexPath: { source, indexPath in
             return false
         }
-
+        
         searchField = {
             let textField = UITextField()
             textField.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
@@ -91,7 +92,7 @@ class VideoFounderViewController: UIViewController,
         
         downloadsTableView = allDownloadsTableView
         downloadsTableView?.view.layer.cornerRadius = 20
-
+        
         
         view.addSubview(searchField)
         searchField.snp.makeConstraints({ make in
@@ -122,8 +123,7 @@ class VideoFounderViewController: UIViewController,
             make.bottom.equalTo(searchField.snp.top).offset(-50)
         }
         downloadsTableView!.didMove(toParent: self)
-
-        allDownloadsTableView.delegate = self
+        
         setBindings()
     }
     
@@ -132,19 +132,23 @@ class VideoFounderViewController: UIViewController,
     }
     
     private func setBindings() {
-        viewModel.waitingToResponse.bind { val in
+        viewModel.waitingToResponse.bind { [weak self] val in
             if val {
-                self.spinner.startAnimating()
+                self?.spinner.startAnimating()
+                self?.button.alpha = 0.5
             } else {
-                self.spinner.stopAnimating()
+                self?.spinner.stopAnimating()
+                self?.button.alpha = 1
             }
         }.disposed(by: disposeBag)
         
         searchField.rx.text.orEmpty.bind(to: viewModel.searchFieldString)
             .disposed(by: disposeBag)
         
-        viewModel.isValid.bind(to: button.rx.isEnabled)
-            .disposed(by: disposeBag)
+        viewModel.isValid.subscribe(onNext: { [weak self] val in
+            self?.button.isEnabled = val
+            self?.button.alpha = val ? 1 : 0.5
+        }).disposed(by: disposeBag)
     }
     
     init(viewModel: VideoFounderViewModelProtocol) {

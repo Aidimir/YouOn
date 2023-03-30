@@ -17,7 +17,7 @@ protocol VideoFounderViewModelProtocol: ViewModelProtocol {
     var waitingToResponse: BehaviorRelay<Bool> { get }
     init(networkService: YTNetworkServiceProtocol)
     func onSearchTap()
-    func stopDownloading(downloadModel: DownloadModel)
+    func cancelDownloading(downloadModel: DownloadModel)
 }
 
 class VideoFounderViewModel: VideoFounderViewModelProtocol {
@@ -71,7 +71,7 @@ class VideoFounderViewModel: VideoFounderViewModelProtocol {
         }
     }
     
-    func stopDownloading(downloadModel: DownloadModel) {
+    func cancelDownloading(downloadModel: DownloadModel) {
         networkService.modelToStopDownloading.accept(downloadModel)
     }
     

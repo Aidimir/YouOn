@@ -13,10 +13,6 @@ import RxDataSources
 import RxRelay
 import RxCocoa
 
-protocol DownloadsTableViewDelegate {
-    func onDownloadTapped(indexPath: IndexPath)
-}
-
 typealias DownloadsSectionModel = AnimatableSectionModel<String, DownloadModel>
 
 class DownloadsTableView: BindableTableViewController<DownloadsSectionModel>, UITableViewDelegate {
@@ -27,14 +23,8 @@ class DownloadsTableView: BindableTableViewController<DownloadsSectionModel>, UI
     
     private var itemsAsRelay: BehaviorRelay<[DownloadModel]>?
     
-    var delegate: DownloadsTableViewDelegate?
-    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return heightForRow
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.onDownloadTapped(indexPath: indexPath)
     }
     
     init(heightForRow: CGFloat,

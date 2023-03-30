@@ -52,9 +52,9 @@ class YTNetworkService: YTNetworkServiceProtocol {
             return
         }
         
-        XCDYouTubeClient.default().getVideoWithIdentifier(linkString) { video, error in
+        XCDYouTubeClient.default().getVideoWithIdentifier(linkString) { [weak self] video, error in
             onGotResponse?()
-            guard let video = video, error == nil else {
+            guard let video = video, error == nil, let self = self else {
                 if error != nil {
                     errorHandler?(error!)
                 }
@@ -74,12 +74,6 @@ class YTNetworkService: YTNetworkServiceProtocol {
             
             self.nowInDownloading.accept([downloadModel] + self.nowInDownloading.value)
             
-            self.modelToStopDownloading.asObservable().subscribe { model in
-                if downloadModel == model {
-                    return
-                }
-            }.disposed(by: self.disposeBag)
-            
             let fileName = "\(video.identifier).mp4"
             
             
@@ -87,28 +81,41 @@ class YTNetworkService: YTNetworkServiceProtocol {
                                       id: video.identifier, duration: video.duration,
                                       author: video.author, videoURL: URL(string: linkString)!,
                                       imageURL: video.thumbnailURLs?.last)
-            do {
-                if self.fileManager.fileExists(atPath: url.appendingPathComponent(fileName).path) {
-                    try self.fileManager.removeItem(at: url.appendingPathComponent(fileName))
+            
+            let downloadRequest = AF.request(video.streamURL!).downloadProgress(closure: { progress in
+                observableVal.accept(progress.fractionCompleted)
+            })
+            
+            self.modelToStopDownloading.asDriver().drive(onNext: { model in
+                if downloadModel == model {
+                    downloadRequest.cancel()
+                    self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.identity != video.identifier }))
+                    return
+                }
+            }).disposed(by: self.disposeBag)
+
+            downloadRequest.response(queue: .main) { response in
+                if downloadRequest.isCancelled {
+                    return
                 }
                 
-                AF.request(video.streamURL!).downloadProgress(closure: { progress in
-                    observableVal.accept(progress.fractionCompleted)
-                }).response(queue: .global()) { response in
-                    switch (response.result) {
-                    case .success(let data):
-                        self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.identity != video.identifier }))
-                        self.fileManager.createFile(atPath: url.appendingPathComponent(fileName).path, contents: data)
-                        try? self.saver.saveToAll(file: mediaFile)
-                        onCompleted?()
-                    case .failure(let error):
+                switch (response.result) {
+                case .success(let data):
+                    self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.identity != video.identifier }))
+                    do {
+                        if self.fileManager.fileExists(atPath: url.appendingPathComponent(fileName).path) {
+                            try self.fileManager.removeItem(at: url.appendingPathComponent(fileName))
+                        }
+                    } catch {
                         errorHandler?(error)
-                        return
                     }
+                    self.fileManager.createFile(atPath: url.appendingPathComponent(fileName).path, contents: data)
+                    try? self.saver.saveToAll(file: mediaFile)
+                    onCompleted?()
+                case .failure(let error):
+                    errorHandler?(error)
+                    return
                 }
-            } catch {
-                errorHandler?(error)
-                return
             }
         }
     }
@@ -116,7 +123,7 @@ class YTNetworkService: YTNetworkServiceProtocol {
     func downloadAudio(linkString: String,
                        onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?) {
-//        
+        //
     }
     
 }

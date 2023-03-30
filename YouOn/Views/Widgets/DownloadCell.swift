@@ -13,14 +13,20 @@ import RxSwift
 class DownloadCell: UITableViewCell {
     private var progressCircleView: ProgressCircleView?
     private var titleLabel: UILabel?
+    private var onCircleTapped: (() -> Void)?
     
     private var disposeBag = DisposeBag()
     
-    func setup(model: DownloadModel, progressCircleView: ProgressCircleView, circleRadiusSize: CGFloat) {
+    func setup(model: DownloadModel, progressCircleView: ProgressCircleView, circleRadiusSize: CGFloat, onCircleTapped: (() -> Void)?) {
+        self.onCircleTapped = onCircleTapped
         titleLabel = .createScrollableLabel()
         titleLabel?.text = model.title
         
         self.progressCircleView = progressCircleView
+        let gestureRecognizer = UITapGestureRecognizer()
+        gestureRecognizer.addTarget(self, action: #selector(onCircleTap))
+        self.progressCircleView?.addGestureRecognizer(gestureRecognizer)
+        self.progressCircleView?.isUserInteractionEnabled = true
         
         addSubview(progressCircleView)
         progressCircleView.snp.makeConstraints({ make in
@@ -37,11 +43,17 @@ class DownloadCell: UITableViewCell {
         }
     }
     
+    @objc private func onCircleTap() {
+        self.onCircleTapped?()
+    }
+    
     override func prepareForReuse() {
         progressCircleView?.removeFromSuperview()
         titleLabel?.removeFromSuperview()
+        progressCircleView?.gestureRecognizers = nil
         progressCircleView = nil
         titleLabel = nil
+        onCircleTapped = nil
         super.prepareForReuse()
     }
 }
