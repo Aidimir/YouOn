@@ -96,6 +96,7 @@ class YTNetworkService: YTNetworkServiceProtocol {
 
             downloadRequest.response(queue: .main) { response in
                 if downloadRequest.isCancelled {
+                    self.modelToStopDownloading.accept(nil)
                     return
                 }
                 
