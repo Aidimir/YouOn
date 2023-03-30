@@ -18,7 +18,11 @@ class ProgressCircleView: UIView {
     
     public var strokeWidth: CGFloat = 10
     
-    public var currentProgress: CGFloat
+    public var currentProgress: CGFloat {
+        didSet {
+            updateProgress()
+        }
+    }
     
     public var lastProgress: CGFloat = 0
     
@@ -28,12 +32,14 @@ class ProgressCircleView: UIView {
     
     var progressLabel: UILabel!
     
-    init(currentProgress: CGFloat = 0, fillColor: CGColor,
-         frame: CGRect, showProgressLabel: Bool = false, updateTimeInterval: TimeInterval) {
+    init(currentProgress: CGFloat = 0,
+         fillColor: CGColor = UIColor.clear.cgColor,
+         showProgressLabel: Bool = false,
+         updateTimeInterval: TimeInterval = 0.1) {
         self.currentProgress = currentProgress
         self.fillColor = fillColor
         self.updateTimeInterval = updateTimeInterval
-        super.init(frame: frame)
+        super.init(frame: .zero)
         if showProgressLabel {
             addView()
         }

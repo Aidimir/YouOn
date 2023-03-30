@@ -55,6 +55,9 @@
 		9DC4CB7429D494FA0045D7F7 /* LNPopupController in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 9DC4CB7229D494DB0045D7F7 /* LNPopupController */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9DC4CB7829D4C17C0045D7F7 /* PlayerDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7729D4C17C0045D7F7 /* PlayerDataManager.swift */; };
 		9DC4CB7A29D4C3250045D7F7 /* PlayerInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7929D4C3250045D7F7 /* PlayerInfoModel.swift */; };
+		9DC4CB7C29D4E9FD0045D7F7 /* DownloadsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7B29D4E9FD0045D7F7 /* DownloadsTableView.swift */; };
+		9DC4CB7E29D4EAE40045D7F7 /* DownloadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7D29D4EAE40045D7F7 /* DownloadModel.swift */; };
+		9DC4CB8029D4EC690045D7F7 /* DownloadCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7F29D4EC690045D7F7 /* DownloadCell.swift */; };
 		C7B93FF1C9326C7EFD75352C /* Pods_YouOn_YouOnUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6227F66CB4FEA90CFE430489 /* Pods_YouOn_YouOnUITests.framework */; };
 		E847D7C616F772C15E6A2083 /* Pods_YouOn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDB00ACF719B20B0C14EE296 /* Pods_YouOn.framework */; };
 /* End PBXBuildFile section */
@@ -147,6 +150,9 @@
 		9DC4CB6329D1D60F0045D7F7 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		9DC4CB7729D4C17C0045D7F7 /* PlayerDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDataManager.swift; sourceTree = "<group>"; };
 		9DC4CB7929D4C3250045D7F7 /* PlayerInfoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerInfoModel.swift; sourceTree = "<group>"; };
+		9DC4CB7B29D4E9FD0045D7F7 /* DownloadsTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsTableView.swift; sourceTree = "<group>"; };
+		9DC4CB7D29D4EAE40045D7F7 /* DownloadModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadModel.swift; sourceTree = "<group>"; };
+		9DC4CB7F29D4EC690045D7F7 /* DownloadCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadCell.swift; sourceTree = "<group>"; };
 		DDB00ACF719B20B0C14EE296 /* Pods_YouOn.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouOn.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -186,6 +192,7 @@
 				9D50900129CB03CE00F9EE5F /* PlaylistTableView.swift */,
 				9D508FEF29C879DD00F9EE5F /* AllPlaylistsTableView.swift */,
 				9DC4CB5A29CF9E2B0045D7F7 /* SelectMediaFilesTableView.swift */,
+				9DC4CB7B29D4E9FD0045D7F7 /* DownloadsTableView.swift */,
 			);
 			path = TableViews;
 			sourceTree = "<group>";
@@ -223,6 +230,7 @@
 				9D6E93E329C860D30044A642 /* ProgressCircleView.swift */,
 				9D6E93E529C873B40044A642 /* PlaylistCell.swift */,
 				9D6E93E729C874640044A642 /* MediaFileCell.swift */,
+				9DC4CB7F29D4EC690045D7F7 /* DownloadCell.swift */,
 			);
 			path = Widgets;
 			sourceTree = "<group>";
@@ -329,6 +337,7 @@
 		9DA011FC29C21BF900962778 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				9DC4CB7D29D4EAE40045D7F7 /* DownloadModel.swift */,
 				9D6E93D429C4373F0044A642 /* Storages */,
 				9DA0120B29C2345E00962778 /* Services */,
 				9DA0120229C2297F00962778 /* MediaFileModel.swift */,
@@ -666,6 +675,7 @@
 				9D508FFA29C8981500F9EE5F /* LibraryPageBuilder.swift in Sources */,
 				9DA011FF29C21C0D00962778 /* MainRouter.swift in Sources */,
 				9DA0121229C239D100962778 /* Extensions.swift in Sources */,
+				9DC4CB7E29D4EAE40045D7F7 /* DownloadModel.swift in Sources */,
 				9DA0120D29C2346A00962778 /* YTNetworkService.swift in Sources */,
 				9D6E93D629C4374F0044A642 /* UserDefaultKeys.swift in Sources */,
 				9D6E93D929C438710044A642 /* MusicPlayer.swift in Sources */,
@@ -674,6 +684,7 @@
 				9D6E93E629C873B40044A642 /* PlaylistCell.swift in Sources */,
 				9D508FF629C893CF00F9EE5F /* LibraryViewModel.swift in Sources */,
 				9DA011D129C1B61E00962778 /* YouOn.xcdatamodeld in Sources */,
+				9DC4CB7C29D4E9FD0045D7F7 /* DownloadsTableView.swift in Sources */,
 				9D50900229CB03CE00F9EE5F /* PlaylistTableView.swift in Sources */,
 				9DC4CB6429D1D60F0045D7F7 /* MainViewController.swift in Sources */,
 				9DA0120529C22AA700962778 /* PlaylistModel.swift in Sources */,
@@ -683,6 +694,7 @@
 				9DC4CB7829D4C17C0045D7F7 /* PlayerDataManager.swift in Sources */,
 				9DA0120329C2297F00962778 /* MediaFileModel.swift in Sources */,
 				9D508FF029C879DE00F9EE5F /* AllPlaylistsTableView.swift in Sources */,
+				9DC4CB8029D4EC690045D7F7 /* DownloadCell.swift in Sources */,
 				9DA0121629C3037A00962778 /* MediaSaverService.swift in Sources */,
 				9DA0120129C21CB200962778 /* FounderPageBuilder.swift in Sources */,
 				9DC4CB5B29CF9E2B0045D7F7 /* SelectMediaFilesTableView.swift in Sources */,

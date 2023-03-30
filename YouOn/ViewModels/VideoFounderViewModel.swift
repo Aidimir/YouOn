@@ -6,43 +6,73 @@
 //
 
 import Foundation
-
-protocol VideoFounderViewModelDelegate {
-    func downloadProgress(result: Double)
-}
+import RxRelay
+import RxSwift
 
 protocol VideoFounderViewModelProtocol: ViewModelProtocol {
-    var searchFieldString: String { get set }
-    var delegate: VideoFounderViewModelDelegate? { get set }
+    var itemsOnDownloading: BehaviorRelay<[DownloadModel]> { get }
+    var searchFieldString: BehaviorRelay<String> { get }
+    var isValid: Observable<Bool> { get }
     var router: FounderRouterProtocol? { get set }
+    var waitingToResponse: BehaviorRelay<Bool> { get }
     init(networkService: YTNetworkServiceProtocol)
     func onSearchTap()
+    func stopDownloading(downloadModel: DownloadModel)
 }
 
 class VideoFounderViewModel: VideoFounderViewModelProtocol {
+    
+    var isValid: RxSwift.Observable<Bool> {
+        get {
+            return searchFieldString.asObservable().map({ !$0.isEmpty && $0.count > 10  })
+        }
+    }
+    
+    var searchFieldString: RxRelay.BehaviorRelay<String> = BehaviorRelay(value: String())
+    
+    var itemsOnDownloading: RxRelay.BehaviorRelay<[DownloadModel]> {
+        get {
+            return networkService.nowInDownloading
+        }
+    }
+    
+    var isButtonEnabled: BehaviorRelay<Bool> = BehaviorRelay(value: true)
+    
+    var waitingToResponse: BehaviorRelay<Bool> = BehaviorRelay(value: false)
             
     var router: FounderRouterProtocol?
     
     private let networkService: YTNetworkServiceProtocol
     
-    public var searchFieldString: String = ""
-    
     required init(networkService: YTNetworkServiceProtocol) {
         self.networkService = networkService
     }
     
-    public var delegate: VideoFounderViewModelDelegate?
-    
     public func onSearchTap() {
-        networkService.downloadVideo(linkString: searchFieldString, completion: { progress in
-            self.delegate?.downloadProgress(result: progress)
-        }, onCompleted: {
-            NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
+        
+        if let linkString = searchFieldString.value.getYoutubeID() {
             
-            if let allPlString = UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist), let playlistId = UUID(uuidString: allPlString) {
-                NotificationCenter.default.post(name: NotificationCenterNames.updatePlaylistWithID(id: playlistId), object: nil)
+            if itemsOnDownloading.value.contains(where: { $0.link == linkString }) {
+                let errorTemp = NSError(domain: "This video is already downloading !", code: -1, userInfo: nil)
+                errorHandler(errorTemp)
+                return
             }
-        }, errorHandler: errorHandler(_:))
+            
+            waitingToResponse.accept(true)
+            networkService.downloadVideo(linkString: linkString, onGotResponse: {
+                self.waitingToResponse.accept(false)
+            }, onCompleted: {
+                NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
+                
+                if let allPlString = UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist), let playlistId = UUID(uuidString: allPlString) {
+                    NotificationCenter.default.post(name: NotificationCenterNames.updatePlaylistWithID(id: playlistId), object: nil)
+                }
+            }, errorHandler: errorHandler(_:))
+        }
+    }
+    
+    func stopDownloading(downloadModel: DownloadModel) {
+        networkService.modelToStopDownloading.accept(downloadModel)
     }
     
     public func errorHandler(_ error: Error) -> Void {

@@ -116,12 +116,6 @@ class MediaFileCell: UITableViewCell {
     }
     
     @objc private func onTap(){
-//        controller?.modalPresentationStyle = .popover
-//        controller?.popoverPresentationController?.delegate = self
-//        controller?.popoverPresentationController?.sourceView = self
-//        controller?.popoverPresentationController?.sourceRect = CGRect(x: self.bounds.maxX, y: self.bounds.minY, width: 0, height: 0)
-//        controller?.preferredContentSize = CGSize(width: self.bounds.width/3, height: self.bounds.height)
-//        getCurrentViewController()?.present(controller ?? UIViewController(), animated: true)
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {

@@ -8,6 +8,9 @@
 import Foundation
 import SnapKit
 import UIKit
+import RxDataSources
+import RxSwift
+import RxCocoa
 
 protocol VideoFounderViewProtocol {
     var viewModel: VideoFounderViewModelProtocol { get set }
@@ -15,18 +18,20 @@ protocol VideoFounderViewProtocol {
 
 class VideoFounderViewController: UIViewController,
                                   UITextFieldDelegate,
-                                  VideoFounderViewModelDelegate,
-                                  VideoFounderViewProtocol {
+                                  VideoFounderViewProtocol,
+                                  DownloadsTableViewDelegate {
     
-    func downloadProgress(result: Double) {
-        currentDownload!.currentProgress = result
+    func onDownloadTapped(indexPath: IndexPath) {
+//
     }
     
-    private var textField: UITextField!
+    private lazy var spinner = UIActivityIndicatorView()
+    
+    private var searchField: UITextField!
     
     private var button: UIButton!
     
-    private var currentDownload: ProgressCircleView?
+    private var downloadsTableView: UIViewController?
     
     private lazy var progressView: UIView = UIView()
     
@@ -34,11 +39,28 @@ class VideoFounderViewController: UIViewController,
     
     private var progressLabel: UILabel!
     
+    private let disposeBag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .darkGray
+        
+        let classesToRegister = ["DownloadCell": DownloadCell.self]
+        
+        let dataSource = RxTableViewSectionedAnimatedDataSource<DownloadsSectionModel> { _, tableView, indexPath, item in
+            let cell = tableView.dequeueReusableCell(withIdentifier: "DownloadCell", for: indexPath) as! DownloadCell
+            let progressCircleView = ProgressCircleView()
+            cell.setup(model: item, progressCircleView: progressCircleView, circleRadiusSize: cell.frame.height / 2)
+            cell.backgroundColor = .black
+            cell.layer.cornerRadius = 15
+            cell.clipsToBounds = true
+            cell.selectionStyle = .none
+            return cell
+        } canEditRowAtIndexPath: { source, indexPath in
+            return false
+        }
 
-        textField = {
+        searchField = {
             let textField = UITextField()
             textField.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
             textField.layer.cornerRadius = 10
@@ -59,8 +81,20 @@ class VideoFounderViewController: UIViewController,
         button.setTitle("Download", for: .normal)
         button.addTarget(self, action: #selector(onTap), for: .touchUpInside)
         
-        view.addSubview(textField)
-        textField.snp.makeConstraints({ make in
+        let allDownloadsTableView = DownloadsTableView(heightForRow: view.frame.size.height / 10,
+                                                       backgroundColor: .clear,
+                                                       tableViewColor: .clear,
+                                                       items: viewModel.itemsOnDownloading.asObservable().map({ [AnimatableSectionModel(model: "", items: $0 )] }),
+                                                       itemsAsRelay: viewModel.itemsOnDownloading,
+                                                       classesToRegister: classesToRegister,
+                                                       dataSource: dataSource)
+        
+        downloadsTableView = allDownloadsTableView
+        downloadsTableView?.view.layer.cornerRadius = 20
+
+        
+        view.addSubview(searchField)
+        searchField.snp.makeConstraints({ make in
             make.center.equalToSuperview()
             make.width.equalToSuperview().multipliedBy(0.9)
             make.height.equalToSuperview().multipliedBy(0.06)
@@ -68,29 +102,49 @@ class VideoFounderViewController: UIViewController,
         
         view.addSubview(button)
         button.snp.makeConstraints { make in
-            make.top.equalTo(textField.snp.bottom).offset(view.frame.height * 0.01)
+            make.top.equalTo(searchField.snp.bottom).offset(view.frame.height * 0.01)
             make.width.equalToSuperview().dividedBy(2.5)
             make.height.equalToSuperview().dividedBy(13)
             make.centerX.equalToSuperview()
         }
         
-        viewModel.delegate = self
+        button.addSubview(spinner)
+        spinner.snp.makeConstraints { make in
+            make.size.equalTo(button)
+        }
+        
+        addChild(downloadsTableView!)
+        view.addSubview(downloadsTableView!.view)
+        downloadsTableView!.view.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.centerX.equalTo(view.readableContentGuide)
+            make.width.equalTo(view.readableContentGuide.snp.width)
+            make.bottom.equalTo(searchField.snp.top).offset(-50)
+        }
+        downloadsTableView!.didMove(toParent: self)
+
+        allDownloadsTableView.delegate = self
+        setBindings()
     }
     
     @objc private func onTap() {
-        viewModel.searchFieldString = textField.text!
         viewModel.onSearchTap()
-        currentDownload?.removeFromSuperview()
-        currentDownload = ProgressCircleView(currentProgress: 0, fillColor: UIColor.clear.cgColor, frame: .zero, updateTimeInterval: 0.1)
-        currentDownload!.strokeColor = UIColor.green.cgColor
+    }
+    
+    private func setBindings() {
+        viewModel.waitingToResponse.bind { val in
+            if val {
+                self.spinner.startAnimating()
+            } else {
+                self.spinner.stopAnimating()
+            }
+        }.disposed(by: disposeBag)
         
-        view.addSubview(currentDownload!)
-        currentDownload!.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.centerX.equalTo(view.readableContentGuide)
-            make.width.equalTo(view.readableContentGuide.snp.width).dividedBy(5)
-            make.height.equalTo(view.readableContentGuide.snp.width).dividedBy(5)
-        }
+        searchField.rx.text.orEmpty.bind(to: viewModel.searchFieldString)
+            .disposed(by: disposeBag)
+        
+        viewModel.isValid.bind(to: button.rx.isEnabled)
+            .disposed(by: disposeBag)
     }
     
     init(viewModel: VideoFounderViewModelProtocol) {
