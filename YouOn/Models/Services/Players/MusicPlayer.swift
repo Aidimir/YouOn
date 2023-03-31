@@ -111,6 +111,12 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
     
     func play(index: Int) {
         self.index = index
+        MPRemoteCommandCenter.shared().playCommand.isEnabled = true
+        MPRemoteCommandCenter.shared().pauseCommand.isEnabled = true
+        MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = true
+        MPRemoteCommandCenter.shared().previousTrackCommand.isEnabled = true
+        MPRemoteCommandCenter.shared().changePlaybackPositionCommand.isEnabled = true
+        
         guard let file = storage[self.index!] as? MediaFile, let storage = storage as? [MediaFile] else { return }
         
         guard let url = fileManager?.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(file.url) else { return }
@@ -126,7 +132,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
             var nowPlayingInfo = [String: Any]()
             MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
             
-            URLSession.shared.dataTask(with: (file.imageURL!)) { [weak self] data, response, error in
+            URLSession.shared.dataTask(with: (file.imageURL!)) { data, response, error in
                 if error == nil {
                     let artwork = MPMediaItemArtwork(boundsSize: .zero) { (size) -> UIImage in
                         return UIImage(data: data!)!

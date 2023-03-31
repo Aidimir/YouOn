@@ -80,6 +80,7 @@ class YTNetworkService: YTNetworkServiceProtocol {
             let mediaFile = MediaFile(url: fileName, title: video.title,
                                       id: video.identifier, duration: video.duration,
                                       author: video.author, videoURL: URL(string: linkString)!,
+                                      supportsVideo: true,
                                       imageURL: video.thumbnailURLs?.last)
             
             let downloadRequest = AF.request(video.streamURL!).downloadProgress(closure: { progress in

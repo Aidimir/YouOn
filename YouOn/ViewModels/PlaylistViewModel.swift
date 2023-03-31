@@ -92,19 +92,27 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     }
     
     func fetchActionModels(indexPath: IndexPath) -> [ActionModel] {
-        let playVideoAction = ActionModel(title: "Play video", onTap: {
-            self.playVideo(indexPath: indexPath)
-        }, iconName: "play.circle")
-        
-        let removeAction = ActionModel(title: "Remove", onTap: {
-            self.removeFromPlaylist(indexPath: indexPath)
-        }, iconName: "trash")
-        
-        let removeFromAllAction = ActionModel(title: "Delete from device", onTap: {
-            self.removeFromAll(indexPath: indexPath)
-        }, iconName: "minus")
-        
-        return [playVideoAction, removeAction, removeFromAllAction]
+        let actions = {
+            let removeAction = ActionModel(title: "Remove", onTap: {
+                self.removeFromPlaylist(indexPath: indexPath)
+            }, iconName: "trash")
+            
+            let removeFromAllAction = ActionModel(title: "Delete from device", onTap: {
+                self.removeFromAll(indexPath: indexPath)
+            }, iconName: "minus")
+            
+            let playVideoAction = ActionModel(title: "Play video", onTap: {
+                self.playVideo(indexPath: indexPath)
+            }, iconName: "play.circle")
+            
+            if let item = uiModels.value[indexPath.row] as? MediaFile, item.supportsVideo {
+                
+                return [playVideoAction, removeAction, removeFromAllAction]
+            } else {
+                return [removeAction, removeFromAllAction]
+            }
+        }()
+        return actions
     }
     
     func playSong(indexPath: IndexPath) {
@@ -115,8 +123,10 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     }
     
     func playVideo(indexPath: IndexPath) {
-        if let mediaFile = uiModels.value[indexPath.row] as? MediaFile {
-            //
+        if let mediaFile = uiModels.value[indexPath.row] as? MediaFile, mediaFile.supportsVideo {
+            DispatchQueue.main.async {
+                self.router?.moveToVideoPlayer(file: mediaFile)
+            }
         }
     }
     

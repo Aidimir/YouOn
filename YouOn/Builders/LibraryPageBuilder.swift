@@ -7,8 +7,10 @@
 
 import Foundation
 import UIKit
+import AVKit
 
 protocol LibraryPageBuilderProtocol: BuilderProtocol {
+    func buildVideoPlayer(item: MediaFile) -> AVPlayerViewController?
     func buildLibraryViewController() -> UIViewController
     func buildPlaylistController(playlistID: UUID) -> UIViewController
     func buildAddItemsToPlaylist(_ fromStorage: [MediaFile], saveAction: (([IndexPath]) -> Void)?) -> UIViewController
@@ -16,7 +18,19 @@ protocol LibraryPageBuilderProtocol: BuilderProtocol {
 
 class LibraryPageBuilder: LibraryPageBuilderProtocol {
     
+    func buildVideoPlayer(item: MediaFile) -> AVPlayerViewController? {
+        guard let url = fileManager.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(item.url) else { return nil }
+        let playerItem = AVPlayerItem(url: url)
+        videoPlayer = AVPlayer(playerItem: playerItem)
+        let controller = AVPlayerViewController()
+        controller.player = videoPlayer
+        return controller
+    }
+    
+    
     private lazy var player = MusicPlayer.shared
+    
+    private var videoPlayer: AVPlayer?
         
     private let fileManager = FileManager.default
     
