@@ -29,6 +29,9 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, MoreActionsT
             actionsController = DisplayActionsTableView(source: viewModel.fetchActionModels(indexPath: indexPath), headerView: headerView, heightForRow: view.frame.size.height / 10, heightForHeader: view.frame.size.height / 8)
         }
         
+        actionsController?.modalPresentationStyle = .custom
+        actionsController?.transitioningDelegate = self
+        
         present(actionsController!, animated: true)
     }
     
@@ -131,5 +134,11 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, MoreActionsT
     
     private func onItemSelected(_ indexPath: IndexPath) -> Void {
         viewModel?.didTapOnPlaylist(indexPath: indexPath)
+    }
+}
+
+extension LibraryViewController: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        PresentationController(presentedViewController: presented, presenting: presenting)
     }
 }

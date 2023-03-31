@@ -7,13 +7,12 @@
 
 import Foundation
 import UIKit
-import RxSwift
-import RxCocoa
-import RxDataSources
 
 class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
     var source: [MediaFileUIProtocol]
+    
+    private var selected: [IndexPath] = []
     
     private lazy var tableView = UITableView()
     
@@ -34,6 +33,11 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as! MediaFileCell
         cell.setup(file: source[indexPath.row], foregroundColor: .black, backgroundColor: .black)
+        if selected.contains(where: { $0 == indexPath }) {
+            cell.didSelect()
+        } else {
+            cell.didDeselect()
+        }
         cell.backgroundColor = .clear
         cell.selectionStyle = .none
         return cell
@@ -49,13 +53,13 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedCell = tableView.cellForRow(at: indexPath) as? MediaFileCell
-        selectedCell?.isSelected = true
+        selected.append(indexPath)
         selectedCell?.didSelect()
     }
 
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         let selectedCell = tableView.cellForRow(at: indexPath) as? MediaFileCell
-        selectedCell?.isSelected = false
+        selected = selected.filter({ $0 != indexPath })
         selectedCell?.didDeselect()
     }
 

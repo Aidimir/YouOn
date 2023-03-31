@@ -26,6 +26,9 @@ struct Playlist: Codable, PlaylistUIProtocol {
             if content.count == 0 {
                 return "No tracks"
             } else {
+                if content.count == 1 {
+                    return "\(content.count) track"
+                }
                 return "\(content.count) tracks"
             }
         }

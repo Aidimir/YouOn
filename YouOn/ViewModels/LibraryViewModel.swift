@@ -67,7 +67,7 @@ class LibraryViewModel: LibraryViewModelProtocol {
     func fetchActionModels(indexPath: IndexPath) -> [ActionModel] {
         let renameAction = ActionModel(title: "Rename", onTap: {
             self.onRenamePLaylistTapped(indexPath: indexPath)
-        }, iconName: "play.circle")
+        }, iconName: "pencil")
         
         let removeAction = ActionModel(title: "Remove", onTap: {
             self.removePlaylist(indexPath: indexPath)

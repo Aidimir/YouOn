@@ -20,8 +20,6 @@ class PlaylistCell: UITableViewCell {
     
     var countLabel = UILabel()
     
-    var view = UIView()
-    
     private let placeholder = UIImage(systemName: "music.note.list")
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -60,26 +58,24 @@ class PlaylistCell: UITableViewCell {
         countLabel.textColor = .gray
         countLabel.font = .boldSystemFont(ofSize: 20)
         countLabel.textAlignment = .center
-
-        view = UIView()
-        view.backgroundColor = foregroundColor
         
-        view.addSubview(imgView)
+        addSubview(imgView)
         imgView.snp.makeConstraints { make in
             make.width.equalToSuperview().multipliedBy(0.4)
-            make.height.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-5)
+            make.top.bottom.equalToSuperview()
             make.left.equalToSuperview()
         }
         
-        view.addSubview(playlistTitle)
+        addSubview(playlistTitle)
         playlistTitle.snp.makeConstraints { make in
             make.left.equalTo(imgView.snp.right).offset(Constants.leftPadding)
             make.right.equalToSuperview()
             make.top.equalToSuperview()
-            make.bottom.equalTo(view.snp.centerY)
+            make.bottom.equalTo(snp.centerY)
         }
         
-        view.addSubview(countLabel)
+        addSubview(countLabel)
         countLabel.snp.makeConstraints { make in
             make.bottom.equalToSuperview()
             make.top.equalTo(playlistTitle.snp.bottom)
@@ -97,15 +93,12 @@ class PlaylistCell: UITableViewCell {
             formattingIcon.addGestureRecognizer(gestureRecognizer)
             formattingIcon.isUserInteractionEnabled = true
             
-            view.addSubview(formattingIcon)
+            addSubview(formattingIcon)
             formattingIcon.snp.makeConstraints { make in
-                make.right.top.bottom.equalTo(view)
-                make.width.equalTo(view).multipliedBy(0.1)
+                make.right.centerY.equalToSuperview()
+                make.width.height.equalTo(50)
             }
         }
-        
-        addSubview(view)
-        view.frame = contentView.bounds
         contentView.backgroundColor = backgroundColor
     }
     
@@ -114,10 +107,15 @@ class PlaylistCell: UITableViewCell {
         imgView.removeFromSuperview()
         playlistTitle.removeFromSuperview()
         countLabel.removeFromSuperview()
-        view.removeFromSuperview()
     }
     
     @objc private func onTap() {
         delegate?.onMoreActionsTapped(cell: self)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 40, left: 10, bottom: 50, right: 10))
     }
 }

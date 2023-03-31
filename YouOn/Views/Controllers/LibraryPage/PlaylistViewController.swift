@@ -24,6 +24,9 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             actionsController = DisplayActionsTableView(source: viewModel.fetchActionModels(indexPath: indexPath), headerView: headerView, heightForRow: view.frame.size.height / 10, heightForHeader: view.frame.size.height * 0.2)
         }
         
+        actionsController?.modalPresentationStyle = .custom
+        actionsController?.transitioningDelegate = self
+        
         present(actionsController!, animated: true)
     }
     
@@ -125,5 +128,11 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             navigationItem.rightBarButtonItem = barItem
         }
         title = viewModel?.title
+    }
+}
+
+extension PlaylistViewController: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        PresentationController(presentedViewController: presented, presenting: presenting)
     }
 }

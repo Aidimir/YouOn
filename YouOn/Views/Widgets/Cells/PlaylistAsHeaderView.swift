@@ -10,6 +10,9 @@ import UIKit
 import SnapKit
 
 class PlaylistAsHeaderView: UIView {
+    
+    private let placeholder = UIImage(systemName: "music.note.list")
+
     init(uiModel: PlaylistUIProtocol, backgroundColor: UIColor, cornerRadius: CGFloat = 0) {
         enum Constants {
             static let verticalPadding = 10
@@ -19,7 +22,7 @@ class PlaylistAsHeaderView: UIView {
         super.init(frame: .zero)
         
         let imgView = UIImageView()
-        imgView.kf.setImage(with: uiModel.imageURL)
+        imgView.kf.setImage(with: uiModel.imageURL, placeholder: placeholder)
         imgView.contentMode = .scaleAspectFill
         imgView.layer.cornerRadius = cornerRadius
         imgView.tintColor = .gray

@@ -64,6 +64,7 @@
 		9DF8710A29D6D30200E21DBC /* UIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710929D6D30200E21DBC /* UIExtensions.swift */; };
 		9DF8710C29D6D75800E21DBC /* MediaFileAsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710B29D6D75800E21DBC /* MediaFileAsHeaderView.swift */; };
 		9DF8710E29D715D500E21DBC /* PlaylistAsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710D29D715D500E21DBC /* PlaylistAsHeaderView.swift */; };
+		9DF8711029D7717200E21DBC /* TransitionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710F29D7717200E21DBC /* TransitionController.swift */; };
 		C7B93FF1C9326C7EFD75352C /* Pods_YouOn_YouOnUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6227F66CB4FEA90CFE430489 /* Pods_YouOn_YouOnUITests.framework */; };
 		E847D7C616F772C15E6A2083 /* Pods_YouOn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDB00ACF719B20B0C14EE296 /* Pods_YouOn.framework */; };
 /* End PBXBuildFile section */
@@ -165,6 +166,7 @@
 		9DF8710929D6D30200E21DBC /* UIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIExtensions.swift; sourceTree = "<group>"; };
 		9DF8710B29D6D75800E21DBC /* MediaFileAsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFileAsHeaderView.swift; sourceTree = "<group>"; };
 		9DF8710D29D715D500E21DBC /* PlaylistAsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistAsHeaderView.swift; sourceTree = "<group>"; };
+		9DF8710F29D7717200E21DBC /* TransitionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionController.swift; sourceTree = "<group>"; };
 		DDB00ACF719B20B0C14EE296 /* Pods_YouOn.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouOn.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -342,6 +344,7 @@
 			children = (
 				9D6E93E229C8605E0044A642 /* Controllers */,
 				9D6E93E129C860540044A642 /* Widgets */,
+				9DF8710F29D7717200E21DBC /* TransitionController.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -730,6 +733,7 @@
 				9DA0120129C21CB200962778 /* FounderPageBuilder.swift in Sources */,
 				9DC4CB5B29CF9E2B0045D7F7 /* SelectMediaFilesTableView.swift in Sources */,
 				9D508FFE29C9A1E500F9EE5F /* FounderPageRouter.swift in Sources */,
+				9DF8711029D7717200E21DBC /* TransitionController.swift in Sources */,
 				9D6E93D129C327470044A642 /* DataManager.swift in Sources */,
 				9D6E93E829C874640044A642 /* MediaFileCell.swift in Sources */,
 				9DF8710629D6123800E21DBC /* ActionModel.swift in Sources */,

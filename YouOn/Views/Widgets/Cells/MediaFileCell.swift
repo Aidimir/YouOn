@@ -101,8 +101,8 @@ class MediaFileCell: UITableViewCell {
             
             addSubview(formattingIcon)
             formattingIcon.snp.makeConstraints { make in
-                make.right.height.top.bottom.equalTo(view)
-                make.width.equalTo(view).multipliedBy(0.1)
+                make.right.centerY.equalTo(view)
+                make.width.height.equalTo(50)
             }
         }
         
@@ -128,11 +128,18 @@ class MediaFileCell: UITableViewCell {
     
     public func didSelect() {
         self.tintColor = .green
+        isSelected = true
         self.accessoryType = .checkmark
     }
     
     public func didDeselect() {
+        isSelected = false
         self.accessoryType = .none
+    }
+    
+    override func prepareForReuse() {
+        isSelected = false
+        super.prepareForReuse()
     }
 }
 
