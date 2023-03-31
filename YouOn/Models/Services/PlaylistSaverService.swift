@@ -21,15 +21,18 @@ class PlaylistSaver: MediaSaver, PlaylistSaverProtocol {
         let id = UUID()
         let playlist = Playlist(content: [MediaFile](), title: title, id: id)
         try savePlaylist(playlist: playlist)
+        NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
         return id
     }
     
     func savePlaylist(playlist: Playlist) throws {
         try dataManager.savePlaylist(data: playlist, id: playlist.id)
+        NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
     }
     
     func removePlaylist(playlist: Playlist) throws {
         try dataManager.removePlaylist(id: playlist.id)
+        NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
     }
     
     func fetchPlaylist(id: UUID) throws -> Playlist? {

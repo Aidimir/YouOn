@@ -39,6 +39,7 @@ class MediaSaver: MediaSaverProtocol {
             playlist?.addFile(file: file)
             try dataManager.savePlaylist(data: playlist, id: id)
         }
+        NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
     }
     
     func removeFromAll(file: MediaFile) throws {
@@ -54,6 +55,7 @@ class MediaSaver: MediaSaverProtocol {
             
             playlist?.removeFileById(id: file.id)
             try dataManager.savePlaylist(data: playlist, id: id)
+            NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
         }
     }
     

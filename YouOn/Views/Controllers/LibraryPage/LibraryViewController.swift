@@ -17,14 +17,14 @@ protocol LibraryViewProtocol {
     var viewModel: (any LibraryViewModelProtocol)? { get set }
 }
 
-class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylistsTableViewDelegate {
+class LibraryViewController: UIViewController, LibraryViewProtocol {
     
     private let disposeBag = DisposeBag()
     
     var viewModel: (any LibraryViewModelProtocol)?
     
     private var playlistsTableView: UIViewController?
-        
+    
     init() {
         super.init(nibName: nil, bundle: nil)
         title = "Library"
@@ -58,22 +58,16 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
             barItem.tintColor = .white
             navigationItem.rightBarButtonItem = barItem
             
-            let allPlTableView = AllPlaylistsTableView(heightForRow: view.frame.size.height / 6,
-                                                       backgroundColor: .clear,
-                                                       tableViewColor: .clear,
-                                                       items:
-                                                        viewModel.uiModels
-                                                        .asObservable()
-                                                        .map({ [AnimatableSectionModel(model: "",
-                                                                                       items: $0.map({ PlaylistUIModel(model: $0)}))] }),
-                                                       itemsAsRelay: viewModel.uiModels,
-                                                       onItemMoved: onItemMoved(_:),
-                                                       onItemRemoved: onItemRemoved(_:),
-                                                       classesToRegister: cellsToRegister,
-                                                       dataSource: dataSource)
-            allPlTableView.delegate = self
+            let allPlTableView = BindableTableViewController(items: viewModel.uiModels
+                                                                    .asObservable()
+                .map({ [AnimatableSectionModel(model: "",
+                                               items: $0.map({ PlaylistUIModel(model: $0)}))] })
+                                                             , heightForRow: view.frame.size.height / 6,
+                                                             onItemSelected: onItemSelected(_:), onItemMoved: onItemMoved(_:), onItemRemoved: onItemRemoved(_:), dataSource: dataSource, classesToRegister: cellsToRegister)
             
             playlistsTableView = allPlTableView
+            allPlTableView.view.backgroundColor = backgroundColor
+            allPlTableView.tableView.backgroundColor = backgroundColor
             
             view.backgroundColor = backgroundColor
             
@@ -84,10 +78,6 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
             }
             playlistsTableView?.didMove(toParent: self)
         }
-    }
-    
-    func didTapOnPlaylist(indexPath: IndexPath) {
-        viewModel?.didTapOnPlaylist(indexPath: indexPath)
     }
     
     @objc private func addPlaylist() {
@@ -115,5 +105,9 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, AllPlaylists
         if let isDefault = viewModel?.uiModels.value[indexPath.row].isDefaultPlaylist, isDefault == false {
             viewModel?.removePlaylist(indexPath: indexPath)
         }
+    }
+    
+    private func onItemSelected(_ indexPath: IndexPath) -> Void {
+        viewModel?.didTapOnPlaylist(indexPath: indexPath)
     }
 }

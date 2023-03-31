@@ -24,14 +24,17 @@ protocol PlaylistViewModelProtocol: CollectableViewModelProtocol where T == Medi
     var router: LibraryPageRouterProtocol? { get set }
     var title: String? { get }
     func playSong(indexPath: IndexPath)
+    func playVideo(indexPath: IndexPath)
     func removeFromPlaylist(indexPath: IndexPath)
+    func removeFromAll(indexPath: IndexPath)
+    func fetchActionModels(indexPath: IndexPath) -> [ActionModel]
     func saveStorage()
     func moveToAddFilesController()
     init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol?, id: UUID)
 }
 
 class PlaylistViewModel: PlaylistViewModelProtocol {
-    
+        
     var title: String? {
         get {
             return playlist?.title
@@ -70,7 +73,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
         fetchData()
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(fetchData),
-                                               name: NotificationCenterNames.updatePlaylistWithID(id: id),                                           object: nil)
+                                               name: NotificationCenterNames.updatedPlaylists, object: nil)
     }
     
     @objc func fetchData() {
@@ -88,10 +91,32 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
         }
     }
     
+    func fetchActionModels(indexPath: IndexPath) -> [ActionModel] {
+        let playVideoAction = ActionModel(title: "Play video", onTap: {
+            self.playVideo(indexPath: indexPath)
+        }, iconName: "play.circle")
+        
+        let removeAction = ActionModel(title: "Remove", onTap: {
+            self.removeFromPlaylist(indexPath: indexPath)
+        }, iconName: "trash")
+        
+        let removeFromAllAction = ActionModel(title: "Delete from device", onTap: {
+            self.removeFromAll(indexPath: indexPath)
+        }, iconName: "minus")
+        
+        return [playVideoAction, removeAction, removeFromAllAction]
+    }
+    
     func playSong(indexPath: IndexPath) {
         if let mediaStorage = uiModels.value as? [MediaFile] {
             player.storage = mediaStorage
             player.play(index: indexPath.row)
+        }
+    }
+    
+    func playVideo(indexPath: IndexPath) {
+        if let mediaFile = uiModels.value[indexPath.row] as? MediaFile {
+            //
         }
     }
     
@@ -110,20 +135,23 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     
     func removeFromPlaylist(indexPath: IndexPath) {
         if let defaultAllPlaylistId = UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist), defaultAllPlaylistId == playlist?.id.uuidString {
-            if let file = uiModels.value[indexPath.row] as? MediaFile {
-                do {
-                    try saver?.removeFromAll(file: file)
-                    uiModels.removeElement(at: indexPath.row)
-                } catch {
-                    errorHandler(error)
-                }
-            }
+            removeFromAll(indexPath: indexPath)
         } else {
             uiModels.removeElement(at: indexPath.row)
         }
-        NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
         
         saveStorage()
+    }
+    
+    func removeFromAll(indexPath: IndexPath) {
+        if let file = uiModels.value[indexPath.row] as? MediaFile {
+            do {
+                try saver?.removeFromAll(file: file)
+                uiModels.removeElement(at: indexPath.row)
+            } catch {
+                errorHandler(error)
+            }
+        }
     }
     
     func moveToAddFilesController() {
@@ -147,7 +175,6 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
                     uiModels.accept([item] + uiModels.value)
                 }
                 try saver?.savePlaylist(playlist: self.playlist!)
-                NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
             }
         } catch {
             errorHandler(error)

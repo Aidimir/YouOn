@@ -16,11 +16,23 @@ protocol PlaylistViewProtocol {
     var viewModel: (any PlaylistViewModelProtocol)? { get set }
 }
 
-class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, PlaylistViewProtocol, PlaylistViewModelDelegate {
+class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistViewModelDelegate, MoreActionsTappedDelegate {
+    
+    func onMoreActionsTapped(cell: UITableViewCell) {
+        if let indexPath = tableViewController?.tableView.indexPath(for: cell), let model = viewModel?.uiModels.value[indexPath.row], let viewModel = viewModel {
+            let headerView = MediaFileAsHeaderView(model: model)
+            actionsController = DisplayActionsTableView(source: viewModel.fetchActionModels(indexPath: indexPath), headerView: headerView)
+        }
+        
+        present(actionsController!, animated: true)
+    }
+    
     
     var viewModel: (any PlaylistViewModelProtocol)?
     
-    var tableViewController: UIViewController?
+    var tableViewController: PlaylistTableView?
+    
+    private var actionsController: DisplayActionsTableView?
     
     func onMediaFileTapped(indexPath: IndexPath) {
         viewModel?.playSong(indexPath: indexPath)
@@ -39,7 +51,9 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
             
             let dataSource = RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel> { _, tableView, indexPath, item in
                 let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as! MediaFileCell
-                cell.setup(file: item, controller: nil, foregroundColor: backgroundColor, backgroundColor: backgroundColor, imageCornerRadius: 10)
+                
+                cell.setup(file: item, foregroundColor: backgroundColor, backgroundColor: backgroundColor, imageCornerRadius: 10, supportsMoreActions: true)
+                cell.delegate = self
                 cell.backgroundColor = .clear
                 cell.selectionStyle = .none
                 return cell
@@ -61,10 +75,9 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
                                                       itemsAsRelay: viewModel.uiModels,
                                                       onItemMoved: onItemMoved(_:),
                                                       onItemRemoved: onItemRemoved(_:),
+                                                      onItemSelected: onItemSelected(_:),
                                                       classesToRegister: classesToRegister,
                                                       dataSource: dataSource)
-            
-            playlistTableView.delegate = self
             
             tableViewController = playlistTableView
             
@@ -84,14 +97,20 @@ class PlaylistViewController: UIViewController, PlaylistTableViewProtocol, Playl
     }
     
     private func onItemMoved(_ event: ItemMovedEvent) -> Void {
-        guard viewModel != nil, let item = viewModel?.uiModels.value[event.sourceIndex.row] else { return }
-        viewModel!.uiModels.replaceElement(at: event.sourceIndex.row, insertTo: event.destinationIndex.row, with: item)
-        viewModel?.saveStorage()
+        guard let viewModel = viewModel else { return }
+        let item = viewModel.uiModels.value[event.sourceIndex.row]
+        viewModel.uiModels.replaceElement(at: event.sourceIndex.row, insertTo: event.destinationIndex.row, with: item)
+        viewModel.saveStorage()
     }
     
     private func onItemRemoved(_ indexPath: IndexPath) -> Void {
-        guard viewModel != nil else { return }
-        viewModel?.removeFromPlaylist(indexPath: indexPath)
+        guard let viewModel = viewModel else { return }
+        viewModel.removeFromPlaylist(indexPath: indexPath)
+    }
+    
+    private func onItemSelected(_ indexPath: IndexPath) -> Void {
+        guard let viewModel = viewModel else { return }
+        viewModel.playSong(indexPath: indexPath)
     }
     
     @objc private func addFiles() {

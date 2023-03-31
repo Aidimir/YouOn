@@ -61,13 +61,7 @@ class VideoFounderViewModel: VideoFounderViewModelProtocol {
             waitingToResponse.accept(true)
             networkService.downloadVideo(linkString: linkString, onGotResponse: {
                 self.waitingToResponse.accept(false)
-            }, onCompleted: {
-                NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
-                
-                if let allPlString = UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist), let playlistId = UUID(uuidString: allPlString) {
-                    NotificationCenter.default.post(name: NotificationCenterNames.updatePlaylistWithID(id: playlistId), object: nil)
-                }
-            }, errorHandler: errorHandler(_:))
+            }, onCompleted: nil, errorHandler: errorHandler(_:))
         }
     }
     

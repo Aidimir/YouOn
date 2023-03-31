@@ -6,11 +6,9 @@
 //
 
 import Foundation
-import UIKit
 import RxRelay
 import RxCocoa
 import RxSwift
-import MarqueeLabel
 import AVFAudio
 import AVFoundation
 import MediaPlayer
@@ -71,49 +69,6 @@ extension TimeInterval {
     }
 }
 
-extension UIView {
-    func getCurrentViewController() -> UIViewController? {
-        if let rootController = UIApplication.shared.keyWindow?.rootViewController {
-            var currentController: UIViewController! = rootController
-            while( currentController.presentedViewController != nil ) {
-                currentController = currentController.presentedViewController
-            }
-            return currentController
-        }
-        return nil
-    }
-    
-    func blurBackground(style: UIBlurEffect.Style) {
-        backgroundColor = .clear
-        let blur = UIBlurEffect(style: style)
-        let blurView = UIVisualEffectView(effect: blur)
-        
-        addSubview(blurView)
-        blurView.snp.makeConstraints { make in
-            make.size.equalTo(self)
-        }
-        sendSubviewToBack(blurView)
-    }
-}
-
-extension UITextField {
-    func setLeftPaddingPoints(_ amount: CGFloat) {
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
-        self.leftView = paddingView
-        self.leftViewMode = .always
-    }
-    
-    func setRightPaddingPoints(_ amount: CGFloat) {
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
-        self.rightView = paddingView
-        self.rightViewMode = .always
-    }
-}
-
-extension UIColor {
-    static let darkGray = UIColor(red: 0.22, green: 0.22, blue: 0.22, alpha: 1)
-}
-
 extension BehaviorRelay where Element: RangeReplaceableCollection {
     func replaceElement(at index: Element.Index, insertTo insertIndex: Element.Index, with element: Element.Element) {
         var newValue = value
@@ -126,57 +81,6 @@ extension BehaviorRelay where Element: RangeReplaceableCollection {
         var newValue = value
         newValue.remove(at: index)
         accept(newValue)
-    }
-}
-
-extension UIViewController {
-    func showInputDialog(title: String? = nil,
-                         subtitle: String? = nil,
-                         actionTitle: String? = "Add",
-                         cancelTitle: String? = "Cancel",
-                         inputPlaceholder: String? = nil,
-                         inputKeyboardType: UIKeyboardType = UIKeyboardType.default,
-                         cancelHandler: ((UIAlertAction) -> Void)? = nil,
-                         actionHandler: ((_ text: String?) -> Void)? = nil) {
-        
-        let alert = UIAlertController(title: title, message: subtitle, preferredStyle: .alert)
-        alert.addTextField { (textField:UITextField) in
-            textField.placeholder = inputPlaceholder
-            textField.keyboardType = inputKeyboardType
-        }
-        alert.addAction(UIAlertAction(title: actionTitle, style: .default, handler: { (action:UIAlertAction) in
-            guard let textField =  alert.textFields?.first else {
-                actionHandler?(nil)
-                return
-            }
-            actionHandler?(textField.text)
-        }))
-        alert.addAction(UIAlertAction(title: cancelTitle, style: .cancel, handler: cancelHandler))
-        
-        self.present(alert, animated: true, completion: nil)
-    }
-}
-
-extension UIFont {
-    public static let titleFont = UIFont.systemFont(ofSize: 24, weight: .semibold)
-    
-    public static let mediumSizeBoldFont = UIFont.systemFont(ofSize: 20, weight: .semibold)
-    
-    public static let mediumSizeFont = UIFont.systemFont(ofSize: 20, weight: .medium)
-    
-    public static let smallSizeFont = UIFont.systemFont(ofSize: 15, weight: .medium)
-}
-
-extension UILabel {
-    static func createScrollableLabel(fadeLength: CGFloat = 20,
-                                      scrollingDuration: CGFloat = 6,
-                                      animationDelay: CGFloat = 2) -> UILabel {
-        let label = MarqueeLabel(frame: .zero, duration: scrollingDuration, fadeLength: 0)
-        label.animationDelay = animationDelay
-        label.fadeLength = fadeLength
-        label.textColor = .white
-        label.font = .mediumSizeBoldFont
-        return label
     }
 }
 
@@ -203,13 +107,5 @@ extension Reactive where Base: AVPlayer {
     public var currentDuration: Observable<Double?> {
         return self.observe(CMTime.self, #keyPath(AVPlayer.currentItem.duration))
             .map({ $0?.seconds })
-    }
-}
-
-extension Reactive where Base: UIProgressView {
-    public var progress: Observable<Float> {
-        return self.observe(Float.self, #keyPath(UIProgressView.progress))
-            .filter({ $0 != nil })
-            .map({ $0! })
     }
 }

@@ -12,62 +12,10 @@ import RxDataSources
 import RxRelay
 import RxCocoa
 
-protocol AllPlaylistsTableViewDelegate {
-    func didTapOnPlaylist(indexPath: IndexPath)
-}
-
 typealias PlaylistSectionModel = AnimatableSectionModel<String, PlaylistUIModel>
-
-class AllPlaylistsTableView: BindableTableViewController<PlaylistSectionModel>, UITableViewDelegate {
-    
-    private var heightForRow: CGFloat
-    
-    private var backgroundColor: UIColor
-    
-    private var itemsAsRelay: BehaviorRelay<[PlaylistUIProtocol]>?
-    
-    var delegate: AllPlaylistsTableViewDelegate?
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return heightForRow
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.didTapOnPlaylist(indexPath: indexPath)
-    }
-    
-    
-    init(heightForRow: CGFloat,
-         backgroundColor: UIColor,
-         tableViewColor: UIColor,
-         items: Observable<[PlaylistSectionModel]>,
-         itemsAsRelay: BehaviorRelay<[PlaylistUIProtocol]>?,
-         onItemMoved: ((ItemMovedEvent) -> Void)? = nil,
-         onItemRemoved: ((IndexPath) -> Void)? = nil,
-         classesToRegister: [String: AnyClass],
-         dataSource: RxTableViewSectionedAnimatedDataSource<PlaylistSectionModel>) {
-        self.heightForRow = heightForRow
-        self.backgroundColor = backgroundColor
-        self.itemsAsRelay = itemsAsRelay
-        
-        super.init(items: items,
-                   onItemMoved: onItemMoved,
-                   onItemRemoved: onItemRemoved,
-                   dataSource: dataSource,
-                   classesToRegister: classesToRegister)
-        
-        tableView.backgroundColor = tableViewColor
-        
-        view.backgroundColor = backgroundColor
-        tableView.separatorColor = .clear
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        tableView.rx.setDelegate(self).disposed(by: disposeBag)
-    }
-}
+//
+//class AllPlaylistsTableView: BindableTableViewController<PlaylistSectionModel> {        
+//    required init?(coder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
+//}

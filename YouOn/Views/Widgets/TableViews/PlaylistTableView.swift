@@ -13,29 +13,13 @@ import RxDataSources
 import RxRelay
 import RxCocoa
 
-protocol PlaylistTableViewProtocol {
-    func onMediaFileTapped(indexPath: IndexPath)
-}
-
 typealias MediaFilesSectionModel = AnimatableSectionModel<String, MediaFileUIModel>
 
-class PlaylistTableView: BindableTableViewController<MediaFilesSectionModel>, UITableViewDelegate, UITableViewDragDelegate {
-    
-    private var heightForRow: CGFloat
+class PlaylistTableView: BindableTableViewController<MediaFilesSectionModel>, UITableViewDragDelegate {
     
     private var backgroundColor: UIColor
     
     private var itemsAsRelay: BehaviorRelay<[MediaFileUIProtocol]>?
-    
-    var delegate: PlaylistTableViewProtocol?
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return heightForRow
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.onMediaFileTapped(indexPath: indexPath)
-    }
     
     init(heightForRow: CGFloat,
          backgroundColor: UIColor,
@@ -44,13 +28,15 @@ class PlaylistTableView: BindableTableViewController<MediaFilesSectionModel>, UI
          itemsAsRelay: BehaviorRelay<[MediaFileUIProtocol]>?,
          onItemMoved: ((ItemMovedEvent) -> Void)? = nil,
          onItemRemoved: ((IndexPath) -> Void)? = nil,
+         onItemSelected: ((IndexPath) -> Void)?,
          classesToRegister: [String: AnyClass],
          dataSource: RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel>) {
-        self.heightForRow = heightForRow
         self.backgroundColor = backgroundColor
         self.itemsAsRelay = itemsAsRelay
         
         super.init(items: items,
+                   heightForRow: heightForRow,
+                   onItemSelected: onItemSelected,
                    onItemMoved: onItemMoved,
                    onItemRemoved: onItemRemoved,
                    dataSource: dataSource,
@@ -66,7 +52,6 @@ class PlaylistTableView: BindableTableViewController<MediaFilesSectionModel>, UI
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.rx.setDelegate(self).disposed(by: disposeBag)
         tableView.dragDelegate = self
     }
     

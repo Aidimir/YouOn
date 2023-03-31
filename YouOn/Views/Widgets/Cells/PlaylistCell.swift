@@ -12,6 +12,8 @@ import SnapKit
 
 class PlaylistCell: UITableViewCell {
     
+    var delegate: MoreActionsTappedDelegate?
+    
     var imgView = UIImageView()
     
     var playlistTitle = UILabel()

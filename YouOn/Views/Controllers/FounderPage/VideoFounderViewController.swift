@@ -82,17 +82,15 @@ class VideoFounderViewController: UIViewController,
         button.setTitle("Download", for: .normal)
         button.addTarget(self, action: #selector(onTap), for: .touchUpInside)
         
-        let allDownloadsTableView = DownloadsTableView(heightForRow: view.frame.size.height / 10,
-                                                       backgroundColor: .clear,
-                                                       tableViewColor: .clear,
-                                                       items: viewModel.itemsOnDownloading.asObservable().map({ [AnimatableSectionModel(model: "", items: $0 )] }),
-                                                       itemsAsRelay: viewModel.itemsOnDownloading,
-                                                       classesToRegister: classesToRegister,
-                                                       dataSource: dataSource)
+        let allDownloadsTableView = BindableTableViewController(items:
+                                                                    viewModel.itemsOnDownloading.asObservable().map({ [AnimatableSectionModel(model: "", items: $0 )] }),
+                                                                heightForRow: view.frame.size.height / 10,
+                                                                tableViewColor: .clear,
+                                                                dataSource: dataSource,
+                                                                classesToRegister: classesToRegister)
         
         downloadsTableView = allDownloadsTableView
         downloadsTableView?.view.layer.cornerRadius = 20
-        
         
         view.addSubview(searchField)
         searchField.snp.makeConstraints({ make in

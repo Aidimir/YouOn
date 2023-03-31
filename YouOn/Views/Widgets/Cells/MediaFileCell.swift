@@ -11,27 +11,21 @@ import SnapKit
 import MarqueeLabel
 import Kingfisher
 
+protocol MoreActionsTappedDelegate {
+    func onMoreActionsTapped(cell: UITableViewCell)
+}
+
 class MediaFileCell: UITableViewCell {
-    
-    private var controller: UIViewController?
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.isUserInteractionEnabled = true
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    public func setup(file: MediaFileUIProtocol, controller: UIViewController? = nil,
+    var delegate: MoreActionsTappedDelegate?
+        
+    public func setup(file: MediaFileUIProtocol,
                       foregroundColor: UIColor,
                       backgroundColor: UIColor,
                       imageCornerRadius: CGFloat = 0,
                       fadeLength: CGFloat = 20,
-                      animationDuration: CGFloat = 6 ) {
-        self.controller = controller
+                      animationDuration: CGFloat = 6,
+                      supportsMoreActions: Bool = false) {
         
         let nameLabel = MarqueeLabel(frame: .zero, duration: animationDuration, fadeLength: 0)
         nameLabel.animationDelay = 2
@@ -95,7 +89,7 @@ class MediaFileCell: UITableViewCell {
         addSubview(view)
         view.frame = contentView.bounds
         
-        if controller != nil {
+        if supportsMoreActions {
             let image = UIImage(named: "Dots")
             let formattingIcon = UIImageView(image: image)
             formattingIcon.contentMode = .scaleAspectFit
@@ -115,7 +109,8 @@ class MediaFileCell: UITableViewCell {
         contentView.backgroundColor = backgroundColor
     }
     
-    @objc private func onTap(){
+    @objc private func onTap() {
+        delegate?.onMoreActionsTapped(cell: self)
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -138,12 +133,6 @@ class MediaFileCell: UITableViewCell {
     
     public func didDeselect() {
         self.accessoryType = .none
-    }
-}
-
-extension MediaFileCell: UIPopoverPresentationControllerDelegate {
-    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
-        return .none
     }
 }
 
