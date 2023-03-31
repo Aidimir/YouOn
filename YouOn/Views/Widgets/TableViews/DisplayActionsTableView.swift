@@ -15,10 +15,16 @@ class DisplayActionsTableView: UIViewController, UITableViewDelegate, UITableVie
     private lazy var tableView = UITableView()
         
     private var headerView: UIView
+    
+    private var heightForRow: CGFloat
+    
+    private var heightForHeader: CGFloat
 
-    init(source: [ActionModel], headerView: UIView) {
+    init(source: [ActionModel], headerView: UIView, heightForRow: CGFloat, heightForHeader: CGFloat) {
         self.source = source
+        self.heightForRow = heightForRow
         self.headerView = headerView
+        self.heightForHeader = heightForHeader
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -45,7 +51,7 @@ class DisplayActionsTableView: UIViewController, UITableViewDelegate, UITableVie
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return view.frame.size.height / 10
+        return heightForRow
     }
 
     override func viewDidLoad() {
@@ -60,9 +66,9 @@ class DisplayActionsTableView: UIViewController, UITableViewDelegate, UITableVie
         
         view.addSubview(headerView)
         headerView.snp.makeConstraints { make in
-            make.top.equalTo(view.readableContentGuide)
+            make.top.equalTo(view.readableContentGuide).offset(50)
             make.left.right.equalTo(view.readableContentGuide)
-            make.height.equalToSuperview().multipliedBy(0.2)
+            make.height.equalTo(heightForHeader)
         }
                 
         view.addSubview(tableView)

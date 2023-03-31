@@ -40,6 +40,7 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
         let saver = PlaylistSaver(dataManager: MediaDataManager(appDelegate: appDelegate), fileManager: fileManager)
         let viewModel = LibraryViewModel(saver: saver)
         let controller = LibraryViewController()
+        viewModel.delegate = controller
         
         let navController = buildNavigationController(rootController: controller)
         router = LibraryPageRouter(builder: self, navigationController: navController)

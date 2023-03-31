@@ -63,6 +63,7 @@
 		9DF8710629D6123800E21DBC /* ActionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710529D6123800E21DBC /* ActionModel.swift */; };
 		9DF8710A29D6D30200E21DBC /* UIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710929D6D30200E21DBC /* UIExtensions.swift */; };
 		9DF8710C29D6D75800E21DBC /* MediaFileAsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710B29D6D75800E21DBC /* MediaFileAsHeaderView.swift */; };
+		9DF8710E29D715D500E21DBC /* PlaylistAsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710D29D715D500E21DBC /* PlaylistAsHeaderView.swift */; };
 		C7B93FF1C9326C7EFD75352C /* Pods_YouOn_YouOnUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6227F66CB4FEA90CFE430489 /* Pods_YouOn_YouOnUITests.framework */; };
 		E847D7C616F772C15E6A2083 /* Pods_YouOn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDB00ACF719B20B0C14EE296 /* Pods_YouOn.framework */; };
 /* End PBXBuildFile section */
@@ -163,6 +164,7 @@
 		9DF8710529D6123800E21DBC /* ActionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionModel.swift; sourceTree = "<group>"; };
 		9DF8710929D6D30200E21DBC /* UIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIExtensions.swift; sourceTree = "<group>"; };
 		9DF8710B29D6D75800E21DBC /* MediaFileAsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFileAsHeaderView.swift; sourceTree = "<group>"; };
+		9DF8710D29D715D500E21DBC /* PlaylistAsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistAsHeaderView.swift; sourceTree = "<group>"; };
 		DDB00ACF719B20B0C14EE296 /* Pods_YouOn.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouOn.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -416,6 +418,7 @@
 				9DC4CB7F29D4EC690045D7F7 /* DownloadCell.swift */,
 				9DF8710129D60E5B00E21DBC /* ActionCell.swift */,
 				9DF8710B29D6D75800E21DBC /* MediaFileAsHeaderView.swift */,
+				9DF8710D29D715D500E21DBC /* PlaylistAsHeaderView.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -711,6 +714,7 @@
 				9DA011D129C1B61E00962778 /* YouOn.xcdatamodeld in Sources */,
 				9DC4CB7C29D4E9FD0045D7F7 /* DownloadsTableView.swift in Sources */,
 				9D50900229CB03CE00F9EE5F /* PlaylistTableView.swift in Sources */,
+				9DF8710E29D715D500E21DBC /* PlaylistAsHeaderView.swift in Sources */,
 				9DC4CB6429D1D60F0045D7F7 /* MainViewController.swift in Sources */,
 				9DA0120529C22AA700962778 /* PlaylistModel.swift in Sources */,
 				9DF8710229D60E5B00E21DBC /* ActionCell.swift in Sources */,

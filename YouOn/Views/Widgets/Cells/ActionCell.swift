@@ -14,6 +14,13 @@ class ActionCell: UITableViewCell {
     private var imgView: UIImageView?
     
     public func setup(title: String?, onTap: (() -> Void)?, icon: UIImage? = nil, tintColor: UIColor = .white, textColor: UIColor = .white) {
+        
+        enum Constants {
+            static let verticalPadding = 10
+            static let horizontalPadding = 10
+            static let iconSize = 50
+        }
+
         titleLabel = UILabel()
         titleLabel!.text = title
         titleLabel!.font = .mediumSizeBoldFont
@@ -28,8 +35,8 @@ class ActionCell: UITableViewCell {
         
         addSubview(imgView!)
         imgView!.snp.makeConstraints { make in
-            make.left.top.bottom.equalTo(contentView)
-            make.width.equalTo(50)
+            make.left.centerY.equalTo(contentView)
+            make.width.height.equalTo(contentView.snp.height)
         }
         
         addSubview(titleLabel!)

@@ -11,8 +11,13 @@ import Differentiator
 
 protocol LibraryViewModelProtocol: CollectableViewModelProtocol where T == PlaylistUIProtocol {
     var router: LibraryPageRouterProtocol? { get set }
+    var delegate: LibraryViewProtocol? { get set }
     func fetchPlaylists()
+    func onAddPlaylistTapped()
+    func onRenamePLaylistTapped(indexPath: IndexPath)
+    func fetchActionModels(indexPath: IndexPath) -> [ActionModel]
     func didTapOnPlaylist(indexPath: IndexPath)
+    func changePlaylistTitle(indexPath: IndexPath, title: String)
     func addPlaylist(_ text: String)
     func removePlaylist(indexPath: IndexPath)
     func saveAllPlaylists()
@@ -20,8 +25,10 @@ protocol LibraryViewModelProtocol: CollectableViewModelProtocol where T == Playl
 }
 
 class LibraryViewModel: LibraryViewModelProtocol {
-        
+    
     private let saver: PlaylistSaverProtocol
+    
+    var delegate: LibraryViewProtocol?
     
     var router: LibraryPageRouterProtocol?
     
@@ -57,6 +64,18 @@ class LibraryViewModel: LibraryViewModelProtocol {
         }
     }
     
+    func fetchActionModels(indexPath: IndexPath) -> [ActionModel] {
+        let renameAction = ActionModel(title: "Rename", onTap: {
+            self.onRenamePLaylistTapped(indexPath: indexPath)
+        }, iconName: "play.circle")
+        
+        let removeAction = ActionModel(title: "Remove", onTap: {
+            self.removePlaylist(indexPath: indexPath)
+        }, iconName: "trash")
+        
+        return [renameAction, removeAction]
+    }
+    
     func saveAllPlaylists() {
         do {
             if let playlists = uiModels.value as? [Playlist] {
@@ -74,6 +93,28 @@ class LibraryViewModel: LibraryViewModelProtocol {
             if let playlist = uiModels.value[indexPath.row] as? Playlist {
                 try saver.removePlaylist(playlist: playlist)
                 uiModels.removeElement(at: indexPath.row)
+            }
+        } catch {
+            errorHandler(error)
+        }
+    }
+    
+    func onAddPlaylistTapped() {
+    }
+    
+    func onRenamePLaylistTapped(indexPath: IndexPath) {
+        if let playlist = uiModels.value[indexPath.row] as? Playlist {
+            DispatchQueue.main.async {
+                self.delegate?.onPlaylistRenameTapped(indexPath: indexPath)
+            }
+        }
+    }
+    
+    func changePlaylistTitle(indexPath: IndexPath, title: String) {
+        do {
+            if var playlist = uiModels.value[indexPath.row] as? Playlist, !playlist.isDefaultPlaylist {
+                playlist.title = title
+                try saver.savePlaylist(playlist: playlist)
             }
         } catch {
             errorHandler(error)

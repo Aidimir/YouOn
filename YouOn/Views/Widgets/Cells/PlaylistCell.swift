@@ -34,7 +34,7 @@ class PlaylistCell: UITableViewCell {
     }
     
     public func setup(uiModel: PlaylistUIProtocol, foregroundColor: UIColor,
-                      backgroundColor: UIColor, cornerRadius: CGFloat = 0) {
+                      backgroundColor: UIColor, cornerRadius: CGFloat = 0, supportsMoreActions: Bool = false) {
         enum Constants {
             static let topPadding = 10
             static let bottomPadding = 10
@@ -87,6 +87,23 @@ class PlaylistCell: UITableViewCell {
             make.right.equalToSuperview()
         }
         
+        if supportsMoreActions {
+            let image = UIImage(named: "Dots")
+            let formattingIcon = UIImageView(image: image)
+            formattingIcon.contentMode = .scaleAspectFit
+            formattingIcon.tintColor = .white
+            let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(onTap))
+            gestureRecognizer.numberOfTapsRequired = 1
+            formattingIcon.addGestureRecognizer(gestureRecognizer)
+            formattingIcon.isUserInteractionEnabled = true
+            
+            view.addSubview(formattingIcon)
+            formattingIcon.snp.makeConstraints { make in
+                make.right.top.bottom.equalTo(view)
+                make.width.equalTo(view).multipliedBy(0.1)
+            }
+        }
+        
         addSubview(view)
         view.frame = contentView.bounds
         contentView.backgroundColor = backgroundColor
@@ -98,5 +115,9 @@ class PlaylistCell: UITableViewCell {
         playlistTitle.removeFromSuperview()
         countLabel.removeFromSuperview()
         view.removeFromSuperview()
+    }
+    
+    @objc private func onTap() {
+        delegate?.onMoreActionsTapped(cell: self)
     }
 }

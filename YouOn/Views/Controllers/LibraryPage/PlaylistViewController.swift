@@ -21,7 +21,7 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     func onMoreActionsTapped(cell: UITableViewCell) {
         if let indexPath = tableViewController?.tableView.indexPath(for: cell), let model = viewModel?.uiModels.value[indexPath.row], let viewModel = viewModel {
             let headerView = MediaFileAsHeaderView(model: model)
-            actionsController = DisplayActionsTableView(source: viewModel.fetchActionModels(indexPath: indexPath), headerView: headerView)
+            actionsController = DisplayActionsTableView(source: viewModel.fetchActionModels(indexPath: indexPath), headerView: headerView, heightForRow: view.frame.size.height / 10, heightForHeader: view.frame.size.height * 0.2)
         }
         
         present(actionsController!, animated: true)

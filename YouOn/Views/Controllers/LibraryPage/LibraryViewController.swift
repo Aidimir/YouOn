@@ -13,17 +13,31 @@ import RxSwift
 import RxCocoa
 import LNPopupController
 
-protocol LibraryViewProtocol {
+protocol LibraryViewProtocol: UIViewController {
     var viewModel: (any LibraryViewModelProtocol)? { get set }
+    func onPlaylistRenameTapped(indexPath: IndexPath)
+    func onAddPlaylistTapped()
 }
 
-class LibraryViewController: UIViewController, LibraryViewProtocol {
+class LibraryViewController: UIViewController, LibraryViewProtocol, MoreActionsTappedDelegate {
+    
+    private var actionsController: DisplayActionsTableView?
+    
+    func onMoreActionsTapped(cell: UITableViewCell) {
+        if let indexPath = playlistsTableView?.tableView.indexPath(for: cell), let model = viewModel?.uiModels.value[indexPath.row], let viewModel = viewModel {
+            let headerView = PlaylistAsHeaderView(uiModel: model, backgroundColor: .clear)
+            actionsController = DisplayActionsTableView(source: viewModel.fetchActionModels(indexPath: indexPath), headerView: headerView, heightForRow: view.frame.size.height / 10, heightForHeader: view.frame.size.height / 8)
+        }
+        
+        present(actionsController!, animated: true)
+    }
+    
     
     private let disposeBag = DisposeBag()
     
     var viewModel: (any LibraryViewModelProtocol)?
     
-    private var playlistsTableView: UIViewController?
+    private var playlistsTableView: BindableTableViewController<PlaylistSectionModel>?
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -39,8 +53,10 @@ class LibraryViewController: UIViewController, LibraryViewProtocol {
         
         let dataSource = RxTableViewSectionedAnimatedDataSource<PlaylistSectionModel> { _, tableView, indexPath, item in
             let cell = tableView.dequeueReusableCell(withIdentifier: "PlaylistCell", for: indexPath) as! PlaylistCell
+            let supportsActions = !item.isDefaultPlaylist
             cell.setup(uiModel: item, foregroundColor: .clear,
-                       backgroundColor: backgroundColor, cornerRadius: 10)
+                       backgroundColor: backgroundColor, cornerRadius: 10, supportsMoreActions: supportsActions)
+            cell.delegate = self
             cell.backgroundColor = .clear
             cell.selectionStyle = .none
             return cell
@@ -54,7 +70,7 @@ class LibraryViewController: UIViewController, LibraryViewProtocol {
             let cellsToRegister = ["PlaylistCell": PlaylistCell.self]
             
             let itemImage = UIImage(systemName: "plus")
-            let barItem = UIBarButtonItem(image: itemImage, style: .plain, target: self, action: #selector(addPlaylist))
+            let barItem = UIBarButtonItem(image: itemImage, style: .plain, target: self, action: #selector(onAddPlaylistTapped))
             barItem.tintColor = .white
             navigationItem.rightBarButtonItem = barItem
             
@@ -80,12 +96,18 @@ class LibraryViewController: UIViewController, LibraryViewProtocol {
         }
     }
     
-    @objc private func addPlaylist() {
+    @objc func onAddPlaylistTapped() {
         showInputDialog(title: "Add playlist", subtitle: nil, actionTitle: "Add", cancelTitle: "Cancel", inputPlaceholder: nil, inputKeyboardType: .default, cancelHandler: nil) { [weak self] text in
-            if text != nil {
-                if !text!.isEmpty {
-                    self?.viewModel?.addPlaylist(text!)
-                }
+            if let text = text, !text.isEmpty {
+                self?.viewModel?.addPlaylist(text)
+            }
+        }
+    }
+    
+    func onPlaylistRenameTapped(indexPath: IndexPath) {
+        showInputDialog(title: "Rename playlist", subtitle: nil, actionTitle: "Rename", cancelTitle: "Cancel", inputPlaceholder: nil, inputKeyboardType: .default, cancelHandler: nil) { [weak self] text in
+            if let text = text, !text.isEmpty {
+                self?.viewModel?.changePlaylistTitle(indexPath: indexPath, title: text)
             }
         }
     }

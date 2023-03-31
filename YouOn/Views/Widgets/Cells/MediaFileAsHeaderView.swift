@@ -47,30 +47,33 @@ class MediaFileAsHeaderView: UIView {
         imgView.layer.cornerRadius = imageCornerRadius
         imgView.layer.masksToBounds = true
         
+        addSubview(durationLabel)
+        durationLabel.snp.makeConstraints { make in
+            make.bottom.equalToSuperview()
+            make.right.equalToSuperview()
+        }
+        
+        addSubview(authorLabel)
+        authorLabel.snp.makeConstraints { make in
+            make.left.equalToSuperview()
+            make.right.equalTo(durationLabel.snp.left).inset(10)
+            make.bottom.equalTo(durationLabel)
+        }
+        
         addSubview(imgView)
         imgView.snp.makeConstraints { make in
-            make.centerY.left.equalToSuperview()
+            make.top.left.equalToSuperview()
             make.height.equalToSuperview().multipliedBy(0.5)
-            make.width.equalToSuperview().dividedBy(5)
+            make.width.equalTo(snp.height).multipliedBy(0.5)
         }
         
         addSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
             make.left.equalToSuperview()
             make.top.equalTo(imgView.snp.bottom).offset(20)
+            make.right.equalTo(durationLabel.snp.left).offset(-10)
         }
         
-        addSubview(durationLabel)
-        durationLabel.snp.makeConstraints { make in
-            make.top.equalTo(nameLabel.snp.bottom)
-            make.right.equalToSuperview()
-        }
-        
-        addSubview(authorLabel)
-        authorLabel.snp.makeConstraints { make in
-            make.left.equalTo(nameLabel)
-            make.right.equalTo(durationLabel.snp.left).inset(10)
-            make.bottom.equalTo(durationLabel)
-        }
+        backgroundColor = .clear
     }
 }
