@@ -28,7 +28,6 @@ class MediaFileCell: UITableViewCell {
     private var imgView: UIImageView!
         
     public func setup(file: MediaFileUIProtocol,
-                      foregroundColor: UIColor,
                       backgroundColor: UIColor,
                       imageCornerRadius: CGFloat = 0,
                       fadeLength: CGFloat = 20,

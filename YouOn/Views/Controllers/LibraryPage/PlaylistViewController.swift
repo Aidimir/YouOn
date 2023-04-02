@@ -55,7 +55,7 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             let dataSource = RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel> { [weak self] _, tableView, indexPath, item in
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as? MediaFileCell {
                     
-                    cell.setup(file: item, foregroundColor: backgroundColor, backgroundColor: backgroundColor, imageCornerRadius: 10, supportsMoreActions: true)
+                    cell.setup(file: item, backgroundColor: backgroundColor, imageCornerRadius: 10, supportsMoreActions: true)
                     cell.delegate = self
                     cell.backgroundColor = .clear
                     cell.selectionStyle = .none

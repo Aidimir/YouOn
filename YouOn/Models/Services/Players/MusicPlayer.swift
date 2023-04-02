@@ -201,7 +201,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
         commandCenter.playCommand.addTarget { [unowned self] event in
             if self.player.rate == 0 {
                 self.player.rate = 1
-                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = self.player.currentTime
+                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = self.player.currentItem?.currentTime()
                 return .success
             }
             return .commandFailed
@@ -260,6 +260,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
         let time = CMTime(seconds: seconds, preferredTimescale: 1000000)
         player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] completed in
             self?.delegate?.isSeekInProgress = false
+            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time.seconds
         }
     }
     

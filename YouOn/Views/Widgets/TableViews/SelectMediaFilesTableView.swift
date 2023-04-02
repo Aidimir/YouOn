@@ -18,7 +18,17 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
     
     private lazy var saveButton = UIButton()
     
+    private lazy var titleLabel = UILabel()
+    
     private let saveAction: (([IndexPath]) -> Void)?
+    
+    private enum Constants {
+        static let buttonWidth = 100
+        static let buttonHeight = 50
+        static let horizontalPadding = 30
+        static let verticalPadding = 15
+        static let roundedCornerRadius = 10
+    }
 
     init(source: [MediaFileUIProtocol], saveAction: (([IndexPath]) -> Void)?) {
         self.saveAction = saveAction
@@ -32,7 +42,7 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as! MediaFileCell
-        cell.setup(file: source[indexPath.row], foregroundColor: .black, backgroundColor: .black)
+        cell.setup(file: source[indexPath.row], backgroundColor: .clear, imageCornerRadius: 10)
         if selected.contains(where: { $0 == indexPath }) {
             cell.didSelect()
         } else {
@@ -48,7 +58,7 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return view.frame.size.height / 10
+        return view.frame.size.height / 8
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -68,26 +78,40 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
         
         saveButton.addTarget(self, action: #selector(onSaveTap), for: .touchUpInside)
         saveButton.setTitle("Add", for: .normal)
-        saveButton.tintColor = .green
+        saveButton.setTitleColor(.black, for: .normal)
+        saveButton.backgroundColor = .white
+        saveButton.layer.cornerRadius = CGFloat(Constants.roundedCornerRadius)
         
         tableView.register(MediaFileCell.self, forCellReuseIdentifier: "MediaFileCell")
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.backgroundColor = .black
+        tableView.backgroundColor = .clear
         tableView.allowsMultipleSelection = true
         tableView.separatorColor = .clear
         
+        titleLabel.text = "Add media to playlist"
+        titleLabel.textColor = .white
+        titleLabel.font = .titleFont
+        titleLabel.adjustsFontSizeToFitWidth = true
+        
         view.addSubview(saveButton)
         saveButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.right.equalTo(view.readableContentGuide.snp.right)
-            make.width.equalTo(100)
-            make.height.equalTo(50)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(Constants.verticalPadding)
+            make.right.equalTo(view).inset(Constants.horizontalPadding)
+            make.width.equalTo(Constants.buttonWidth)
+            make.height.equalTo(Constants.buttonHeight)
+        }
+        
+        view.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.right.equalTo(saveButton.snp.left).inset(Constants.horizontalPadding)
+            make.left.equalTo(view.readableContentGuide)
+            make.top.bottom.equalTo(saveButton)
         }
         
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(saveButton.snp.bottom).offset(10)
+            make.top.equalTo(saveButton.snp.bottom).offset(Constants.verticalPadding)
             make.bottom.equalToSuperview()
             make.left.right.equalTo(view.readableContentGuide)
         }
