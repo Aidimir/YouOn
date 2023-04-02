@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-protocol LibraryPageRouterProtocol: RouterProtocol {
+protocol LibraryPageRouterProtocol: RouterProtocol, AnyObject {
     var builder: LibraryPageBuilderProtocol { get set }
     func initPlaylistsViewController()
     func moveToPlaylist(playlistID: UUID)

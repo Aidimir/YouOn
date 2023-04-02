@@ -45,7 +45,7 @@ class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDel
     
     private lazy var blurView = UIVisualEffectView(effect: blur)
     
-    override func viewWillLayoutSubviews() {
+    override func viewDidLoad() {
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.backgroundEffect = blur
         tabBarAppearance.shadowImage = nil
@@ -55,14 +55,7 @@ class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDel
             tabBar.scrollEdgeAppearance = tabBarAppearance
         }
         navigationController?.toolbar.isHidden = true
-    }
-    
-    override func viewDidLoad() {
         super.viewDidLoad()
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
     }
     
     func onPlayerFileAppeared(title: String?, author: String?) {

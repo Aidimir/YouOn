@@ -28,7 +28,7 @@ class LibraryViewModel: LibraryViewModelProtocol {
     
     private let saver: PlaylistSaverProtocol
     
-    var delegate: LibraryViewProtocol?
+    weak var delegate: LibraryViewProtocol?
     
     var router: LibraryPageRouterProtocol?
     

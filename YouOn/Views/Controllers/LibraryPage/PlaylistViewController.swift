@@ -31,9 +31,9 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     }
     
     
-    var viewModel: (any PlaylistViewModelProtocol)?
+    weak var viewModel: (any PlaylistViewModelProtocol)?
     
-    var tableViewController: PlaylistTableView?
+    var tableViewController: BindableTableViewController<MediaFilesSectionModel>?
     
     private var actionsController: DisplayActionsTableView?
     
@@ -52,14 +52,17 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             
             self.viewModel?.delegate = self
             
-            let dataSource = RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel> { _, tableView, indexPath, item in
-                let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as! MediaFileCell
-                
-                cell.setup(file: item, foregroundColor: backgroundColor, backgroundColor: backgroundColor, imageCornerRadius: 10, supportsMoreActions: true)
-                cell.delegate = self
-                cell.backgroundColor = .clear
-                cell.selectionStyle = .none
-                return cell
+            let dataSource = RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel> { [weak self] _, tableView, indexPath, item in
+                if let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as? MediaFileCell {
+                    
+                    cell.setup(file: item, foregroundColor: backgroundColor, backgroundColor: backgroundColor, imageCornerRadius: 10, supportsMoreActions: true)
+                    cell.delegate = self
+                    cell.backgroundColor = .clear
+                    cell.selectionStyle = .none
+                    return cell
+                } else {
+                    return UITableViewCell()
+                }
             } titleForHeaderInSection: { source, sectionIndex in
                 return source[sectionIndex].model
             } canEditRowAtIndexPath: { source, indexPath in
@@ -68,21 +71,17 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
                 return true
             }
             
-            let playlistTableView = PlaylistTableView(heightForRow: view.frame.size.height / 10,
-                                                      backgroundColor: .clear,
-                                                      tableViewColor: .clear,
-                                                      items: viewModel.uiModels
+            tableViewController = BindableTableViewController(items: viewModel.uiModels
                 .asObservable()
                 .map({ [AnimatableSectionModel(model: "",
                                                items: $0.map({ MediaFileUIModel(model: $0) }))] }),
-                                                      itemsAsRelay: viewModel.uiModels,
-                                                      onItemMoved: onItemMoved(_:),
-                                                      onItemRemoved: onItemRemoved(_:),
-                                                      onItemSelected: onItemSelected(_:),
-                                                      classesToRegister: classesToRegister,
-                                                      dataSource: dataSource)
-            
-            tableViewController = playlistTableView
+                                                              heightForRow: view.frame.size.height / 10,
+                                                              onItemSelected: onItemSelected(_:),
+                                                              onItemMoved: onItemMoved(_:),
+                                                              onItemRemoved: onItemRemoved(_:),
+                                                              dataSource: dataSource,
+                                                              classesToRegister: classesToRegister,
+                                                              supportsDragging: true)
             
             view.backgroundColor = backgroundColor
             

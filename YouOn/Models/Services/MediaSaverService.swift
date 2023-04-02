@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol MediaSaverProtocol {
+protocol MediaSaverProtocol: AnyObject {
     func saveToAll(file: MediaFile) throws
     func removeFromAll(file: MediaFile) throws
     func fetchAllMedia() throws -> [MediaFile]

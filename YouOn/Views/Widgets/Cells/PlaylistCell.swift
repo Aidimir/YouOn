@@ -12,13 +12,13 @@ import SnapKit
 
 class PlaylistCell: UITableViewCell {
     
-    var delegate: MoreActionsTappedDelegate?
+    weak var delegate: MoreActionsTappedDelegate?
     
-    var imgView = UIImageView()
+    var imgView: UIImageView!
     
-    var playlistTitle = UILabel()
+    var playlistTitle: UILabel!
     
-    var countLabel = UILabel()
+    var countLabel: UILabel!
     
     private let placeholder = UIImage(systemName: "music.note.list")
     
@@ -107,6 +107,9 @@ class PlaylistCell: UITableViewCell {
         imgView.removeFromSuperview()
         playlistTitle.removeFromSuperview()
         countLabel.removeFromSuperview()
+        imgView = nil
+        playlistTitle = nil
+        countLabel = nil
     }
     
     @objc private func onTap() {

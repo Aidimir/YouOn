@@ -28,13 +28,21 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
     }
     
     
-    private lazy var player = MusicPlayer.shared
+    private var player: MusicPlayer = MusicPlayer.shared
+    
+    private var playlistViewModel: PlaylistViewModel?
     
     private var videoPlayer: AVPlayer?
         
     private let fileManager = FileManager.default
     
     private var router: LibraryPageRouter?
+    
+    private lazy var playlistSaver: PlaylistSaver? = {
+        let dataManager = MediaDataManager(appDelegate: appDelegate)
+        let saver = PlaylistSaver(dataManager: dataManager, fileManager: fileManager)
+        return saver
+    }()
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -51,8 +59,7 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
     }
     
     func buildLibraryViewController() -> UIViewController {
-        let saver = PlaylistSaver(dataManager: MediaDataManager(appDelegate: appDelegate), fileManager: fileManager)
-        let viewModel = LibraryViewModel(saver: saver)
+        let viewModel = LibraryViewModel(saver: playlistSaver!)
         let controller = LibraryViewController()
         viewModel.delegate = controller
         
@@ -64,17 +71,14 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
     }
     
     func buildPlaylistController(playlistID: UUID) -> UIViewController {
-        let dataManager = MediaDataManager(appDelegate: appDelegate)
-        let saver = PlaylistSaver(dataManager: dataManager, fileManager: fileManager)
-        
-        let viewModel = PlaylistViewModel(player: player,
-                                          saver: saver,
+        playlistViewModel = PlaylistViewModel(player: player,
+                                          saver: playlistSaver,
                                           id: playlistID)
-        viewModel.router = router
+        playlistViewModel!.router = router
         
-        let playlistController = PlaylistViewController()
-        playlistController.viewModel = viewModel
-        return playlistController
+        let playlistVC = PlaylistViewController()
+        playlistVC.viewModel = playlistViewModel
+        return playlistVC
     }
     
     func buildAddItemsToPlaylist(_ fromStorage: [MediaFile], saveAction: (([IndexPath]) -> Void)?) -> UIViewController {

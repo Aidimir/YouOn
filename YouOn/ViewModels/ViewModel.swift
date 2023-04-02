@@ -11,7 +11,7 @@ protocol ViewModelProtocol {
     func errorHandler(_ error: Error)
 }
 
-protocol MainViewModelDelegate {
+protocol MainViewModelDelegate: AnyObject {
     func onPlayerFileAppeared(title: String?, author: String?)
 }
 
@@ -29,7 +29,7 @@ class MainViewModel: MainViewModelProtocol {
     
     var router: MainRouterProtocol?
     
-    var delegate: MainViewModelDelegate?
+    weak var delegate: MainViewModelDelegate?
     
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(updateValue), name: NotificationCenterNames.playedSong, object: nil)

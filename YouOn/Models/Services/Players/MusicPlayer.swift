@@ -14,7 +14,7 @@ import RxRelay
 import RxSwift
 import RxCocoa
 
-protocol MusicPlayerViewDelegate {
+protocol MusicPlayerViewDelegate: AnyObject {
     var isScrubbingFlag: Bool { get set }
     var isSeekInProgress: Bool { get set }
     func onItemChanged()
@@ -23,7 +23,7 @@ protocol MusicPlayerViewDelegate {
     func errorHandler(error: Error)
 }
 
-protocol MusicPlayerProtocol {
+protocol MusicPlayerProtocol: AnyObject {
     var dataManager: PlayerDataManagerProtocol? { get set }
     var currentFile: MediaFileUIProtocol? { get }
     var isPlaying: Observable<Bool> { get }
@@ -87,7 +87,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
     
     var storage: [MediaFileUIProtocol] = []
     
-    var delegate: MusicPlayerViewDelegate?
+    weak var delegate: MusicPlayerViewDelegate?
     
     private var index: Int?
     

@@ -15,11 +15,11 @@ protocol CollectableViewModelProtocol: ViewModelProtocol {
     var uiModels: BehaviorRelay<[T]> { get set }
 }
 
-protocol PlaylistViewModelDelegate {
+protocol PlaylistViewModelDelegate: AnyObject {
     func barItemIf(_ isAddable: Bool)
 }
 
-protocol PlaylistViewModelProtocol: CollectableViewModelProtocol where T == MediaFileUIProtocol {
+protocol PlaylistViewModelProtocol: AnyObject, CollectableViewModelProtocol where T == MediaFileUIProtocol {
     var delegate: PlaylistViewModelDelegate? { get set }
     var router: LibraryPageRouterProtocol? { get set }
     var title: String? { get }
@@ -41,7 +41,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
         }
     }
     
-    var delegate: PlaylistViewModelDelegate?
+    weak var delegate: PlaylistViewModelDelegate?
     
     private var isAddable: Bool {
         get {
@@ -52,13 +52,13 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
         }
     }
     
-    var router: LibraryPageRouterProtocol?
+    weak var router: LibraryPageRouterProtocol?
     
     var uiModels: RxRelay.BehaviorRelay<[MediaFileUIProtocol]> = BehaviorRelay(value: [MediaFileUIProtocol]())
     
-    private var player: MusicPlayerProtocol
+    weak var player: MusicPlayerProtocol?
     
-    private let saver: PlaylistSaverProtocol?
+    weak var saver: PlaylistSaverProtocol?
     
     private let id: UUID
     
@@ -117,15 +117,15 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     
     func playSong(indexPath: IndexPath) {
         if let mediaStorage = uiModels.value as? [MediaFile] {
-            player.storage = mediaStorage
-            player.play(index: indexPath.row)
+            player?.storage = mediaStorage
+            player?.play(index: indexPath.row)
         }
     }
     
     func playVideo(indexPath: IndexPath) {
         if let mediaFile = uiModels.value[indexPath.row] as? MediaFile, mediaFile.supportsVideo {
-            DispatchQueue.main.async {
-                self.router?.moveToVideoPlayer(file: mediaFile)
+            DispatchQueue.main.async { [weak self] in
+                self?.router?.moveToVideoPlayer(file: mediaFile)
             }
         }
     }

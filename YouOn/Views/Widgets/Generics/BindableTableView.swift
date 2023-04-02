@@ -12,8 +12,15 @@ import SnapKit
 import RxRelay
 import RxCocoa
 
-class BindableTableViewController<T: AnimatableSectionModelType>: UIViewController, UITableViewDelegate {
-        
+class BindableTableViewController<T: AnimatableSectionModelType>: UIViewController, UITableViewDelegate, UITableViewDragDelegate {
+    
+    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        let dragItem = UIDragItem(itemProvider: NSItemProvider())
+        dragItem.localObject = tableView.visibleCells[indexPath.row]
+        return [dragItem]
+    }
+    
+    
     var items: RxSwift.Observable<[T]>
     
     var onItemSelected: ((IndexPath) -> Void)?
@@ -29,7 +36,9 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
     var dataSource: RxTableViewSectionedAnimatedDataSource<T>
     
     var heightForRow: CGFloat
-        
+    
+    var supportsDragging: Bool
+    
     let disposeBag = DisposeBag()
     
     init(items: RxSwift.Observable<[T]>,
@@ -39,7 +48,8 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
          onItemMoved: ((ItemMovedEvent) -> Void)? = nil,
          onItemRemoved: ((IndexPath) -> Void)? = nil,
          dataSource: RxTableViewSectionedAnimatedDataSource<T>,
-         classesToRegister: [String: AnyClass] ) {
+         classesToRegister: [String: AnyClass],
+         supportsDragging: Bool = false) {
         self.heightForRow = heightForRow
         self.items = items
         self.dataSource = dataSource
@@ -47,6 +57,7 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
         self.onItemSelected = onItemSelected
         self.onItemMoved = onItemMoved
         self.onItemRemoved = onItemRemoved
+        self.supportsDragging = supportsDragging
         super.init(nibName: nil, bundle: nil)
         tableView.backgroundColor = tableViewColor
     }
@@ -61,7 +72,7 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        
         for (key, value) in classesToRegister {
             tableView.register(value, forCellReuseIdentifier: key)
         }
@@ -83,7 +94,7 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
         
         items.bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
-
+        
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.size.equalToSuperview()
@@ -91,7 +102,10 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
         
         tableView.separatorColor = .clear
         
+        if supportsDragging {
+            tableView.dragDelegate = self
+        }
+        
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
     }
-    
 }

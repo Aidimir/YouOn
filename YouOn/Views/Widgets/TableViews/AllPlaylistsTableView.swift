@@ -13,9 +13,3 @@ import RxRelay
 import RxCocoa
 
 typealias PlaylistSectionModel = AnimatableSectionModel<String, PlaylistUIModel>
-//
-//class AllPlaylistsTableView: BindableTableViewController<PlaylistSectionModel> {        
-//    required init?(coder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
-//}
