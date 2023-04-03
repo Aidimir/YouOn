@@ -12,6 +12,6 @@ TODO:
   
   download only audio feature;
   
-  remake some ui elements;
+  remake some ui elements and add animations/transitions;
   
   add "share video" feature;
