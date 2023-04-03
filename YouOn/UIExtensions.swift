@@ -40,6 +40,8 @@ extension UIViewController {
 extension UIFont {
     public static let titleFont = UIFont.systemFont(ofSize: 24, weight: .semibold)
     
+    public static let largeFont = UIFont.systemFont(ofSize: 30, weight: .bold)
+    
     public static let mediumSizeBoldFont = UIFont.systemFont(ofSize: 20, weight: .semibold)
     
     public static let mediumSizeFont = UIFont.systemFont(ofSize: 20, weight: .medium)
@@ -97,4 +99,17 @@ extension UIView {
         mask.path = path.cgPath
         layer.mask = mask
     }
+    
+    func addGradientOnBottom(gradientHeight: CGFloat, colors: [UIColor]) {
+        layer.sublayers?.forEach { $0.removeFromSuperlayer() }
+        let width = self.bounds.width
+        let height = self.bounds.height
+        let sHeight: CGFloat = gradientHeight
+        let shadows = colors.map({ $0.cgColor })
+        let bottomImageGradient = CAGradientLayer()
+        bottomImageGradient.frame = CGRect(x: 0, y: height - sHeight, width: width, height: sHeight)
+        bottomImageGradient.colors = shadows
+        layer.insertSublayer(bottomImageGradient, at: 0)
+    }
 }
+

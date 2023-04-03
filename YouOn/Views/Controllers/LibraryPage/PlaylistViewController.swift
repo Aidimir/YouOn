@@ -36,9 +36,7 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     weak var viewModel: (any PlaylistViewModelProtocol)?
     
     private let disposeBag = DisposeBag()
-    
-    private var headerView: PlaylistHeaderView?
-    
+        
     var tableViewController: BindableTableViewController<MediaFilesSectionModel>?
     
     private var actionsController: DisplayActionsTableView?
@@ -68,12 +66,14 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         let backgroundColor = UIColor.darkGray
         
         let classesToRegister = ["MediaFileCell": MediaFileCell.self]
         
         if let viewModel = viewModel {
+            
+            asInfoFetched(viewModel.isAddable)
             
             self.viewModel?.delegate = self
             
@@ -108,17 +108,21 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
                                                               classesToRegister: classesToRegister,
                                                               supportsDragging: true)
             
-            let placeholder = UIImage(systemName: "music.note.list")?.withTintColor(.red)
-            headerView = PlaylistHeaderView(title: viewModel.title ?? String())
+            let placeholder = UIImage(systemName: "music.note.list")
+            let headerView = PlaylistHeaderView(title: viewModel.title ?? String())
             
-            viewModel.imgURL.asDriver().drive { [weak self] url in
-                self?.headerView?.imgView.kf.setImage(with: url, placeholder: placeholder)
+            viewModel.imgURL.asDriver().drive { url in
+                if let url = url {
+                    headerView.imgView.kf.setImage(with: url, placeholder: nil)
+                } else {
+                    headerView.imgView.kf.setImage(with: url, placeholder: placeholder)
+                }
             }.disposed(by: disposeBag)
             
-            tableViewController?.tableView.parallaxHeader.view = headerView!
-            tableViewController?.tableView.parallaxHeader.height = view.frame.height / 4
+            tableViewController?.tableView.parallaxHeader.view = headerView
+            tableViewController?.tableView.parallaxHeader.height = view.frame.height / 3
             tableViewController?.tableView.parallaxHeader.minimumHeight = 0
-            tableViewController?.tableView.parallaxHeader.mode = .bottomFill
+            tableViewController?.tableView.parallaxHeader.mode = .topFill
             
             view.backgroundColor = backgroundColor
             
@@ -126,8 +130,7 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             
             view.addSubview(tableViewController!.view)
             tableViewController!.view.snp.makeConstraints { make in
-                make.left.equalTo(view.readableContentGuide.snp.left)
-                make.right.equalToSuperview()
+                make.left.right.equalToSuperview()
                 make.top.bottom.equalTo(view)
             }
             
@@ -139,8 +142,8 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
         viewModel?.moveToAddFilesController()
     }
     
-    func barItemIf(_ isAddable: Bool) {
-        if isAddable {
+    func asInfoFetched(_ isAddable: Bool) {
+        if isAddable && navigationItem.rightBarButtonItem == nil {
             let itemImage = UIImage(systemName: "plus")
             let barItem = UIBarButtonItem(image: itemImage, style: .plain, target: self, action: #selector(addFiles))
             barItem.tintColor = .white

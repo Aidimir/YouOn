@@ -11,7 +11,7 @@ import UIKit
 protocol LibraryPageRouterProtocol: RouterProtocol, AnyObject {
     var builder: LibraryPageBuilderProtocol { get set }
     func initPlaylistsViewController()
-    func moveToPlaylist(playlistID: UUID)
+    func moveToPlaylist(playlistID: UUID, playlist: Playlist?)
     func moveToAddItemsToPlaylist(_ fromStorage: [MediaFile], saveAction: (([IndexPath]) -> Void)?)
     func moveToVideoPlayer(file: MediaFile)
 }
@@ -32,8 +32,8 @@ class LibraryPageRouter: LibraryPageRouterProtocol {
         navigationController.viewControllers = [controller]
     }
     
-    func moveToPlaylist(playlistID: UUID) {
-        let controller = builder.buildPlaylistController(playlistID: playlistID)
+    func moveToPlaylist(playlistID: UUID, playlist: Playlist? = nil) {
+        let controller = builder.buildPlaylistController(playlistID: playlistID, playlist: playlist)
         navigationController.pushViewController(controller, animated: true)
     }
     

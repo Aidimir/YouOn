@@ -63,7 +63,8 @@ class MediaFileCell: UITableViewCell {
         
         addSubview(imgView)
         imgView.snp.makeConstraints { make in
-            make.centerY.left.equalToSuperview()
+            make.centerY.equalToSuperview()
+            make.left.equalTo(contentView.readableContentGuide)
             make.height.equalToSuperview().multipliedBy(0.95)
             make.width.equalToSuperview().dividedBy(5)
         }

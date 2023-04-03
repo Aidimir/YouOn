@@ -12,7 +12,7 @@ import AVKit
 protocol LibraryPageBuilderProtocol: BuilderProtocol {
     func buildVideoPlayer(item: MediaFile) -> AVPlayerViewController?
     func buildLibraryViewController() -> UIViewController
-    func buildPlaylistController(playlistID: UUID) -> UIViewController
+    func buildPlaylistController(playlistID: UUID, playlist: Playlist?) -> UIViewController
     func buildAddItemsToPlaylist(_ fromStorage: [MediaFile], saveAction: (([IndexPath]) -> Void)?) -> UIViewController
 }
 
@@ -33,7 +33,7 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
     private var playlistViewModel: PlaylistViewModel?
     
     private var videoPlayer: AVPlayer?
-        
+    
     private let fileManager = FileManager.default
     
     private var router: LibraryPageRouter?
@@ -70,10 +70,11 @@ class LibraryPageBuilder: LibraryPageBuilderProtocol {
         return navController
     }
     
-    func buildPlaylistController(playlistID: UUID) -> UIViewController {
+    func buildPlaylistController(playlistID: UUID, playlist: Playlist?) -> UIViewController {
         playlistViewModel = PlaylistViewModel(player: player,
-                                          saver: playlistSaver,
-                                          id: playlistID)
+                                              saver: playlistSaver,
+                                              id: playlistID,
+                                              playlist: playlist)
         playlistViewModel!.router = router
         
         let playlistVC = PlaylistViewController()

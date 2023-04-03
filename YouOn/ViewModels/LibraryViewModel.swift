@@ -51,7 +51,7 @@ class LibraryViewModel: LibraryViewModelProtocol {
     
     func didTapOnPlaylist(indexPath: IndexPath) {
         if let pl = uiModels.value[indexPath.row] as? Playlist {
-            router?.moveToPlaylist(playlistID: pl.id)
+            router?.moveToPlaylist(playlistID: pl.id, playlist: pl)
         }
     }
     

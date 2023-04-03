@@ -16,12 +16,13 @@ protocol CollectableViewModelProtocol: ViewModelProtocol {
 }
 
 protocol PlaylistViewModelDelegate: AnyObject {
-    func barItemIf(_ isAddable: Bool)
+    func asInfoFetched(_ isAddable: Bool)
 }
 
 protocol PlaylistViewModelProtocol: AnyObject, CollectableViewModelProtocol where T == MediaFileUIProtocol {
     var delegate: PlaylistViewModelDelegate? { get set }
     var router: LibraryPageRouterProtocol? { get set }
+    var isAddable: Bool { get }
     var title: String? { get }
     var imgURL: BehaviorRelay<URL?> { get }
     func playSong(indexPath: IndexPath)
@@ -31,7 +32,7 @@ protocol PlaylistViewModelProtocol: AnyObject, CollectableViewModelProtocol wher
     func fetchActionModels(indexPath: IndexPath) -> [ActionModel]
     func saveStorage()
     func moveToAddFilesController()
-    init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol?, id: UUID)
+    init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol?, id: UUID, playlist: Playlist?)
 }
 
 class PlaylistViewModel: PlaylistViewModelProtocol {
@@ -46,7 +47,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     
     weak var delegate: PlaylistViewModelDelegate?
     
-    private var isAddable: Bool {
+    var isAddable: Bool {
         get {
             if let isDefault = playlist?.isDefaultPlaylist {
                 return !isDefault
@@ -69,9 +70,10 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     
     private var allFilesStorage: [MediaFile]?
     
-    required init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol?, id: UUID) {
+    required init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol?, id: UUID, playlist: Playlist?) {
         self.player = player
         self.saver = saver
+        self.playlist = playlist
         self.id = id
         fetchData()
         NotificationCenter.default.addObserver(self,
@@ -86,7 +88,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
                 if let playlist = try self.saver?.fetchPlaylist(id: self.id) {
                     self.playlist = playlist
                     self.imgURL.accept(playlist.imageURL)
-                    self.delegate?.barItemIf(self.isAddable)
+                    self.delegate?.asInfoFetched(self.isAddable)
                     self.uiModels.accept(playlist.content)
                 }
             } catch {
