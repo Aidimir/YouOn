@@ -200,8 +200,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
 
         commandCenter.playCommand.addTarget { [unowned self] event in
             if self.player.rate == 0 {
-                self.player.rate = 1
-                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = self.player.currentItem?.currentTime()
+                continuePlay()
                 return .success
             }
             return .commandFailed
@@ -209,7 +208,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
 
         commandCenter.pauseCommand.addTarget { [unowned self] event in
             if self.player.rate == 1 {
-                self.player.rate = 0
+                self.pause()
                 return .success
             }
             return .commandFailed
@@ -240,19 +239,24 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
     func playTapped() {
         if currentFile != nil {
             if player.rate == 0 {
-                player.rate = 1
+                continuePlay()
             } else {
-                player.rate = 0
+                pause()
             }
         }
     }
     
     func pause() {
         player.rate = 0
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentItem?.currentTime().seconds
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackProgress] = player.currentItem?.currentTime().seconds
     }
     
     func continuePlay() {
         player.rate = 1
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentItem?.currentTime().seconds
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackProgress] = player.currentItem?.currentTime().seconds
+
     }
     
     func seekTo(seconds: Double) {
@@ -267,9 +271,8 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
     private func setBindings() {
         player.currentItem?.rx.status.subscribe { status in
             if status == .readyToPlay {
-                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = self.player.currentItem?.currentTime().seconds
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = self.player.currentItem?.duration.seconds
-                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = self.player.currentItem?.currentTime()
+                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackProgress] = self.player.currentItem?.currentTime().seconds
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] = self.currentFile?.title
                 
                 if let storage = self.storage as? [MediaFile],
