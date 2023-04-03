@@ -46,10 +46,9 @@ class VideoFounderViewController: UIViewController,
         
         let classesToRegister = ["DownloadCell": DownloadCell.self]
         
-        let dataSource = RxTableViewSectionedAnimatedDataSource<DownloadsSectionModel> { _, tableView, indexPath, item in
+        let dataSource = RxTableViewSectionedAnimatedDataSource<DownloadsSectionModel> { [weak self] _, tableView, indexPath, item in
             let cell = tableView.dequeueReusableCell(withIdentifier: "DownloadCell", for: indexPath) as! DownloadCell
-            let progressCircleView = ProgressCircleView()
-            cell.setup(model: item, progressCircleView: progressCircleView, circleRadiusSize: cell.frame.height / 2) { [weak self] in
+            cell.setup(model: item, circleRadiusSize: cell.frame.height / 2) { [weak self] in
                 self?.viewModel.cancelDownloading(downloadModel: item)
             }
             cell.backgroundColor = .black
@@ -82,7 +81,6 @@ class VideoFounderViewController: UIViewController,
         button.setTitle("Download", for: .normal)
         button.addTarget(self, action: #selector(onTap), for: .touchUpInside)
         
-        let tbView = UITableView()
         let allDownloadsTableView = BindableTableViewController(items:
                                                                     viewModel.itemsOnDownloading.asObservable().map({ [AnimatableSectionModel(model: "", items: $0 )] }),
                                                                 heightForRow: view.frame.size.height / 10,

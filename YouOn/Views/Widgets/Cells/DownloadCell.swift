@@ -14,32 +14,33 @@ class DownloadCell: UITableViewCell {
     private var progressCircleView: ProgressCircleView?
     private var titleLabel: UILabel?
     private var onCircleTapped: (() -> Void)?
+    private var gestureRecognizer: UITapGestureRecognizer?
     
     private var disposeBag = DisposeBag()
     
-    func setup(model: DownloadModel, progressCircleView: ProgressCircleView, circleRadiusSize: CGFloat, onCircleTapped: (() -> Void)?) {
+    func setup(model: DownloadModelUIProtocol, circleRadiusSize: CGFloat, onCircleTapped: (() -> Void)?) {
         self.onCircleTapped = onCircleTapped
         titleLabel = .createScrollableLabel()
         titleLabel?.text = model.title
         
-        self.progressCircleView = progressCircleView
-        let gestureRecognizer = UITapGestureRecognizer()
-        gestureRecognizer.addTarget(self, action: #selector(onCircleTap))
-        self.progressCircleView?.addGestureRecognizer(gestureRecognizer)
+        progressCircleView = ProgressCircleView()
+        gestureRecognizer = UITapGestureRecognizer()
+        gestureRecognizer!.addTarget(self, action: #selector(onCircleTap))
+        self.progressCircleView?.addGestureRecognizer(gestureRecognizer!)
         self.progressCircleView?.isUserInteractionEnabled = true
         
-        addSubview(progressCircleView)
-        progressCircleView.snp.makeConstraints({ make in
+        addSubview(self.progressCircleView!)
+        self.progressCircleView!.snp.makeConstraints({ make in
             make.right.centerY.equalTo(contentView.readableContentGuide)
             make.height.width.equalTo(circleRadiusSize)
         })
         
-        model.progress.bind(to: progressCircleView.rx.currentProgress).disposed(by: disposeBag)
+        model.progress?.bind(to: self.progressCircleView!.rx.currentProgress).disposed(by: disposeBag)
         
         addSubview(titleLabel!)
         titleLabel!.snp.makeConstraints { make in
             make.left.top.bottom.equalTo(contentView.readableContentGuide)
-            make.right.equalTo(progressCircleView.snp.left)
+            make.right.equalTo(self.progressCircleView!.snp.left)
         }
     }
     
@@ -48,12 +49,14 @@ class DownloadCell: UITableViewCell {
     }
     
     override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
         progressCircleView?.removeFromSuperview()
         titleLabel?.removeFromSuperview()
         progressCircleView?.gestureRecognizers = nil
         progressCircleView = nil
         titleLabel = nil
         onCircleTapped = nil
-        super.prepareForReuse()
+        gestureRecognizer = nil
     }
 }

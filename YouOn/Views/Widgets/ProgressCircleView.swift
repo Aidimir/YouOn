@@ -50,7 +50,7 @@ class ProgressCircleView: UIView {
     }
     
     private func addView() {
-
+        
         progressLabel = {
             let label = UILabel()
             label.textAlignment = .center
@@ -99,7 +99,5 @@ class ProgressCircleView: UIView {
         shapeLayer.fillColor = fillColor
         
         layer.addSublayer(shapeLayer)
-        
-        let timer = Timer.scheduledTimer(timeInterval: updateTimeInterval, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
     }
 }

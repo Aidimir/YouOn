@@ -44,6 +44,12 @@ class VideoFounderViewModel: VideoFounderViewModelProtocol {
     
     private let networkService: YTNetworkServiceProtocol
     
+    private var netErrorHandler: (Error) -> () {
+        return { [weak self] error in
+            self?.errorHandler(error)
+        }
+    }
+    
     required init(networkService: YTNetworkServiceProtocol) {
         self.networkService = networkService
     }
@@ -59,9 +65,9 @@ class VideoFounderViewModel: VideoFounderViewModelProtocol {
             }
             
             waitingToResponse.accept(true)
-            networkService.downloadVideo(linkString: linkString, onGotResponse: {
-                self.waitingToResponse.accept(false)
-            }, onCompleted: nil, errorHandler: errorHandler(_:))
+            networkService.downloadVideo(linkString: linkString, onGotResponse: { [weak self] in
+                self?.waitingToResponse.accept(false)
+            }, onCompleted: nil, errorHandler: netErrorHandler)
         }
     }
     

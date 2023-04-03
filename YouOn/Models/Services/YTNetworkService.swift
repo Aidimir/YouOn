@@ -39,6 +39,11 @@ class YTNetworkService: YTNetworkServiceProtocol {
     required init(saver: MediaSaverProtocol, fileManager: FileManager) {
         self.saver = saver
         self.fileManager = fileManager
+        modelToStopDownloading.asObservable().subscribe(onNext: { [unowned self] model in
+            model?.dataRequest.cancel()
+            self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.dataRequest != model?.dataRequest }))
+            return
+        }).disposed(by: disposeBag)
     }
     
     func downloadVideo(linkString: String,
@@ -68,12 +73,6 @@ class YTNetworkService: YTNetworkServiceProtocol {
                 return
             }
             
-            let observableVal = BehaviorRelay(value: CGFloat(0))
-            
-            let downloadModel = DownloadModel(identity: video.identifier, title: video.title, link: linkString, progress: observableVal.asObservable())
-            
-            self.nowInDownloading.accept([downloadModel] + self.nowInDownloading.value)
-            
             let fileName = "\(video.identifier).mp4"
             
             
@@ -83,18 +82,16 @@ class YTNetworkService: YTNetworkServiceProtocol {
                                       supportsVideo: true,
                                       imageURL: video.thumbnailURLs?.last)
             
+            let observableVal = BehaviorRelay(value: CGFloat(0))
+            
             let downloadRequest = AF.request(video.streamURL!).downloadProgress(closure: { progress in
                 observableVal.accept(progress.fractionCompleted)
             })
             
-            self.modelToStopDownloading.asDriver().drive(onNext: { model in
-                if downloadModel == model {
-                    downloadRequest.cancel()
-                    self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.identity != video.identifier }))
-                    return
-                }
-            }).disposed(by: self.disposeBag)
-
+            let downloadModel = DownloadModel(identity: video.identifier, title: video.title, link: linkString, progress: observableVal.asObservable(), dataRequest: downloadRequest)
+            
+            self.nowInDownloading.accept([downloadModel] + self.nowInDownloading.value)
+            
             downloadRequest.response(queue: .main) { response in
                 if downloadRequest.isCancelled {
                     self.modelToStopDownloading.accept(nil)
@@ -103,7 +100,7 @@ class YTNetworkService: YTNetworkServiceProtocol {
                 
                 switch (response.result) {
                 case .success(let data):
-                    self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.identity != video.identifier }))
+                    self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.dataRequest != downloadRequest }) )
                     do {
                         if self.fileManager.fileExists(atPath: url.appendingPathComponent(fileName).path) {
                             try self.fileManager.removeItem(at: url.appendingPathComponent(fileName))
