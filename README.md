@@ -6,7 +6,10 @@ This app has a lot features that need to be added later, such as downloading onl
 <img src="/GithubImages/Demo.gif" width="250" height="500" >
 
 TODO: 
-  add custom videoPlayer
-  download only audio feature
-  remake some ui elements
-  add "share video" feature 
+  add custom videoPlayer; 
+  
+  download only audio feature;
+  
+  remake some ui elements;
+  
+  add "share video" feature;
