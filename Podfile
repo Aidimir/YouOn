@@ -13,6 +13,8 @@ target 'YouOn' do
     	pod 'Alamofire'
     	pod 'Kingfisher'
 	pod 'RxDataSources', '~> 5.0'
+	pod 'ParallaxHeader'
+
 
 
 

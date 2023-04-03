@@ -11,6 +11,8 @@ import RxSwift
 import RxDataSources
 import SnapKit
 import RxCocoa
+import ParallaxHeader
+import Kingfisher
 
 protocol PlaylistViewProtocol {
     var viewModel: (any PlaylistViewModelProtocol)? { get set }
@@ -33,12 +35,35 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     
     weak var viewModel: (any PlaylistViewModelProtocol)?
     
+    private let disposeBag = DisposeBag()
+    
+    private var headerView: PlaylistHeaderView?
+    
     var tableViewController: BindableTableViewController<MediaFilesSectionModel>?
     
     private var actionsController: DisplayActionsTableView?
     
-    func onMediaFileTapped(indexPath: IndexPath) {
-        viewModel?.playSong(indexPath: indexPath)
+    private var onItemMoved: (ItemMovedEvent) -> () {
+        return { [weak self] (event) in
+            guard let viewModel = self?.viewModel else { return }
+            let item = viewModel.uiModels.value[event.sourceIndex.row]
+            viewModel.uiModels.replaceElement(at: event.sourceIndex.row, insertTo: event.destinationIndex.row, with: item)
+            viewModel.saveStorage()
+        }
+    }
+    
+    private var onItemRemoved: (IndexPath) -> () {
+        return { [weak self] (indexPath) in
+            guard let viewModel = self?.viewModel else { return }
+            viewModel.removeFromPlaylist(indexPath: indexPath)
+        }
+    }
+    
+    private var onItemSelected: (IndexPath) -> () {
+        return { [weak self] (indexPath) in
+            guard let viewModel = self?.viewModel else { return }
+            viewModel.playSong(indexPath: indexPath)
+        }
     }
     
     override func viewDidLoad() {
@@ -55,7 +80,7 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             let dataSource = RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel> { [weak self] _, tableView, indexPath, item in
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as? MediaFileCell {
                     
-                    cell.setup(file: item, backgroundColor: backgroundColor, imageCornerRadius: 10, supportsMoreActions: true)
+                    cell.setup(file: item, backgroundColor: backgroundColor, imageCornerRadius: 20, supportsMoreActions: true)
                     cell.delegate = self
                     cell.backgroundColor = .clear
                     cell.selectionStyle = .none
@@ -76,12 +101,24 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
                 .map({ [AnimatableSectionModel(model: "",
                                                items: $0.map({ MediaFileUIModel(model: $0) }))] }),
                                                               heightForRow: view.frame.size.height / 10,
-                                                              onItemSelected: onItemSelected(_:),
-                                                              onItemMoved: onItemMoved(_:),
-                                                              onItemRemoved: onItemRemoved(_:),
+                                                              onItemSelected: onItemSelected,
+                                                              onItemMoved: onItemMoved,
+                                                              onItemRemoved: onItemRemoved,
                                                               dataSource: dataSource,
                                                               classesToRegister: classesToRegister,
                                                               supportsDragging: true)
+            
+            let placeholder = UIImage(systemName: "music.note.list")?.withTintColor(.red)
+            headerView = PlaylistHeaderView(title: viewModel.title ?? String())
+            
+            viewModel.imgURL.asDriver().drive { [weak self] url in
+                self?.headerView?.imgView.kf.setImage(with: url, placeholder: placeholder)
+            }.disposed(by: disposeBag)
+            
+            tableViewController?.tableView.parallaxHeader.view = headerView!
+            tableViewController?.tableView.parallaxHeader.height = view.frame.height / 4
+            tableViewController?.tableView.parallaxHeader.minimumHeight = 0
+            tableViewController?.tableView.parallaxHeader.mode = .bottomFill
             
             view.backgroundColor = backgroundColor
             
@@ -96,23 +133,6 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             
             tableViewController?.didMove(toParent: self)
         }
-    }
-    
-    private func onItemMoved(_ event: ItemMovedEvent) -> Void {
-        guard let viewModel = viewModel else { return }
-        let item = viewModel.uiModels.value[event.sourceIndex.row]
-        viewModel.uiModels.replaceElement(at: event.sourceIndex.row, insertTo: event.destinationIndex.row, with: item)
-        viewModel.saveStorage()
-    }
-    
-    private func onItemRemoved(_ indexPath: IndexPath) -> Void {
-        guard let viewModel = viewModel else { return }
-        viewModel.removeFromPlaylist(indexPath: indexPath)
-    }
-    
-    private func onItemSelected(_ indexPath: IndexPath) -> Void {
-        guard let viewModel = viewModel else { return }
-        viewModel.playSong(indexPath: indexPath)
     }
     
     @objc private func addFiles() {

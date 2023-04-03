@@ -42,6 +42,19 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, MoreActionsT
     
     private var playlistsTableView: BindableTableViewController<PlaylistSectionModel>?
     
+    private var onItemSelected: (IndexPath) -> () {
+        return { [weak self] indexPath in
+            self?.viewModel?.didTapOnPlaylist(indexPath: indexPath)
+        }
+    }
+    
+    private var onItemRemoved: (IndexPath) -> () {
+        return { [weak self] indexPath in
+            guard let viewModel = self?.viewModel, !viewModel.uiModels.value[indexPath.row].isDefaultPlaylist else { return }
+            viewModel.removePlaylist(indexPath: indexPath)
+        }
+    }
+    
     init() {
         super.init(nibName: nil, bundle: nil)
         title = "Library"
@@ -78,11 +91,14 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, MoreActionsT
             navigationItem.rightBarButtonItem = barItem
             
             let allPlTableView = BindableTableViewController(items: viewModel.uiModels
-                                                                    .asObservable()
+                .asObservable()
                 .map({ [AnimatableSectionModel(model: "",
                                                items: $0.map({ PlaylistUIModel(model: $0)}))] })
                                                              , heightForRow: view.frame.size.height / 6,
-                                                             onItemSelected: onItemSelected(_:), onItemMoved: onItemMoved(_:), onItemRemoved: onItemRemoved(_:), dataSource: dataSource, classesToRegister: cellsToRegister)
+                                                             onItemSelected: onItemSelected,
+                                                             onItemRemoved: onItemRemoved,
+                                                             dataSource: dataSource,
+                                                             classesToRegister: cellsToRegister)
             
             playlistsTableView = allPlTableView
             allPlTableView.view.backgroundColor = backgroundColor
@@ -117,23 +133,6 @@ class LibraryViewController: UIViewController, LibraryViewProtocol, MoreActionsT
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func onItemMoved(_ event: ItemMovedEvent) -> Void {
-        guard viewModel != nil, let item = viewModel?.uiModels.value[event.sourceIndex.row] else { return }
-        viewModel!.uiModels.replaceElement(at: event.sourceIndex.row, insertTo: event.destinationIndex.row, with: item)
-        viewModel?.saveAllPlaylists()
-    }
-    
-    private func onItemRemoved(_ indexPath: IndexPath) -> Void {
-        guard viewModel != nil else { return }
-        if let isDefault = viewModel?.uiModels.value[indexPath.row].isDefaultPlaylist, isDefault == false {
-            viewModel?.removePlaylist(indexPath: indexPath)
-        }
-    }
-    
-    private func onItemSelected(_ indexPath: IndexPath) -> Void {
-        viewModel?.didTapOnPlaylist(indexPath: indexPath)
     }
 }
 

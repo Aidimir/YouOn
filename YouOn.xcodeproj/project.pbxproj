@@ -48,6 +48,7 @@
 		9DA0120D29C2346A00962778 /* YTNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA0120C29C2346A00962778 /* YTNetworkService.swift */; };
 		9DA0121229C239D100962778 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA0121129C239D100962778 /* Extensions.swift */; };
 		9DA0121629C3037A00962778 /* MediaSaverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA0121529C3037A00962778 /* MediaSaverService.swift */; };
+		9DA42C1F29DA09BA00D7C3B1 /* PlaylistTableViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA42C1E29DA09BA00D7C3B1 /* PlaylistTableViewHeader.swift */; };
 		9DC4CB5B29CF9E2B0045D7F7 /* SelectMediaFilesTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB5A29CF9E2B0045D7F7 /* SelectMediaFilesTableView.swift */; };
 		9DC4CB6229D1AD6F0045D7F7 /* MusicPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB6129D1AD6F0045D7F7 /* MusicPlayerController.swift */; };
 		9DC4CB6429D1D60F0045D7F7 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB6329D1D60F0045D7F7 /* MainViewController.swift */; };
@@ -152,6 +153,7 @@
 		9DA0120C29C2346A00962778 /* YTNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTNetworkService.swift; sourceTree = "<group>"; };
 		9DA0121129C239D100962778 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		9DA0121529C3037A00962778 /* MediaSaverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSaverService.swift; sourceTree = "<group>"; };
+		9DA42C1E29DA09BA00D7C3B1 /* PlaylistTableViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistTableViewHeader.swift; sourceTree = "<group>"; };
 		9DC4CB5A29CF9E2B0045D7F7 /* SelectMediaFilesTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectMediaFilesTableView.swift; sourceTree = "<group>"; };
 		9DC4CB6129D1AD6F0045D7F7 /* MusicPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicPlayerController.swift; sourceTree = "<group>"; };
 		9DC4CB6329D1D60F0045D7F7 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -240,6 +242,7 @@
 		9D6E93E129C860540044A642 /* Widgets */ = {
 			isa = PBXGroup;
 			children = (
+				9DA42C1D29DA09AC00D7C3B1 /* Headers */,
 				9DF8710029D60E4800E21DBC /* Cells */,
 				9D50900429CB05F000F9EE5F /* Generics */,
 				9D50900329CB05E300F9EE5F /* TableViews */,
@@ -384,6 +387,14 @@
 				9D508FF729C8960000F9EE5F /* PlaylistSaverService.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		9DA42C1D29DA09AC00D7C3B1 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				9DA42C1E29DA09BA00D7C3B1 /* PlaylistTableViewHeader.swift */,
+			);
+			path = Headers;
 			sourceTree = "<group>";
 		};
 		9DC4CB5E29D1AD490045D7F7 /* LibraryPage */ = {
@@ -722,6 +733,7 @@
 				9DA0120529C22AA700962778 /* PlaylistModel.swift in Sources */,
 				9DF8710229D60E5B00E21DBC /* ActionCell.swift in Sources */,
 				9D508FF429C8916F00F9EE5F /* LibraryViewController.swift in Sources */,
+				9DA42C1F29DA09BA00D7C3B1 /* PlaylistTableViewHeader.swift in Sources */,
 				9D50900029C9D2FD00F9EE5F /* NotificationCenterNames.swift in Sources */,
 				9D6E93EA29C876740044A642 /* VideoFounderViewController.swift in Sources */,
 				9DC4CB7829D4C17C0045D7F7 /* PlayerDataManager.swift in Sources */,

@@ -58,7 +58,7 @@ class MediaFileCell: UITableViewCell {
         imgView.kf.setImage(with: file.imageURL)
         imgView.contentMode = .scaleToFill
         imgView.layer.cornerRadius = imageCornerRadius
-        imgView.layer.masksToBounds = true
+        imgView.clipsToBounds = true
         
         
         addSubview(imgView)

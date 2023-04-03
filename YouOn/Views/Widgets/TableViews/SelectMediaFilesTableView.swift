@@ -20,6 +20,12 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
     
     private lazy var titleLabel = UILabel()
     
+    private lazy var dragView: UIView = {
+       let view = UIView()
+        view.backgroundColor = .gray
+        return view
+    }()
+    
     private let saveAction: (([IndexPath]) -> Void)?
     
     private enum Constants {
@@ -43,6 +49,7 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as! MediaFileCell
         cell.setup(file: source[indexPath.row], backgroundColor: .clear, imageCornerRadius: 10)
+
         if selected.contains(where: { $0 == indexPath }) {
             cell.didSelect()
         } else {
@@ -81,6 +88,7 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
         saveButton.setTitleColor(.black, for: .normal)
         saveButton.backgroundColor = .white
         saveButton.layer.cornerRadius = CGFloat(Constants.roundedCornerRadius)
+        saveButton.clipsToBounds = true
         
         tableView.register(MediaFileCell.self, forCellReuseIdentifier: "MediaFileCell")
         tableView.delegate = self
@@ -94,9 +102,17 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
         titleLabel.font = .titleFont
         titleLabel.adjustsFontSizeToFitWidth = true
         
+        view.addSubview(dragView)
+        dragView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(Constants.verticalPadding)
+            make.width.equalToSuperview().dividedBy(10)
+            make.height.equalTo(6)
+        }
+        
         view.addSubview(saveButton)
         saveButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(Constants.verticalPadding)
+            make.top.equalTo(dragView).offset(Constants.verticalPadding)
             make.right.equalTo(view).inset(Constants.horizontalPadding)
             make.width.equalTo(Constants.buttonWidth)
             make.height.equalTo(Constants.buttonHeight)

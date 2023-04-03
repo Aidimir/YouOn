@@ -82,6 +82,7 @@ class VideoFounderViewController: UIViewController,
         button.setTitle("Download", for: .normal)
         button.addTarget(self, action: #selector(onTap), for: .touchUpInside)
         
+        let tbView = UITableView()
         let allDownloadsTableView = BindableTableViewController(items:
                                                                     viewModel.itemsOnDownloading.asObservable().map({ [AnimatableSectionModel(model: "", items: $0 )] }),
                                                                 heightForRow: view.frame.size.height / 10,

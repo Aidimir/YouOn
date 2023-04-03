@@ -21,7 +21,7 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
     }
     
     
-    var items: RxSwift.Observable<[T]>
+    var items: RxSwift.Observable<[T]>?
     
     var onItemSelected: ((IndexPath) -> Void)?
     
@@ -29,19 +29,19 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
     
     var onItemRemoved: ((IndexPath) -> Void)?
     
-    let tableView = UITableView()
+    lazy var tableView = UITableView()
     
     var classesToRegister: [String: AnyClass]
     
-    var dataSource: RxTableViewSectionedAnimatedDataSource<T>
+    weak var dataSource: RxTableViewSectionedAnimatedDataSource<T>?
     
     var heightForRow: CGFloat
     
     var supportsDragging: Bool
     
-    let disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
     
-    init(items: RxSwift.Observable<[T]>,
+    init(items: RxSwift.Observable<[T]>?,
          heightForRow: CGFloat,
          tableViewColor: UIColor = .clear,
          onItemSelected: ((IndexPath) -> Void)? = nil,
@@ -72,40 +72,40 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        for (key, value) in classesToRegister {
-            tableView.register(value, forCellReuseIdentifier: key)
-        }
-        
-        tableView.rx.itemDeleted
-            .asDriver()
-            .drive(onNext: onItemRemoved)
-            .disposed(by: disposeBag)
-        
-        tableView.rx.itemMoved
-            .asDriver()
-            .drive(onNext: onItemMoved)
-            .disposed(by: disposeBag)
-        
-        tableView.rx.itemSelected
-            .asDriver()
-            .drive(onNext: onItemSelected)
-            .disposed(by: disposeBag)
-        
-        items.bind(to: tableView.rx.items(dataSource: dataSource))
-            .disposed(by: disposeBag)
-        
-        view.addSubview(tableView)
-        tableView.snp.makeConstraints { make in
-            make.size.equalToSuperview()
-        }
-        
-        tableView.separatorColor = .clear
-        
-        if supportsDragging {
-            tableView.dragDelegate = self
-        }
-        
-        tableView.rx.setDelegate(self).disposed(by: disposeBag)
+            
+            for (key, value) in classesToRegister {
+                tableView.register(value, forCellReuseIdentifier: key)
+            }
+            
+            tableView.rx.itemDeleted
+                .asDriver()
+                .drive(onNext: onItemRemoved)
+                .disposed(by: disposeBag)
+            
+            tableView.rx.itemMoved
+                .asDriver()
+                .drive(onNext: onItemMoved)
+                .disposed(by: disposeBag)
+            
+            tableView.rx.itemSelected
+                .asDriver()
+                .drive(onNext: onItemSelected)
+                .disposed(by: disposeBag)
+            
+            items?.bind(to: tableView.rx.items(dataSource: dataSource!))
+                .disposed(by: disposeBag)
+            
+            view.addSubview(tableView)
+            tableView.snp.makeConstraints { make in
+                make.size.equalToSuperview()
+            }
+            
+            tableView.separatorColor = .clear
+            
+            if supportsDragging {
+                tableView.dragDelegate = self
+            }
+            
+            tableView.rx.setDelegate(self).disposed(by: disposeBag)
     }
 }

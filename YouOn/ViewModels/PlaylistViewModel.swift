@@ -23,6 +23,7 @@ protocol PlaylistViewModelProtocol: AnyObject, CollectableViewModelProtocol wher
     var delegate: PlaylistViewModelDelegate? { get set }
     var router: LibraryPageRouterProtocol? { get set }
     var title: String? { get }
+    var imgURL: BehaviorRelay<URL?> { get }
     func playSong(indexPath: IndexPath)
     func playVideo(indexPath: IndexPath)
     func removeFromPlaylist(indexPath: IndexPath)
@@ -34,12 +35,14 @@ protocol PlaylistViewModelProtocol: AnyObject, CollectableViewModelProtocol wher
 }
 
 class PlaylistViewModel: PlaylistViewModelProtocol {
-        
+    
     var title: String? {
         get {
             return playlist?.title
         }
     }
+    
+    var imgURL: BehaviorRelay<URL?> = BehaviorRelay(value: nil)
     
     weak var delegate: PlaylistViewModelDelegate?
     
@@ -77,11 +80,12 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     }
     
     @objc func fetchData() {
-        DispatchQueue.main.async { [ weak self ] in
+        DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             do {
                 if let playlist = try self.saver?.fetchPlaylist(id: self.id) {
                     self.playlist = playlist
+                    self.imgURL.accept(playlist.imageURL)
                     self.delegate?.barItemIf(self.isAddable)
                     self.uiModels.accept(playlist.content)
                 }
@@ -92,26 +96,28 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     }
     
     func fetchActionModels(indexPath: IndexPath) -> [ActionModel] {
-        let actions = {
-            let removeAction = ActionModel(title: "Remove", onTap: {
-                self.removeFromPlaylist(indexPath: indexPath)
-            }, iconName: "trash")
-            
-            let removeFromAllAction = ActionModel(title: "Delete from device", onTap: {
-                self.removeFromAll(indexPath: indexPath)
-            }, iconName: "minus")
+        var actions = [ActionModel]()
+        
+        if let item = uiModels.value[indexPath.row] as? MediaFile, item.supportsVideo {
             
             let playVideoAction = ActionModel(title: "Play video", onTap: {
                 self.playVideo(indexPath: indexPath)
             }, iconName: "play.circle")
+            actions.append(playVideoAction)
+        }
             
-            if let item = uiModels.value[indexPath.row] as? MediaFile, item.supportsVideo {
-                
-                return [playVideoAction, removeAction, removeFromAllAction]
-            } else {
-                return [removeAction, removeFromAllAction]
-            }
-        }()
+        if let playlist = playlist, !playlist.isDefaultPlaylist {
+            let removeAction = ActionModel(title: "Remove", onTap: {
+                self.removeFromPlaylist(indexPath: indexPath)
+            }, iconName: "trash")
+            actions.append(removeAction)
+        }
+        
+        let removeFromAllAction = ActionModel(title: "Delete from device", onTap: {
+            self.removeFromAll(indexPath: indexPath)
+        }, iconName: "minus")
+        actions.append(removeFromAllAction)
+        
         return actions
     }
     
