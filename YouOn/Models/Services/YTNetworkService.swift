@@ -28,6 +28,8 @@ class YTNetworkService: YTNetworkServiceProtocol {
     
     private let disposeBag = DisposeBag()
     
+    private var log: Dictionary<String, Int> = [:]
+    
     var modelToStopDownloading: RxRelay.BehaviorRelay<DownloadModel?> = BehaviorRelay(value: nil)
     
     var nowInDownloading: BehaviorRelay<[DownloadModel]>  = BehaviorRelay(value: [DownloadModel]())
@@ -50,6 +52,10 @@ class YTNetworkService: YTNetworkServiceProtocol {
                        onGotResponse: (() -> Void)?,
                        onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?) {
+        
+        if log[linkString] == nil {
+            log[linkString] = 0
+        }
         
         guard let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             let errorTemp = NSError(domain: "Couldn't fetch file's url", code: -1, userInfo: nil)
@@ -84,6 +90,25 @@ class YTNetworkService: YTNetworkServiceProtocol {
             
             let observableVal = BehaviorRelay(value: CGFloat(0))
             
+        /// TEMPORARY FIX ( CAUSE: XCDYouTubeKit IS BROKEN BECAUSE OF YOUTUBE API UPDATE
+            if Array(video.streamURLs.values).count <= 1 || video.streamURL!.absoluteString.contains("manifest") {
+                let errorTemp = NSError(domain: "Can't download any of audio or video streams", code: -1, userInfo: nil)
+                if self.log[linkString]! < 100 {
+                    self.log[linkString]! += 1
+                    if self.log[linkString]! == 1 {
+                        let err = NSError(domain: "Can't download video. Will try 100 times to do it.", code: -1, userInfo: nil)
+                        errorHandler?(err)
+                    }
+                    self.downloadVideo(linkString: linkString, onGotResponse: onGotResponse, onCompleted: onCompleted, errorHandler: errorHandler)
+                    return
+                } else {
+                    self.log[linkString] = 0
+                    errorHandler?(errorTemp)
+                    return
+                }
+            }
+        /// REMOVE CODE ABOVE AFTER SOLUTION
+
             let downloadRequest = AF.request(video.streamURL!).downloadProgress(closure: { progress in
                 observableVal.accept(progress.fractionCompleted)
             })
@@ -113,6 +138,8 @@ class YTNetworkService: YTNetworkServiceProtocol {
                     onCompleted?()
                 case .failure(let error):
                     errorHandler?(error)
+                    downloadModel.dataRequest.cancel()
+                    self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.dataRequest != downloadModel.dataRequest }))
                     return
                 }
             }

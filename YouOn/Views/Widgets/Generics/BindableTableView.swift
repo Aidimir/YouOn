@@ -72,40 +72,40 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
     
     override func viewDidLoad() {
         super.viewDidLoad()
-            
-            for (key, value) in classesToRegister {
-                tableView.register(value, forCellReuseIdentifier: key)
-            }
-            
-            tableView.rx.itemDeleted
-                .asDriver()
-                .drive(onNext: onItemRemoved)
-                .disposed(by: disposeBag)
-            
-            tableView.rx.itemMoved
-                .asDriver()
-                .drive(onNext: onItemMoved)
-                .disposed(by: disposeBag)
-            
-            tableView.rx.itemSelected
-                .asDriver()
-                .drive(onNext: onItemSelected)
-                .disposed(by: disposeBag)
-            
-            items?.bind(to: tableView.rx.items(dataSource: dataSource!))
-                .disposed(by: disposeBag)
-            
-            view.addSubview(tableView)
-            tableView.snp.makeConstraints { make in
-                make.size.equalToSuperview()
-            }
-            
-            tableView.separatorColor = .clear
-            
-            if supportsDragging {
-                tableView.dragDelegate = self
-            }
-            
-            tableView.rx.setDelegate(self).disposed(by: disposeBag)
+        
+        for (key, value) in classesToRegister {
+            tableView.register(value, forCellReuseIdentifier: key)
+        }
+        
+        tableView.rx.itemDeleted
+            .asDriver()
+            .drive(onNext: onItemRemoved)
+            .disposed(by: disposeBag)
+        
+        tableView.rx.itemMoved
+            .asDriver()
+            .drive(onNext: onItemMoved)
+            .disposed(by: disposeBag)
+        
+        tableView.rx.itemSelected
+            .asDriver()
+            .drive(onNext: onItemSelected)
+            .disposed(by: disposeBag)
+        
+        items?.bind(to: tableView.rx.items(dataSource: dataSource!))
+            .disposed(by: disposeBag)
+        
+        view.addSubview(tableView)
+        tableView.snp.makeConstraints { make in
+            make.size.equalToSuperview()
+        }
+        
+        tableView.separatorColor = .clear
+        
+        if supportsDragging {
+            tableView.dragDelegate = self
+        }
+        
+        tableView.rx.setDelegate(self).disposed(by: disposeBag)
     }
 }

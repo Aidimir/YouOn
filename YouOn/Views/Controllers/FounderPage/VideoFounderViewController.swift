@@ -122,6 +122,11 @@ class VideoFounderViewController: UIViewController,
         downloadsTableView!.didMove(toParent: self)
         
         setBindings()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil);
+
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil);
+
     }
     
     @objc private func onTap() {
@@ -158,6 +163,14 @@ class VideoFounderViewController: UIViewController,
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc func keyboardWillShow(sender: NSNotification) {
+        self.view.frame.origin.y -= button.frame.height + 20
+    }
+
+    @objc func keyboardWillHide(sender: NSNotification) {
+         self.view.frame.origin.y = 0
     }
 }
 
