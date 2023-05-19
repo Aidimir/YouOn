@@ -10,6 +10,7 @@ import XCDYouTubeKit
 import Alamofire
 import RxRelay
 import RxSwift
+import YouTubeKit
 
 protocol YTNetworkServiceProtocol: AnyObject {
     init(saver: MediaSaverProtocol, fileManager: FileManager)
@@ -63,16 +64,7 @@ class YTNetworkService: YTNetworkServiceProtocol {
             return
         }
         
-        XCDYouTubeClient.default().getVideoWithIdentifier(linkString) { [weak self] video, error in
-            onGotResponse?()
-            guard let video = video, error == nil, let self = self else {
-                if error != nil {
-                    errorHandler?(error!)
-                }
-                
-                return
-            }
-            
+        fetchVideoInfo(linkString: linkString, onCompleted: { video in
             if self.nowInDownloading.value.contains(where: { $0.identity == video.identifier }) {
                 let errorTemp = NSError(domain: "This video is already downloading !", code: -1, userInfo: nil)
                 errorHandler?(errorTemp)
@@ -90,60 +82,58 @@ class YTNetworkService: YTNetworkServiceProtocol {
             
             let observableVal = BehaviorRelay(value: CGFloat(0))
             
-        /// TEMPORARY FIX ( CAUSE: XCDYouTubeKit IS BROKEN BECAUSE OF YOUTUBE API UPDATE
-            if Array(video.streamURLs.values).count <= 1 || video.streamURL!.absoluteString.contains("manifest") {
-                let errorTemp = NSError(domain: "Can't download any of audio or video streams", code: -1, userInfo: nil)
-                if self.log[linkString]! < 100 {
-                    self.log[linkString]! += 1
-                    if self.log[linkString]! == 1 {
-                        let err = NSError(domain: "Can't download video. Will try 100 times to do it.", code: -1, userInfo: nil)
+            Task {
+                do {
+                    let streamURL = try await YouTube(videoID: linkString).streams
+                                              .filter { $0.isProgressive && $0.subtype == "mp4" }
+                                              .highestResolutionStream()?
+                                              .url
+                    if streamURL == nil {
+                        let err = NSError(domain: "Can't download any of \"\(video.title)\" streams.", code: -1, userInfo: nil)
                         errorHandler?(err)
+                        return
                     }
-                    self.downloadVideo(linkString: linkString, onGotResponse: onGotResponse, onCompleted: onCompleted, errorHandler: errorHandler)
-                    return
-                } else {
-                    self.log[linkString] = 0
-                    errorHandler?(errorTemp)
-                    return
-                }
-            }
-        /// REMOVE CODE ABOVE AFTER SOLUTION
-
-            let downloadRequest = AF.request(video.streamURL!).downloadProgress(closure: { progress in
-                observableVal.accept(progress.fractionCompleted)
-            })
-            
-            let downloadModel = DownloadModel(identity: video.identifier, title: video.title, link: linkString, progress: observableVal.asObservable(), dataRequest: downloadRequest)
-            
-            self.nowInDownloading.accept([downloadModel] + self.nowInDownloading.value)
-            
-            downloadRequest.response(queue: .main) { response in
-                if downloadRequest.isCancelled {
-                    self.modelToStopDownloading.accept(nil)
-                    return
-                }
-                
-                switch (response.result) {
-                case .success(let data):
-                    self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.dataRequest != downloadRequest }) )
-                    do {
-                        if self.fileManager.fileExists(atPath: url.appendingPathComponent(fileName).path) {
-                            try self.fileManager.removeItem(at: url.appendingPathComponent(fileName))
+                    
+                    onGotResponse?()
+                    let downloadRequest = AF.request(streamURL!).downloadProgress(closure: { progress in
+                        observableVal.accept(progress.fractionCompleted)
+                    })
+                    
+                    let downloadModel = DownloadModel(identity: video.identifier, title: video.title, link: linkString, progress: observableVal.asObservable(), dataRequest: downloadRequest)
+                    
+                    self.nowInDownloading.accept([downloadModel] + self.nowInDownloading.value)
+                    
+                    downloadRequest.response(queue: .main) { response in
+                        if downloadRequest.isCancelled {
+                            self.modelToStopDownloading.accept(nil)
+                            return
                         }
-                    } catch {
-                        errorHandler?(error)
+                        
+                        switch (response.result) {
+                        case .success(let data):
+                            self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.dataRequest != downloadRequest }) )
+                            do {
+                                if self.fileManager.fileExists(atPath: url.appendingPathComponent(fileName).path) {
+                                    try self.fileManager.removeItem(at: url.appendingPathComponent(fileName))
+                                }
+                            } catch {
+                                errorHandler?(error)
+                            }
+                            self.fileManager.createFile(atPath: url.appendingPathComponent(fileName).path, contents: data)
+                            try? self.saver.saveToAll(file: mediaFile)
+                            onCompleted?()
+                        case .failure(let error):
+                            errorHandler?(error)
+                            downloadModel.dataRequest.cancel()
+                            self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.dataRequest != downloadModel.dataRequest }))
+                            return
+                        }
                     }
-                    self.fileManager.createFile(atPath: url.appendingPathComponent(fileName).path, contents: data)
-                    try? self.saver.saveToAll(file: mediaFile)
-                    onCompleted?()
-                case .failure(let error):
+                } catch {
                     errorHandler?(error)
-                    downloadModel.dataRequest.cancel()
-                    self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.dataRequest != downloadModel.dataRequest }))
-                    return
                 }
             }
-        }
+        }, errorHandler: errorHandler)
     }
     
     func downloadAudio(linkString: String,
@@ -152,4 +142,19 @@ class YTNetworkService: YTNetworkServiceProtocol {
         //
     }
     
+    private func fetchVideoInfo(linkString: String,
+                                onCompleted: ((_ video: XCDYouTubeVideo) -> Void)?,
+                                errorHandler: ((Error) -> Void)?) {
+        
+        XCDYouTubeClient.default().getVideoWithIdentifier(linkString) { [weak self] video, error in
+            guard let video = video, error == nil, let self = self else {
+                if error != nil {
+                    errorHandler?(error!)
+                }
+                
+                return
+            }
+            onCompleted?(video)
+        }
+    }
 }

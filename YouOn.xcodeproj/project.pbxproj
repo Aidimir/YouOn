@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2632501A5802B62DE7836783 /* Pods_YouOnTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F425F0CBFB6198A89E21BA3 /* Pods_YouOnTests.framework */; };
 		9D0997C529FE6BE5009A40FB /* XCDYouTubeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9D0997C429FE6BE5009A40FB /* XCDYouTubeKit */; };
+		9D32530B2A1754C000A1F616 /* YouTubeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9D32530A2A1754C000A1F616 /* YouTubeKit */; };
 		9D345E8529DB020A00FBE917 /* Demo.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9D345E8429DB020900FBE917 /* Demo.gif */; };
 		9D508FF029C879DE00F9EE5F /* AllPlaylistsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FEF29C879DD00F9EE5F /* AllPlaylistsTableView.swift */; };
 		9D508FF229C87A0D00F9EE5F /* BindableTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FF129C87A0D00F9EE5F /* BindableTableView.swift */; };
@@ -182,6 +183,7 @@
 				E847D7C616F772C15E6A2083 /* Pods_YouOn.framework in Frameworks */,
 				9DC4CB7329D494DB0045D7F7 /* LNPopupController in Frameworks */,
 				9D0997C529FE6BE5009A40FB /* XCDYouTubeKit in Frameworks */,
+				9D32530B2A1754C000A1F616 /* YouTubeKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -493,6 +495,7 @@
 			packageProductDependencies = (
 				9DC4CB7229D494DB0045D7F7 /* LNPopupController */,
 				9D0997C429FE6BE5009A40FB /* XCDYouTubeKit */,
+				9D32530A2A1754C000A1F616 /* YouTubeKit */,
 			);
 			productName = YouOn;
 			productReference = 9DA011C329C1B61E00962778 /* YouOn.app */;
@@ -572,6 +575,7 @@
 			packageReferences = (
 				9DC4CB7129D494DB0045D7F7 /* XCRemoteSwiftPackageReference "LNPopupController" */,
 				9D0997C329FE6BE5009A40FB /* XCRemoteSwiftPackageReference "XCDYouTubeKit" */,
+				9D3253092A1754C000A1F616 /* XCRemoteSwiftPackageReference "YouTubeKit" */,
 			);
 			productRefGroup = 9DA011C429C1B61E00962778 /* Products */;
 			projectDirPath = "";
@@ -1130,6 +1134,14 @@
 				kind = branch;
 			};
 		};
+		9D3253092A1754C000A1F616 /* XCRemoteSwiftPackageReference "YouTubeKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/alexeichhorn/YouTubeKit.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		9DC4CB7129D494DB0045D7F7 /* XCRemoteSwiftPackageReference "LNPopupController" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/LeoNatan/LNPopupController.git";
@@ -1145,6 +1157,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9D0997C329FE6BE5009A40FB /* XCRemoteSwiftPackageReference "XCDYouTubeKit" */;
 			productName = XCDYouTubeKit;
+		};
+		9D32530A2A1754C000A1F616 /* YouTubeKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9D3253092A1754C000A1F616 /* XCRemoteSwiftPackageReference "YouTubeKit" */;
+			productName = YouTubeKit;
 		};
 		9DC4CB7229D494DB0045D7F7 /* LNPopupController */ = {
 			isa = XCSwiftPackageProductDependency;
