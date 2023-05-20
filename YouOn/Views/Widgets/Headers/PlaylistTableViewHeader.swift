@@ -15,7 +15,6 @@ class PlaylistHeaderView: UIView {
        let imgView = UIImageView()
         imgView.tintColor = .gray
         imgView.contentMode = .scaleAspectFill
-        imgView.layer.cornerRadius = 10
         imgView.clipsToBounds = true
         return imgView
     }()

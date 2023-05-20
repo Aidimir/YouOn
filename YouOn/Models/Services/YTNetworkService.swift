@@ -93,8 +93,9 @@ class YTNetworkService: YTNetworkServiceProtocol {
                         errorHandler?(err)
                         return
                     }
-                    
-                    onGotResponse?()
+                    DispatchQueue.main.async {
+                        onGotResponse?()
+                    }
                     let downloadRequest = AF.request(streamURL!).downloadProgress(closure: { progress in
                         observableVal.accept(progress.fractionCompleted)
                     })
