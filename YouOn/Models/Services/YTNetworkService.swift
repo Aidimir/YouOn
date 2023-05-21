@@ -1,10 +1,3 @@
-//
-//  YTNetworkService.swift
-//  YouOn
-//
-//  Created by Айдимир Магомедов on 15.03.2023.
-//
-
 import Foundation
 import XCDYouTubeKit
 import Alamofire
@@ -16,11 +9,13 @@ protocol YTNetworkServiceProtocol: AnyObject {
     init(saver: MediaSaverProtocol, fileManager: FileManager)
     var nowInDownloading: BehaviorRelay<[DownloadModel]> { get }
     var modelToStopDownloading: BehaviorRelay<DownloadModel?> { get }
-    func downloadVideo(linkString: String,
+    func downloadVideo(videoIdentifier: String,
+                       videoURL: URL,
                        onGotResponse: (() -> Void)?,
                        onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?)
-    func downloadAudio(linkString: String,
+    func downloadAudio(videoIdentifier: String,
+                       videoURL: URL,
                        onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?)
 }
@@ -29,11 +24,11 @@ class YTNetworkService: YTNetworkServiceProtocol {
     
     private let disposeBag = DisposeBag()
     
-    private var log: Dictionary<String, Int> = [:]
+    private var log: [String: Int] = [:]
     
-    var modelToStopDownloading: RxRelay.BehaviorRelay<DownloadModel?> = BehaviorRelay(value: nil)
+    var modelToStopDownloading: BehaviorRelay<DownloadModel?> = BehaviorRelay(value: nil)
     
-    var nowInDownloading: BehaviorRelay<[DownloadModel]>  = BehaviorRelay(value: [DownloadModel]())
+    var nowInDownloading: BehaviorRelay<[DownloadModel]> = BehaviorRelay(value: [])
     
     private let fileManager: FileManager
     
@@ -42,6 +37,7 @@ class YTNetworkService: YTNetworkServiceProtocol {
     required init(saver: MediaSaverProtocol, fileManager: FileManager) {
         self.saver = saver
         self.fileManager = fileManager
+        
         modelToStopDownloading.asObservable().subscribe(onNext: { [unowned self] model in
             model?.dataRequest.cancel()
             self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.dataRequest != model?.dataRequest }))
@@ -49,13 +45,14 @@ class YTNetworkService: YTNetworkServiceProtocol {
         }).disposed(by: disposeBag)
     }
     
-    func downloadVideo(linkString: String,
+    func downloadVideo(videoIdentifier: String,
+                       videoURL: URL,
                        onGotResponse: (() -> Void)?,
                        onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?) {
         
-        if log[linkString] == nil {
-            log[linkString] = 0
+        if log[videoIdentifier] == nil {
+            log[videoIdentifier] = 0
         }
         
         guard let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
@@ -64,19 +61,18 @@ class YTNetworkService: YTNetworkServiceProtocol {
             return
         }
         
-        fetchVideoInfo(linkString: linkString, onCompleted: { video in
+        fetchVideoInfo(linkString: videoIdentifier, onCompleted: { video in
             if self.nowInDownloading.value.contains(where: { $0.identity == video.identifier }) {
-                let errorTemp = NSError(domain: "This video is already downloading !", code: -1, userInfo: nil)
+                let errorTemp = NSError(domain: "This video is already downloading!", code: -1, userInfo: nil)
                 errorHandler?(errorTemp)
                 return
             }
             
             let fileName = "\(video.identifier).mp4"
             
-            
             let mediaFile = MediaFile(url: fileName, title: video.title,
                                       id: video.identifier, duration: video.duration,
-                                      author: video.author, videoURL: URL(string: linkString)!,
+                                      author: video.author, videoURL: videoURL,
                                       supportsVideo: true,
                                       imageURL: video.thumbnailURLs?.last)
             
@@ -84,10 +80,10 @@ class YTNetworkService: YTNetworkServiceProtocol {
             
             Task {
                 do {
-                    let streamURL = try await YouTube(videoID: linkString).streams
-                                              .filter { $0.isProgressive && $0.subtype == "mp4" }
-                                              .highestResolutionStream()?
-                                              .url
+                    let streamURL = try await YouTube(videoID: videoIdentifier).streams
+                        .filter { $0.isProgressive && $0.subtype == "mp4" }
+                        .highestResolutionStream()?
+                        .url
                     if streamURL == nil {
                         let err = NSError(domain: "Can't download any of \"\(video.title)\" streams.", code: -1, userInfo: nil)
                         errorHandler?(err)
@@ -100,7 +96,7 @@ class YTNetworkService: YTNetworkServiceProtocol {
                         observableVal.accept(progress.fractionCompleted)
                     })
                     
-                    let downloadModel = DownloadModel(identity: video.identifier, title: video.title, link: linkString, progress: observableVal.asObservable(), dataRequest: downloadRequest)
+                    let downloadModel = DownloadModel(identity: video.identifier, title: video.title, link: videoIdentifier, progress: observableVal.asObservable(), dataRequest: downloadRequest)
                     
                     self.nowInDownloading.accept([downloadModel] + self.nowInDownloading.value)
                     
@@ -110,9 +106,9 @@ class YTNetworkService: YTNetworkServiceProtocol {
                             return
                         }
                         
-                        switch (response.result) {
+                        switch response.result {
                         case .success(let data):
-                            self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.dataRequest != downloadRequest }) )
+                            self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.dataRequest != downloadRequest }))
                             do {
                                 if self.fileManager.fileExists(atPath: url.appendingPathComponent(fileName).path) {
                                     try self.fileManager.removeItem(at: url.appendingPathComponent(fileName))
@@ -137,25 +133,25 @@ class YTNetworkService: YTNetworkServiceProtocol {
         }, errorHandler: errorHandler)
     }
     
-    func downloadAudio(linkString: String,
+    func downloadAudio(videoIdentifier: String,
+                       videoURL: URL,
                        onCompleted: (() -> Void)?,
                        errorHandler: ((Error) -> Void)?) {
         //
     }
     
     private func fetchVideoInfo(linkString: String,
-                                onCompleted: ((_ video: XCDYouTubeVideo) -> Void)?,
+                                onCompleted: @escaping (_ video: XCDYouTubeVideo) -> Void,
                                 errorHandler: ((Error) -> Void)?) {
         
         XCDYouTubeClient.default().getVideoWithIdentifier(linkString) { [weak self] video, error in
             guard let video = video, error == nil, let self = self else {
-                if error != nil {
-                    errorHandler?(error!)
+                if let error = error {
+                    errorHandler?(error)
                 }
-                
                 return
             }
-            onCompleted?(video)
+            onCompleted(video)
         }
     }
 }

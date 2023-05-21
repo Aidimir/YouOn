@@ -20,6 +20,18 @@ protocol PlaylistViewProtocol {
 
 class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistViewModelDelegate, MoreActionsTappedDelegate {
     
+    var activityVC: UIActivityViewController?
+    
+    func onShareButtonTapped(itemsToShare: [Any]) {
+        activityVC?.dismiss(animated: true)
+        actionsController?.dismiss(animated: true)
+        activityVC = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
+        activityVC!.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.any
+        activityVC!.modalPresentationStyle = .automatic
+        present(activityVC!, animated: true, completion: nil)
+    }
+    
+    
     func onMoreActionsTapped(cell: UITableViewCell) {
         if let indexPath = tableViewController?.tableView.indexPath(for: cell), let model = viewModel?.uiModels.value[indexPath.row], let viewModel = viewModel {
             let headerView = MediaFileAsHeaderView(model: model)
@@ -36,7 +48,7 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     weak var viewModel: (any PlaylistViewModelProtocol)?
     
     private let disposeBag = DisposeBag()
-        
+    
     var tableViewController: BindableTableViewController<MediaFilesSectionModel>?
     
     private var actionsController: DisplayActionsTableView?

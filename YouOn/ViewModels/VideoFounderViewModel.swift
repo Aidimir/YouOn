@@ -56,7 +56,7 @@ class VideoFounderViewModel: VideoFounderViewModelProtocol {
     
     public func onSearchTap() {
         
-        if let linkString = searchFieldString.value.getYoutubeID() {
+        if let linkString = searchFieldString.value.getYoutubeID(), let url = URL(string: searchFieldString.value) {
             
             if itemsOnDownloading.value.contains(where: { $0.link == linkString }) {
                 let errorTemp = NSError(domain: "This video is already downloading !", code: -1, userInfo: nil)
@@ -65,7 +65,7 @@ class VideoFounderViewModel: VideoFounderViewModelProtocol {
             }
             
             waitingToResponse.accept(true)
-            networkService.downloadVideo(linkString: linkString, onGotResponse: { [weak self] in
+            networkService.downloadVideo(videoIdentifier: linkString, videoURL: url, onGotResponse: { [weak self] in
                 self?.waitingToResponse.accept(false)
             }, onCompleted: nil, errorHandler: netErrorHandler)
         }

@@ -17,6 +17,7 @@ protocol CollectableViewModelProtocol: ViewModelProtocol {
 
 protocol PlaylistViewModelDelegate: AnyObject {
     func asInfoFetched(_ isAddable: Bool)
+    func onShareButtonTapped(itemsToShare: [Any])
 }
 
 protocol PlaylistViewModelProtocol: AnyObject, CollectableViewModelProtocol where T == MediaFileUIProtocol {
@@ -36,6 +37,8 @@ protocol PlaylistViewModelProtocol: AnyObject, CollectableViewModelProtocol wher
 }
 
 class PlaylistViewModel: PlaylistViewModelProtocol {
+    
+    var urlToShare: URL?
     
     var title: String? {
         get {
@@ -119,6 +122,16 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
             self.removeFromAll(indexPath: indexPath)
         }, iconName: "minus")
         actions.append(removeFromAllAction)
+        
+        if let item = uiModels.value[indexPath.row] as? MediaFile, item.supportsVideo {
+            
+            let shareAction = ActionModel(title: "Share", onTap: {
+                self.delegate?.onShareButtonTapped(itemsToShare: [item.videoURL])
+            }, iconName: "paperplane")
+            
+            actions.append(shareAction)
+        }
+
         
         return actions
     }
