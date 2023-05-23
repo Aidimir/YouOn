@@ -7,13 +7,13 @@ This app has a lot features that need to be added later, such as downloading onl
 
 <img src="/GithubImages/Demo.gif" width="250" height="500" >
 
-TODO:\ 
-  add custom videoPlayer;\
+TODO: <br/>
+  add custom videoPlayer; <br/>
   
-  add download settings, where you can choose streams (audio/video+audio) and quality of video;\
+  add download settings, where you can choose streams (audio/video+audio) and quality of video; <br/>
   
-  remake finder page;\
+  remake finder page; <br/>
   
-  add search by title with dropping list of videos;\
+  add search by title with dropping list of videos; <br/>
   
   add more actions for downloads, such as pause, continue, saveToCache, retry;
