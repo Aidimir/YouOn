@@ -138,8 +138,8 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     
     func playSong(indexPath: IndexPath) {
         if let mediaStorage = uiModels.value as? [MediaFile] {
-            player?.storage = mediaStorage
-            player?.play(index: indexPath.row)
+            player?.storage.accept(mediaStorage)
+            player?.play(index: indexPath.row, updatesStorage: true)
         }
     }
     

@@ -23,24 +23,39 @@ protocol MusicPlayerViewDelegate: AnyObject {
     func errorHandler(error: Error)
 }
 
-protocol MusicPlayerProtocol: AnyObject {
-    var dataManager: PlayerDataManagerProtocol? { get set }
-    var currentFile: MediaFileUIProtocol? { get }
-    var isPlaying: Observable<Bool> { get }
-    var currentItemDuration: Observable<Double?> { get }
-    var delegate: MusicPlayerViewDelegate? { get set }
-    var storage: [MediaFileUIProtocol] { get set }
-    var fileManager: FileManager? { get set }
+protocol MusicPlayerControlProtocol: AnyObject {
     func seekTo(seconds: Double)
     func playNext()
     func playPrevious()
-    func play(index: Int)
+    func play(index: Int, updatesStorage: Bool?)
     func playTapped()
     func pause()
     func continuePlay()
+    func randomize(fromIndex: Int)
+    var isInLoop: Bool { get set }
+    var isAlreadyRandomized: Bool { get }
 }
 
-class MusicPlayer: NSObject, MusicPlayerProtocol {
+protocol MusicPlayerProtocol: AnyObject, MusicPlayerControlProtocol {
+    var dataManager: PlayerDataManagerProtocol? { get set }
+    var currentFile: MediaFileUIProtocol? { get }
+    var currentIndex: Int? { get }
+    var isPlaying: Observable<Bool> { get }
+    var currentItemDuration: Observable<Double?> { get }
+    var delegate: MusicPlayerViewDelegate? { get set }
+    var storage: BehaviorRelay<[MediaFileUIProtocol]> { get }
+    var fileManager: FileManager? { get set }
+}
+
+class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
+    
+    var isInLoop: Bool = false
+    
+    var storage: RxRelay.BehaviorRelay<[MediaFileUIProtocol]> = BehaviorRelay(value: [])
+    
+    private var unmodifiedStorage: [MediaFileUIProtocol]? = nil
+    
+    private var unmodifiedIndex: Int? = nil
     
     private var savedInfo: PlayerInfo?
     
@@ -49,8 +64,13 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
             let info = try? dataManager?.fetchSavedData()
             savedInfo = info
             if info != nil {
-                index = savedInfo!.currentIndex
-                storage = savedInfo!.storage
+                currentIndex = savedInfo!.currentIndex
+                storage.accept(savedInfo!.storage)
+                if let unmodifiedIndex = savedInfo?.unmodifiedIndex, let unmodifiedStorage = savedInfo?.unmodifiedStorage {
+                    self.unmodifiedIndex = unmodifiedIndex
+                    self.unmodifiedStorage = unmodifiedStorage
+                    isAlreadyRandomized = savedInfo?.isRandomized ?? false
+                }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
                     self?.play(index: info!.currentIndex)
                     self?.pause()
@@ -76,8 +96,8 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
     
     var currentFile: MediaFileUIProtocol? {
         get {
-            if index != nil {
-                return storage[index!]
+            if currentIndex != nil {
+                return storage.value[currentIndex!]
             }
             return nil
         }
@@ -85,11 +105,13 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
     
     var fileManager: FileManager?
     
-    var storage: [MediaFileUIProtocol] = []
-    
     weak var delegate: MusicPlayerViewDelegate?
     
-    private var index: Int?
+    var currentIndex: Int?
+    
+    private var alreadyPlayed: [MediaFileUIProtocol] = []
+    
+    var isAlreadyRandomized: Bool = false
     
     private var player: AVPlayer = AVPlayer()
     
@@ -109,15 +131,15 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
         }
     }
     
-    func play(index: Int) {
-        self.index = index
+    func play(index: Int, updatesStorage: Bool? = false) {
+        self.currentIndex = index
         MPRemoteCommandCenter.shared().playCommand.isEnabled = true
         MPRemoteCommandCenter.shared().pauseCommand.isEnabled = true
         MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = true
         MPRemoteCommandCenter.shared().previousTrackCommand.isEnabled = true
         MPRemoteCommandCenter.shared().changePlaybackPositionCommand.isEnabled = true
         
-        guard let file = storage[self.index!] as? MediaFile, let storage = storage as? [MediaFile] else { return }
+        guard let file = storage.value[self.currentIndex!] as? MediaFile else { return }
         
         guard let url = fileManager?.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(file.url) else { return }
         do {
@@ -129,7 +151,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
             NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(note: )), name: .AVPlayerItemDidPlayToEndTime, object: item)
             
             
-            var nowPlayingInfo = [String: Any]()
+            let nowPlayingInfo = [String: Any]()
             MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
             
             URLSession.shared.dataTask(with: (file.imageURL!)) { data, response, error in
@@ -142,45 +164,51 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
                 }
             }.resume()
             
-            
             startRemoteCommandsCenter()
             player.rate = 1
             setBindings()
             delegate?.onItemChanged()
             NotificationCenter.default.post(name: NotificationCenterNames.playedSong, object: nil)
+            
+            if updatesStorage! {
+                if isAlreadyRandomized {
+                    shuffleStorage(fromIndex: index)
+                }
+            }
         } catch {
             delegate?.errorHandler(error: error)
         }
     }
     
     @objc private func playerDidFinishPlaying(note: NSNotification) {
+        alreadyPlayed.append(currentFile!)
         playNext()
     }
     
     
     func playNext() {
-        if index != nil {
-            if index! + 1 <= storage.count - 1 {
-                play(index: index! + 1)
+        if currentIndex != nil {
+            if currentIndex! + 1 <= storage.value.count - 1 {
+                play(index: currentIndex! + 1)
             } else {
                 play(index: 0)
-                self.player.rate = 0
+                self.player.rate = isInLoop ? 1 : 0
             }
             delegate?.onItemChanged()
         }
     }
     
     func playPrevious() {
-        if index != nil {
+        if currentIndex != nil {
             if player.currentTime().seconds >= TimeInterval(3) {
-                play(index: index!)
+                play(index: currentIndex!)
                 return
             }
             
-            if index! - 1 >= 0 {
-                play(index: index! - 1)
+            if currentIndex! - 1 >= 0 {
+                play(index: currentIndex! - 1)
             } else {
-                play(index: storage.count - 1)
+                play(index: storage.value.count - 1)
             }
             delegate?.onItemChanged()
         }
@@ -275,11 +303,43 @@ class MusicPlayer: NSObject, MusicPlayerProtocol {
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackProgress] = self.player.currentItem?.currentTime().seconds
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] = self.currentFile?.title
                 
-                if let storage = self.storage as? [MediaFile],
+                if let storage = self.storage.value as? [MediaFile],
+                   let unmodifiedStorage = self.unmodifiedStorage as? [MediaFile],
                    let item = self.player.currentItem {
-                    self.savedInfo = PlayerInfo(storage: storage , currentIndex: self.index!, currentTime: item.currentTime().seconds, duration: item.duration.seconds)
+                    self.savedInfo = PlayerInfo(storage: storage, unmodifiedStorage: unmodifiedStorage, currentIndex: self.currentIndex!, unmodifiedIndex: self.unmodifiedIndex, currentTime: item.currentTime().seconds, duration: item.duration.seconds, isRandomized: self.isAlreadyRandomized)
                 }
             }
         }.disposed(by: disposeBag)
+    }
+    
+    func randomize(fromIndex: Int) {
+        shuffleStorage(fromIndex: fromIndex)
+        isAlreadyRandomized = !isAlreadyRandomized
+    }
+    
+    private func shuffleStorage(fromIndex: Int) {
+        if storage.value.endIndex >= fromIndex {
+            if !isAlreadyRandomized {
+                unmodifiedStorage = storage.value
+                unmodifiedIndex = currentIndex
+                if fromIndex != storage.value.endIndex - 1 {
+                    let fromStartToIndex = storage.value[0 ..< fromIndex].shuffled()
+                    let fromIndexToEnd = storage.value[fromIndex + 1 ..< storage.value.count].shuffled()
+                    storage.accept([storage.value[fromIndex]] + fromStartToIndex + fromIndexToEnd)
+                } else {
+                    let shuffledPart = storage.value[0 ..< storage.value.count - 1].shuffled()
+                    storage.accept([storage.value[fromIndex]] + shuffledPart)
+                }
+                currentIndex = 0
+            } else {
+                if unmodifiedStorage != nil {
+                    storage.accept(unmodifiedStorage!)
+                }
+                
+                if unmodifiedIndex != nil {
+                    currentIndex = unmodifiedIndex! < storage.value.count ? unmodifiedIndex! : 0
+                }
+            }
+        }
     }
 }

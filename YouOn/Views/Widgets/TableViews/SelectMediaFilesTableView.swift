@@ -23,6 +23,7 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
     private lazy var dragView: UIView = {
        let view = UIView()
         view.backgroundColor = .gray
+        view.layer.cornerRadius = 5
         return view
     }()
     
@@ -82,7 +83,10 @@ class SelectMediaFilesTableView: UIViewController, UITableViewDelegate, UITableV
 
     override func viewDidLoad() {
         view.backgroundColor = .black
-        
+        addSubviews()
+    }
+    
+    private func addSubviews() {
         saveButton.addTarget(self, action: #selector(onSaveTap), for: .touchUpInside)
         saveButton.setTitle("Add", for: .normal)
         saveButton.setTitleColor(.black, for: .normal)

@@ -35,7 +35,7 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     func onMoreActionsTapped(cell: UITableViewCell) {
         if let indexPath = tableViewController?.tableView.indexPath(for: cell), let model = viewModel?.uiModels.value[indexPath.row], let viewModel = viewModel {
             let headerView = MediaFileAsHeaderView(model: model)
-            actionsController = DisplayActionsTableView(source: viewModel.fetchActionModels(indexPath: indexPath), headerView: headerView, heightForRow: view.frame.size.height / 10, heightForHeader: view.frame.size.height * 0.2)
+            actionsController = DisplayActionsTableView(source: viewModel.fetchActionModels(indexPath: indexPath), headerView: headerView, heightForRow: view.frame.size.height / 12, heightForHeader: view.frame.size.height * 0.2)
         }
         
         actionsController?.modalPresentationStyle = .custom
@@ -78,12 +78,15 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
-        let backgroundColor = UIColor.darkGray
-        
-        let classesToRegister = ["MediaFileCell": MediaFileCell.self]
-        
+                                
+        addSubviews()
+    }
+    
+    private func addSubviews() {
         if let viewModel = viewModel {
+            let backgroundColor = UIColor.darkGray
+
+            let classesToRegister = ["MediaFileCell": MediaFileCell.self]
             
             asInfoFetched(viewModel.isAddable)
             
@@ -92,7 +95,10 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             let dataSource = RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel> { [weak self] _, tableView, indexPath, item in
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as? MediaFileCell {
                     
-                    cell.setup(file: item, backgroundColor: backgroundColor, imageCornerRadius: 20, supportsMoreActions: true)
+                    cell.setup(file: item,
+                               backgroundColor: backgroundColor,
+                               imageCornerRadius: 20,
+                               supportsMoreActions: true)
                     cell.delegate = self
                     cell.backgroundColor = .clear
                     cell.selectionStyle = .none
@@ -148,6 +154,7 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             
             tableViewController?.didMove(toParent: self)
         }
+
     }
     
     @objc private func addFiles() {

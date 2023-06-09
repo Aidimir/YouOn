@@ -26,6 +26,7 @@ class ActionCell: UITableViewCell {
         titleLabel!.font = .mediumSizeBoldFont
         titleLabel!.textColor = textColor
         titleLabel!.textAlignment = .left
+        titleLabel?.sizeToFit()
         
         self.onTap = onTap
         imgView = UIImageView()
@@ -35,13 +36,13 @@ class ActionCell: UITableViewCell {
         
         addSubview(imgView!)
         imgView!.snp.makeConstraints { make in
-            make.left.centerY.equalTo(contentView)
-            make.width.height.equalTo(contentView.snp.height)
+            make.left.centerY.equalToSuperview()
+            make.width.height.equalTo(titleLabel!.frame.height)
         }
         
         addSubview(titleLabel!)
         titleLabel!.snp.makeConstraints { make in
-            make.right.top.bottom.equalTo(contentView)
+            make.centerY.equalToSuperview()
             make.left.equalTo(imgView!.snp.right).offset(10)
         }
     }

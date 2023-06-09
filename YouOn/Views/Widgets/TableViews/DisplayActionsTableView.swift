@@ -88,7 +88,7 @@ class DisplayActionsTableView: UIViewController, UITableViewDelegate, UITableVie
         tableView.dataSource = self
         tableView.backgroundColor = .darkGray
         tableView.allowsMultipleSelection = true
-        tableView.separatorColor = .clear
+        tableView.separatorColor = .white
         
         view.addSubview(headerView)
         headerView.snp.makeConstraints { make in

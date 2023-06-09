@@ -12,12 +12,19 @@ import Kingfisher
 import MarqueeLabel
 import RxSwift
 import LNPopupController
+import Differentiator
+import RxDataSources
 
 protocol MusicPlayerViewProtocol: UIViewController {
     init(musicPlayer: MusicPlayerProtocol, imageCornerRadius: CGFloat, titleScrollingDuration: CGFloat)
 }
 
-class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, MusicPlayerViewDelegate {
+class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, MusicPlayerViewDelegate, MoreActionsTappedDelegate {
+    
+    func onMoreActionsTapped(cell: UITableViewCell) {
+//
+    }
+    
     
     var dismissAnimationDuration = 0.3
     
@@ -65,7 +72,15 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     
     private lazy var playButton = UIButton()
     
+    private lazy var randomizeOrderButton = UIButton()
+    
+    private lazy var loopButton = UIButton()
+    
+    private lazy var showCurrentStorageButton = UIButton()
+    
     private var progressBarHighlightedObserver: NSKeyValueObservation?
+    
+    private var currentStorageTableView: BindableTableViewController<MediaFilesSectionModel>!
     
     private lazy var changePlaybackPositionSlider: UISlider = {
         let bar = UISlider()
@@ -124,6 +139,35 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        addSubviews()
+    }
+    
+    private func addSubviews() {
+        let dataSource = RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel> { _, tableView, indexPath, item in
+            let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as! MediaFileCell
+            cell.setup(file: item,
+                       backgroundColor: .darkGray,
+                       imageCornerRadius: 10,
+                       supportsMoreActions: true)
+            cell.delegate = self
+            cell.backgroundColor = .clear
+            cell.selectionStyle = .none
+            return cell
+        } canEditRowAtIndexPath: { source, indexPath in
+            true
+        }
+        
+        let cellsToRegister = ["MediaFileCell": MediaFileCell.self]
+        
+        currentStorageTableView = BindableTableViewController(items: musicPlayer.storage
+            .asObservable()
+            .map({ [AnimatableSectionModel(model: "",
+                                           items: $0.map({ MediaFileUIModel(model: $0)}))] }),
+                                                              heightForRow: view.frame.size.height / 8,
+                                                              dataSource: dataSource,
+                                                              classesToRegister: cellsToRegister)
+        currentStorageTableView?.view.backgroundColor = .lightGray
+        currentStorageTableView.tableView.cellLayoutMarginsFollowReadableWidth = true
         
         songImageView.contentMode = .scaleAspectFill
         songImageView.kf.setImage(with: musicPlayer.currentFile?.imageURL, placeholder: imagePlaceholder)
@@ -150,6 +194,22 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         nextButton.tintColor = .white
         nextButton.addTarget(self, action: #selector(didTapNext), for: .touchUpInside)
         
+        let loopImage = UIImage(systemName: "repeat")
+        loopButton.setImage(loopImage, for: .normal)
+        loopButton.tintColor = .lightGray
+        loopButton.addTarget(self, action: #selector(didTapLoop), for: .touchUpInside)
+        
+        let randomizeOrderImage = UIImage(systemName: "shuffle")
+        randomizeOrderButton.setImage(randomizeOrderImage, for: .normal)
+        print(musicPlayer.isAlreadyRandomized)
+        randomizeOrderButton.tintColor = musicPlayer.isAlreadyRandomized ? .green : .lightGray
+        randomizeOrderButton.addTarget(self, action: #selector(didTapRandomize), for: .touchUpInside)
+        
+        let showCurrentStorageImage = UIImage(systemName: "list.dash")
+        showCurrentStorageButton.setImage(showCurrentStorageImage, for: .normal)
+        showCurrentStorageButton.tintColor = .white
+        showCurrentStorageButton.addTarget(self, action: #selector(didTapShowCurrentStorage), for: .touchUpInside)
+        
         let pauseButtonItem = UIBarButtonItem(image: UIImage(systemName: "pause.fill"), style: .plain, target: self, action: #selector(didTapPlay))
         popupItem.trailingBarButtonItems = [pauseButtonItem]
         
@@ -161,7 +221,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         playButton.clipsToBounds = true
         playButton.frame = CGRect(x: 0, y: 0, width: Constants.mediumButtonSize, height: Constants.mediumButtonSize)
         
-        let stackSubviews = [previousButton, playButton, nextButton]
+        let stackSubviews = [loopButton, previousButton, playButton, nextButton, randomizeOrderButton]
         let controlButtonsStack = UIStackView(arrangedSubviews: stackSubviews)
         controlButtonsStack.distribution = .equalCentering
         controlButtonsStack.axis = .horizontal
@@ -212,6 +272,14 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             make.width.equalTo(view.readableContentGuide).multipliedBy(0.65)
             make.height.equalTo(Constants.mediumButtonSize)
         }
+        
+        view.addSubview(showCurrentStorageButton)
+        showCurrentStorageButton.snp.makeConstraints { make in
+            make.right.equalTo(songImageView)
+            make.bottom.equalTo(songImageView.snp.top)
+            make.width.height.equalTo(Constants.smallButtonSize)
+        }
+
     }
     
     func errorHandler(error: Error) {
@@ -238,7 +306,9 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
                 self.popupItem.image = nil
             }
         }
-        timeWent.text = nil
+        if musicPlayer.currentFile == nil {
+            timeWent.text = nil
+        }
         popupItem.title = musicPlayer.currentFile?.title
         popupItem.subtitle = musicPlayer.currentFile?.author
     }
@@ -285,6 +355,25 @@ extension MusicPlayerViewController {
     
     @objc private func didTapPlay() {
         musicPlayer.playTapped()
+        updateViews()
+    }
+    
+    @objc private func didTapRandomize() {
+        if musicPlayer.currentIndex != nil {
+            musicPlayer.randomize(fromIndex: musicPlayer.currentIndex!)
+            randomizeOrderButton.tintColor = musicPlayer.isAlreadyRandomized ? .green : .lightGray
+            updateViews()
+        }
+    }
+
+    @objc private func didTapLoop() {
+        musicPlayer.isInLoop = !musicPlayer.isInLoop
+        loopButton.tintColor = musicPlayer.isInLoop ? .green : .lightGray
+        updateViews()
+    }
+
+    @objc private func didTapShowCurrentStorage() {
+        present(currentStorageTableView!, animated: true)
         updateViews()
     }
 }
