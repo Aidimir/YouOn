@@ -133,6 +133,11 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     
     func play(index: Int, updatesStorage: Bool? = false) {
         self.currentIndex = index
+        if updatesStorage! {
+            if isAlreadyRandomized {
+                shuffleStorage(fromIndex: index)
+            }
+        }
         MPRemoteCommandCenter.shared().playCommand.isEnabled = true
         MPRemoteCommandCenter.shared().pauseCommand.isEnabled = true
         MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = true
@@ -169,12 +174,6 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
             setBindings()
             delegate?.onItemChanged()
             NotificationCenter.default.post(name: NotificationCenterNames.playedSong, object: nil)
-            
-            if updatesStorage! {
-                if isAlreadyRandomized {
-                    shuffleStorage(fromIndex: index)
-                }
-            }
         } catch {
             delegate?.errorHandler(error: error)
         }
@@ -225,7 +224,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     
     private func setupCommandCenterCommands() {
         let commandCenter = MPRemoteCommandCenter.shared()
-
+        
         commandCenter.playCommand.addTarget { [unowned self] event in
             if self.player.rate == 0 {
                 continuePlay()
@@ -233,7 +232,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
             }
             return .commandFailed
         }
-
+        
         commandCenter.pauseCommand.addTarget { [unowned self] event in
             if self.player.rate == 1 {
                 self.pause()
@@ -242,12 +241,12 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
             return .commandFailed
         }
         
-
+        
         commandCenter.nextTrackCommand.addTarget { [unowned self] event in
             playNext()
             return .success
         }
-
+        
         commandCenter.previousTrackCommand.addTarget { [unowned self] event in
             playPrevious()
             return .success
@@ -284,7 +283,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
         player.rate = 1
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentItem?.currentTime().seconds
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackProgress] = player.currentItem?.currentTime().seconds
-
+        
     }
     
     func seekTo(seconds: Double) {
@@ -313,33 +312,32 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     }
     
     func randomize(fromIndex: Int) {
-        shuffleStorage(fromIndex: fromIndex)
+        if !isAlreadyRandomized {
+            shuffleStorage(fromIndex: fromIndex)
+        } else {
+            if unmodifiedStorage != nil {
+                storage.accept(unmodifiedStorage!)
+            }
+            
+            if unmodifiedIndex != nil {
+                currentIndex = unmodifiedIndex! < storage.value.count ? unmodifiedIndex! : 0
+            }
+        }
         isAlreadyRandomized = !isAlreadyRandomized
     }
     
     private func shuffleStorage(fromIndex: Int) {
         if storage.value.endIndex >= fromIndex {
-            if !isAlreadyRandomized {
-                unmodifiedStorage = storage.value
-                unmodifiedIndex = currentIndex
-                if fromIndex != storage.value.endIndex - 1 {
-                    let fromStartToIndex = storage.value[0 ..< fromIndex].shuffled()
-                    let fromIndexToEnd = storage.value[fromIndex + 1 ..< storage.value.count].shuffled()
-                    storage.accept([storage.value[fromIndex]] + fromStartToIndex + fromIndexToEnd)
-                } else {
-                    let shuffledPart = storage.value[0 ..< storage.value.count - 1].shuffled()
-                    storage.accept([storage.value[fromIndex]] + shuffledPart)
-                }
-                currentIndex = 0
+            unmodifiedStorage = storage.value
+            unmodifiedIndex = currentIndex
+            if fromIndex != storage.value.endIndex - 1 {
+                let newStorage = (storage.value[0 ..< fromIndex] + storage.value[fromIndex + 1 ..< storage.value.count]).shuffled()
+                storage.accept([storage.value[fromIndex]] + newStorage)
             } else {
-                if unmodifiedStorage != nil {
-                    storage.accept(unmodifiedStorage!)
-                }
-                
-                if unmodifiedIndex != nil {
-                    currentIndex = unmodifiedIndex! < storage.value.count ? unmodifiedIndex! : 0
-                }
+                let shuffledPart = storage.value[0 ..< storage.value.count - 1].shuffled()
+                storage.accept([storage.value[fromIndex]] + shuffledPart)
             }
+            currentIndex = 0
         }
     }
 }

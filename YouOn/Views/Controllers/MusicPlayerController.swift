@@ -201,7 +201,6 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         
         let randomizeOrderImage = UIImage(systemName: "shuffle")
         randomizeOrderButton.setImage(randomizeOrderImage, for: .normal)
-        print(musicPlayer.isAlreadyRandomized)
         randomizeOrderButton.tintColor = musicPlayer.isAlreadyRandomized ? .green : .lightGray
         randomizeOrderButton.addTarget(self, action: #selector(didTapRandomize), for: .touchUpInside)
         
@@ -269,7 +268,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         controlButtonsStack.snp.makeConstraints { make in
             make.centerX.equalTo(changePlaybackPositionSlider)
             make.centerY.equalTo(view.frame.maxY - (changePlaybackPositionSlider.frame.maxY * 5))
-            make.width.equalTo(view.readableContentGuide).multipliedBy(0.65)
+            make.width.equalTo(view.readableContentGuide).multipliedBy(0.75)
             make.height.equalTo(Constants.mediumButtonSize)
         }
         
