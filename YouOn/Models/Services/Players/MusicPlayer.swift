@@ -55,8 +55,6 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     
     private var unmodifiedStorage: [MediaFileUIProtocol]? = nil
     
-    private var unmodifiedIndex: Int? = nil
-    
     private var savedInfo: PlayerInfo?
     
     var dataManager: PlayerDataManagerProtocol? {
@@ -66,8 +64,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
             if info != nil {
                 currentIndex = savedInfo!.currentIndex
                 storage.accept(savedInfo!.storage)
-                if let unmodifiedIndex = savedInfo?.unmodifiedIndex, let unmodifiedStorage = savedInfo?.unmodifiedStorage {
-                    self.unmodifiedIndex = unmodifiedIndex
+                if  let unmodifiedStorage = savedInfo?.unmodifiedStorage {
                     self.unmodifiedStorage = unmodifiedStorage
                     isAlreadyRandomized = savedInfo?.isRandomized ?? false
                 }
@@ -303,9 +300,9 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] = self.currentFile?.title
                 
                 if let storage = self.storage.value as? [MediaFile],
-                   let unmodifiedStorage = self.unmodifiedStorage as? [MediaFile],
+                   let unmodifiedStorage = self.unmodifiedStorage as? [MediaFile]?,
                    let item = self.player.currentItem {
-                    self.savedInfo = PlayerInfo(storage: storage, unmodifiedStorage: unmodifiedStorage, currentIndex: self.currentIndex!, unmodifiedIndex: self.unmodifiedIndex, currentTime: item.currentTime().seconds, duration: item.duration.seconds, isRandomized: self.isAlreadyRandomized)
+                    self.savedInfo = PlayerInfo(storage: storage, unmodifiedStorage: unmodifiedStorage, currentIndex: self.currentIndex!, currentTime: item.currentTime().seconds, duration: item.duration.seconds, isRandomized: self.isAlreadyRandomized)
                 }
             }
         }.disposed(by: disposeBag)
@@ -316,11 +313,8 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
             shuffleStorage(fromIndex: fromIndex)
         } else {
             if unmodifiedStorage != nil {
+                currentIndex = unmodifiedStorage!.firstIndex(where: { $0.id == currentFile?.id })
                 storage.accept(unmodifiedStorage!)
-            }
-            
-            if unmodifiedIndex != nil {
-                currentIndex = unmodifiedIndex! < storage.value.count ? unmodifiedIndex! : 0
             }
         }
         isAlreadyRandomized = !isAlreadyRandomized
@@ -329,7 +323,6 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     private func shuffleStorage(fromIndex: Int) {
         if storage.value.endIndex >= fromIndex {
             unmodifiedStorage = storage.value
-            unmodifiedIndex = currentIndex
             if fromIndex != storage.value.endIndex - 1 {
                 let newStorage = (storage.value[0 ..< fromIndex] + storage.value[fromIndex + 1 ..< storage.value.count]).shuffled()
                 storage.accept([storage.value[fromIndex]] + newStorage)
