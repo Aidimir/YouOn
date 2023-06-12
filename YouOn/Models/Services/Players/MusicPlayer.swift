@@ -31,21 +31,28 @@ protocol MusicPlayerControlProtocol: AnyObject {
     func playTapped()
     func pause()
     func continuePlay()
-    func randomize(fromIndex: Int)
     var isInLoop: Bool { get set }
     var isAlreadyRandomized: Bool { get }
 }
 
-protocol MusicPlayerProtocol: AnyObject, MusicPlayerControlProtocol {
+protocol MusicPlayerStorageProtocol: AnyObject {
+    func randomize(fromIndex: Int)
+    func addNext(file: MediaFile)
+    func addLast(file: MediaFile)
+    var storage: BehaviorRelay<[MediaFileUIProtocol]> { get }
+}
+
+protocol MusicPlayerProtocol: AnyObject, MusicPlayerControlProtocol, MusicPlayerStorageProtocol {
     var dataManager: PlayerDataManagerProtocol? { get set }
     var currentFile: MediaFileUIProtocol? { get }
     var currentIndex: Int? { get }
     var isPlaying: Observable<Bool> { get }
     var currentItemDuration: Observable<Double?> { get }
     var delegate: MusicPlayerViewDelegate? { get set }
-    var storage: BehaviorRelay<[MediaFileUIProtocol]> { get }
     var fileManager: FileManager? { get set }
 }
+
+typealias OutsidePlayerControlProtocol = MusicPlayerStorageProtocol & MusicPlayerControlProtocol
 
 class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     
@@ -122,6 +129,10 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
         player.addPeriodicTimeObserver(forInterval: CMTime(value: CMTimeValue(1), timescale: 2), queue: DispatchQueue.main) { [weak self] (progressTime) in
             self?.delegate?.updateProgress(progress: progressTime.seconds)
             self?.savedInfo?.currentTime = progressTime.seconds
+            if let storage = self?.storage.value as? [MediaFile] {
+                self?.savedInfo?.storage = storage
+            }
+            
             if let savedInfo = self?.savedInfo {
                 try? self?.dataManager?.saveData(info: savedInfo)
             }
@@ -332,5 +343,17 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
             }
             currentIndex = 0
         }
+    }
+    
+    func addNext(file: MediaFile) {
+        if currentIndex != nil {
+            var newStorage = storage.value
+            newStorage.insert(file, at: currentIndex! + 1)
+            storage.accept(newStorage)
+        }
+    }
+    
+    func addLast(file: MediaFile) {
+        storage.accept(storage.value + [file])
     }
 }

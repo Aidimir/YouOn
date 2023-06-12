@@ -14,6 +14,7 @@ import RxSwift
 import LNPopupController
 import Differentiator
 import RxDataSources
+import RxCocoa
 
 protocol MusicPlayerViewProtocol: UIViewController {
     init(musicPlayer: MusicPlayerProtocol, imageCornerRadius: CGFloat, titleScrollingDuration: CGFloat)
@@ -81,6 +82,25 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     private var progressBarHighlightedObserver: NSKeyValueObservation?
     
     private var currentStorageTableView: BindableTableViewController<MediaFilesSectionModel>!
+    
+    private var onItemSelected: (IndexPath) -> () {
+        return { [weak self] (indexPath) in
+            self?.musicPlayer.play(index: indexPath.row, updatesStorage: false)
+        }
+    }
+    
+    private var onItemMoved: (ItemMovedEvent) -> () {
+        return { [weak self] (event) in
+            guard let item = self?.musicPlayer.storage.value[event.sourceIndex.row] else { return }
+            self?.musicPlayer.storage.replaceElement(at: event.sourceIndex.row, insertTo: event.destinationIndex.row, with: item)
+        }
+    }
+    
+    private var onItemRemoved: (IndexPath) -> () {
+        return { [weak self] (indexPath) in
+            self?.musicPlayer.storage.removeElement(at: indexPath.row)
+        }
+    }
     
     private lazy var changePlaybackPositionSlider: UISlider = {
         let bar = UISlider()
@@ -164,8 +184,12 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             .map({ [AnimatableSectionModel(model: "",
                                            items: $0.map({ MediaFileUIModel(model: $0)}))] }),
                                                               heightForRow: view.frame.size.height / 8,
+                                                              onItemSelected: onItemSelected,
+                                                              onItemMoved: onItemMoved,
+                                                              onItemRemoved: onItemRemoved,
                                                               dataSource: dataSource,
-                                                              classesToRegister: cellsToRegister)
+                                                              classesToRegister: cellsToRegister,
+                                                              supportsDragging: true)
         currentStorageTableView?.view.backgroundColor = .lightGray
         currentStorageTableView.tableView.cellLayoutMarginsFollowReadableWidth = true
         
@@ -278,7 +302,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             make.bottom.equalTo(songImageView.snp.top)
             make.width.height.equalTo(Constants.smallButtonSize)
         }
-
+        
     }
     
     func errorHandler(error: Error) {
@@ -364,15 +388,31 @@ extension MusicPlayerViewController {
             updateViews()
         }
     }
-
+    
     @objc private func didTapLoop() {
         musicPlayer.isInLoop = !musicPlayer.isInLoop
         loopButton.tintColor = musicPlayer.isInLoop ? .green : .lightGray
         updateViews()
     }
-
+    
     @objc private func didTapShowCurrentStorage() {
+//        if let indexPath = playlistsTableView?.tableView.indexPath(for: cell), let model = viewModel?.uiModels.value[indexPath.row], let viewModel = viewModel {
+//            let headerView = PlaylistAsHeaderView(uiModel: model, backgroundColor: .clear)
+//            actionsController = DisplayActionsTableView(source: viewModel.fetchActionModels(indexPath: indexPath), headerView: headerView, heightForRow: view.frame.size.height / 10, heightForHeader: view.frame.size.height / 8)
+//        }
+//
+//        actionsController?.modalPresentationStyle = .custom
+//        actionsController?.transitioningDelegate = self
+//
+//        present(actionsController!, animated: true)
+        
         present(currentStorageTableView!, animated: true)
         updateViews()
     }
 }
+
+//extension MusicPlayerViewController: UIViewControllerTransitioningDelegate {
+//    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+//        PresentationController(presentedViewController: presented, presenting: presenting)
+//    }
+//}

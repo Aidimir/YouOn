@@ -13,6 +13,7 @@ import SnapKit
 import RxCocoa
 import ParallaxHeader
 import Kingfisher
+import PopMenu
 
 protocol PlaylistViewProtocol {
     var viewModel: (any PlaylistViewModelProtocol)? { get set }
@@ -24,24 +25,31 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     
     func onShareButtonTapped(itemsToShare: [Any]) {
         activityVC?.dismiss(animated: true)
-        actionsController?.dismiss(animated: true)
         activityVC = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
         activityVC!.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.any
         activityVC!.modalPresentationStyle = .automatic
         present(activityVC!, animated: true, completion: nil)
     }
     
-    
     func onMoreActionsTapped(cell: UITableViewCell) {
-        if let indexPath = tableViewController?.tableView.indexPath(for: cell), let model = viewModel?.uiModels.value[indexPath.row], let viewModel = viewModel {
-            let headerView = MediaFileAsHeaderView(model: model)
-            actionsController = DisplayActionsTableView(source: viewModel.fetchActionModels(indexPath: indexPath), headerView: headerView, heightForRow: view.frame.size.height / 12, heightForHeader: view.frame.size.height * 0.2)
+        let actions = viewModel!.fetchActionModels(indexPath: (tableViewController?.tableView.indexPath(for: cell)!)!).map { element in
+            
+            var image: UIImage? = nil
+            if element.iconName != nil {
+                image = UIImage(systemName: element.iconName!)
+            }
+            
+            let action = PopMenuDefaultAction(title: element.title, image: image, color: UIColor.white) { action in element.onTap?() }
+            return action
         }
         
-        actionsController?.modalPresentationStyle = .custom
-        actionsController?.transitioningDelegate = self
-        
-        present(actionsController!, animated: true)
+        if let cell = cell as? MediaFileCell {
+            let controller = PopMenuViewController(sourceView: cell.moreActionsButton, actions: actions)
+            controller.appearance.popMenuFont = UIFont(name: "AvenirNext-DemiBold", size: 16)!
+            controller.appearance.popMenuBackgroundStyle = .dimmed(color: .black, opacity: 0.6)
+            controller.appearance.popMenuItemSeparator = .fill()
+            present(controller, animated: true)
+        }
     }
     
     
@@ -50,8 +58,6 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     private let disposeBag = DisposeBag()
     
     var tableViewController: BindableTableViewController<MediaFilesSectionModel>?
-    
-    private var actionsController: DisplayActionsTableView?
     
     private var onItemMoved: (ItemMovedEvent) -> () {
         return { [weak self] (event) in
@@ -95,10 +101,20 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             let dataSource = RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel> { [weak self] _, tableView, indexPath, item in
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as? MediaFileCell {
                     
+                    let actions = viewModel.fetchActionModels(indexPath: indexPath).map { element in
+                        let action = UIAction(handler: { action in element.onTap?() })
+                        action.title = element.title ?? ""
+                        if element.iconName != nil {
+                            action.image = UIImage(systemName: element.iconName!)
+                        }
+                        return action
+                    }
+                    
                     cell.setup(file: item,
                                backgroundColor: backgroundColor,
                                imageCornerRadius: 20,
-                               supportsMoreActions: true)
+                               supportsMoreActions: true,
+                               contextMenuActions: actions)
                     cell.delegate = self
                     cell.backgroundColor = .clear
                     cell.selectionStyle = .none
@@ -169,11 +185,5 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             navigationItem.rightBarButtonItem = barItem
         }
         title = viewModel?.title
-    }
-}
-
-extension PlaylistViewController: UIViewControllerTransitioningDelegate {
-    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        PresentationController(presentedViewController: presented, presenting: presenting)
     }
 }

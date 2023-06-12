@@ -33,7 +33,7 @@ protocol PlaylistViewModelProtocol: AnyObject, CollectableViewModelProtocol wher
     func fetchActionModels(indexPath: IndexPath) -> [ActionModel]
     func saveStorage()
     func moveToAddFilesController()
-    init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol?, id: UUID, playlist: Playlist?)
+    init(player: OutsidePlayerControlProtocol, saver: PlaylistSaverProtocol?, id: UUID, playlist: Playlist?)
 }
 
 class PlaylistViewModel: PlaylistViewModelProtocol {
@@ -63,7 +63,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     
     var uiModels: RxRelay.BehaviorRelay<[MediaFileUIProtocol]> = BehaviorRelay(value: [MediaFileUIProtocol]())
     
-    weak var player: MusicPlayerProtocol?
+    weak var player: OutsidePlayerControlProtocol?
     
     weak var saver: PlaylistSaverProtocol?
     
@@ -73,7 +73,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     
     private var allFilesStorage: [MediaFile]?
     
-    required init(player: MusicPlayerProtocol, saver: PlaylistSaverProtocol?, id: UUID, playlist: Playlist?) {
+    required init(player: OutsidePlayerControlProtocol, saver: PlaylistSaverProtocol?, id: UUID, playlist: Playlist?) {
         self.player = player
         self.saver = saver
         self.playlist = playlist
@@ -109,6 +109,16 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
                 self.playVideo(indexPath: indexPath)
             }, iconName: "play.circle")
             actions.append(playVideoAction)
+            
+            let playNextAction = ActionModel(title: "Play next", onTap: {
+                self.player?.addNext(file: item)
+            }, iconName: "text.insert")
+            actions.append(playNextAction)
+            
+            let playLastAction = ActionModel(title: "Add to queue", onTap: {
+                self.player?.addLast(file: item)
+            }, iconName: "text.append")
+            actions.append(playLastAction)
         }
             
         if let playlist = playlist, !playlist.isDefaultPlaylist {

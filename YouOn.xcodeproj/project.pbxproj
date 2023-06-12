@@ -61,6 +61,8 @@
 		9DC4CB7C29D4E9FD0045D7F7 /* DownloadsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7B29D4E9FD0045D7F7 /* DownloadsTableView.swift */; };
 		9DC4CB7E29D4EAE40045D7F7 /* DownloadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7D29D4EAE40045D7F7 /* DownloadModel.swift */; };
 		9DC4CB8029D4EC690045D7F7 /* DownloadCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7F29D4EC690045D7F7 /* DownloadCell.swift */; };
+		9DCFC7842A37604A00616FCF /* PopMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCFC7832A37604A00616FCF /* PopMenu */; };
+		9DF0405C2A36F40800CDECBE /* ContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF0405B2A36F40800CDECBE /* ContextMenuButton.swift */; };
 		9DF870FF29D60D9100E21DBC /* DisplayActionsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF870FE29D60D9100E21DBC /* DisplayActionsTableView.swift */; };
 		9DF8710229D60E5B00E21DBC /* ActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710129D60E5B00E21DBC /* ActionCell.swift */; };
 		9DF8710629D6123800E21DBC /* ActionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710529D6123800E21DBC /* ActionModel.swift */; };
@@ -165,6 +167,7 @@
 		9DC4CB7B29D4E9FD0045D7F7 /* DownloadsTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsTableView.swift; sourceTree = "<group>"; };
 		9DC4CB7D29D4EAE40045D7F7 /* DownloadModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadModel.swift; sourceTree = "<group>"; };
 		9DC4CB7F29D4EC690045D7F7 /* DownloadCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadCell.swift; sourceTree = "<group>"; };
+		9DF0405B2A36F40800CDECBE /* ContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuButton.swift; sourceTree = "<group>"; };
 		9DF870FE29D60D9100E21DBC /* DisplayActionsTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayActionsTableView.swift; sourceTree = "<group>"; };
 		9DF8710129D60E5B00E21DBC /* ActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCell.swift; sourceTree = "<group>"; };
 		9DF8710529D6123800E21DBC /* ActionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionModel.swift; sourceTree = "<group>"; };
@@ -184,6 +187,7 @@
 				9DC4CB7329D494DB0045D7F7 /* LNPopupController in Frameworks */,
 				9D0997C529FE6BE5009A40FB /* XCDYouTubeKit in Frameworks */,
 				9D32530B2A1754C000A1F616 /* YouTubeKit in Frameworks */,
+				9DCFC7842A37604A00616FCF /* PopMenu in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,6 +234,7 @@
 			isa = PBXGroup;
 			children = (
 				9D508FF129C87A0D00F9EE5F /* BindableTableView.swift */,
+				9DF0405B2A36F40800CDECBE /* ContextMenuButton.swift */,
 			);
 			path = Generics;
 			sourceTree = "<group>";
@@ -496,6 +501,7 @@
 				9DC4CB7229D494DB0045D7F7 /* LNPopupController */,
 				9D0997C429FE6BE5009A40FB /* XCDYouTubeKit */,
 				9D32530A2A1754C000A1F616 /* YouTubeKit */,
+				9DCFC7832A37604A00616FCF /* PopMenu */,
 			);
 			productName = YouOn;
 			productReference = 9DA011C329C1B61E00962778 /* YouOn.app */;
@@ -576,6 +582,7 @@
 				9DC4CB7129D494DB0045D7F7 /* XCRemoteSwiftPackageReference "LNPopupController" */,
 				9D0997C329FE6BE5009A40FB /* XCRemoteSwiftPackageReference "XCDYouTubeKit" */,
 				9D3253092A1754C000A1F616 /* XCRemoteSwiftPackageReference "YouTubeKit" */,
+				9DCFC7822A37604A00616FCF /* XCRemoteSwiftPackageReference "PopMenu" */,
 			);
 			productRefGroup = 9DA011C429C1B61E00962778 /* Products */;
 			projectDirPath = "";
@@ -754,6 +761,7 @@
 				9D6E93EA29C876740044A642 /* VideoFounderViewController.swift in Sources */,
 				9DC4CB7829D4C17C0045D7F7 /* PlayerDataManager.swift in Sources */,
 				9DA0120329C2297F00962778 /* MediaFileModel.swift in Sources */,
+				9DF0405C2A36F40800CDECBE /* ContextMenuButton.swift in Sources */,
 				9D508FF029C879DE00F9EE5F /* AllPlaylistsTableView.swift in Sources */,
 				9DC4CB8029D4EC690045D7F7 /* DownloadCell.swift in Sources */,
 				9DF8710C29D6D75800E21DBC /* MediaFileAsHeaderView.swift in Sources */,
@@ -1150,6 +1158,14 @@
 				kind = branch;
 			};
 		};
+		9DCFC7822A37604A00616FCF /* XCRemoteSwiftPackageReference "PopMenu" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CaliCastle/PopMenu.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1167,6 +1183,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9DC4CB7129D494DB0045D7F7 /* XCRemoteSwiftPackageReference "LNPopupController" */;
 			productName = LNPopupController;
+		};
+		9DCFC7832A37604A00616FCF /* PopMenu */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9DCFC7822A37604A00616FCF /* XCRemoteSwiftPackageReference "PopMenu" */;
+			productName = PopMenu;
 		};
 /* End XCSwiftPackageProductDependency section */
 

@@ -16,7 +16,7 @@ protocol MoreActionsTappedDelegate: AnyObject {
 }
 
 class MediaFileCell: UITableViewCell {
-        
+    
     weak var delegate: MoreActionsTappedDelegate?
     
     private var nameLabel: MarqueeLabel!
@@ -25,14 +25,17 @@ class MediaFileCell: UITableViewCell {
     
     private var durationLabel: UILabel!
     
-    private var imgView: UIImageView!
-        
+    private(set) var moreActionsButton: UIButton?
+    
+    private(set) var imgView: UIImageView!
+    
     public func setup(file: MediaFileUIProtocol,
                       backgroundColor: UIColor,
                       imageCornerRadius: CGFloat = 0,
                       fadeLength: CGFloat = 20,
                       animationDuration: CGFloat = 6,
-                      supportsMoreActions: Bool = false) {
+                      supportsMoreActions: Bool = false,
+                      contextMenuActions: [UIAction]? = nil) {
         
         nameLabel = MarqueeLabel(frame: .zero, duration: animationDuration, fadeLength: 0)
         nameLabel.animationDelay = 2
@@ -89,19 +92,15 @@ class MediaFileCell: UITableViewCell {
             make.right.equalTo(durationLabel.snp.left).offset(-10)
             make.bottom.equalTo(imgView)
         }
-                
+        
         if supportsMoreActions {
             let image = UIImage(named: "Dots")
-            let formattingIcon = UIImageView(image: image)
-            formattingIcon.contentMode = .scaleAspectFit
-            formattingIcon.tintColor = .white
-            let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(onTap))
-            gestureRecognizer.numberOfTapsRequired = 1
-            formattingIcon.addGestureRecognizer(gestureRecognizer)
-            formattingIcon.isUserInteractionEnabled = true
-            
-            addSubview(formattingIcon)
-            formattingIcon.snp.makeConstraints { make in
+            moreActionsButton = UIButton()
+            moreActionsButton?.setImage(image, for: .normal)
+            moreActionsButton?.tintColor = .white
+            moreActionsButton?.addTarget(self, action: #selector(onTap), for: .touchUpInside)
+            addSubview(moreActionsButton!)
+            moreActionsButton!.snp.makeConstraints { make in
                 make.right.centerY.equalToSuperview()
                 make.width.height.equalTo(50)
             }
@@ -145,10 +144,12 @@ class MediaFileCell: UITableViewCell {
         authorLabel.removeFromSuperview()
         durationLabel.removeFromSuperview()
         imgView.removeFromSuperview()
+        moreActionsButton?.removeFromSuperview()
         nameLabel = nil
         authorLabel = nil
         durationLabel = nil
         imgView = nil
+        moreActionsButton = nil
     }
 }
 
