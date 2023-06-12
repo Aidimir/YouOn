@@ -8,11 +8,7 @@
 import Foundation
 import UIKit
 
-class DisplayActionsTableView: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    
-    var hasSetPointOrigin = false
-    
-    var pointOrigin: CGPoint?
+class DisplayActionsTableView: DraggableViewController, UITableViewDelegate, UITableViewDataSource {
         
     var source: [ActionModel]
     
@@ -34,14 +30,6 @@ class DisplayActionsTableView: UIViewController, UITableViewDelegate, UITableVie
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if !hasSetPointOrigin {
-            hasSetPointOrigin = true
-            pointOrigin = self.view.frame.origin
-        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -103,26 +91,6 @@ class DisplayActionsTableView: UIViewController, UITableViewDelegate, UITableVie
             make.bottom.left.right.equalTo(view.readableContentGuide)
         }
     }
-    
-    @objc func panGestureRecognizerAction(sender: UIPanGestureRecognizer) {
-        let translation = sender.translation(in: view)
-        
-        guard translation.y >= 0 else { return }
-        
-        view.frame.origin = CGPoint(x: 0, y: self.pointOrigin!.y + translation.y)
-        
-        if sender.state == .ended {
-            let draggedToDismiss = (translation.y > view.frame.size.height/3.0)
-            let dragVelocity = sender.velocity(in: view)
-            if (dragVelocity.y >= 1300) || draggedToDismiss {
-                self.dismiss(animated: true, completion: nil)
-            } else {
-                // Set back to original position of the view controller
-                UIView.animate(withDuration: 0.3) {
-                    self.view.frame.origin = self.pointOrigin ?? CGPoint(x: 0, y: 400)
-                }
-            }
-        }
-    }
 }
+
 

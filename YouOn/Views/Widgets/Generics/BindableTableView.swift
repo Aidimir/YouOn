@@ -29,7 +29,7 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
     
     var onItemRemoved: ((IndexPath) -> Void)?
     
-    lazy var tableView = UITableView()
+    var tableView: UITableView
     
     var classesToRegister: [String: AnyClass]
     
@@ -49,7 +49,8 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
          onItemRemoved: ((IndexPath) -> Void)? = nil,
          dataSource: RxTableViewSectionedAnimatedDataSource<T>,
          classesToRegister: [String: AnyClass],
-         supportsDragging: Bool = false) {
+         supportsDragging: Bool = false,
+         style: UITableView.Style? = .plain) {
         self.heightForRow = heightForRow
         self.items = items
         self.dataSource = dataSource
@@ -58,6 +59,7 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
         self.onItemMoved = onItemMoved
         self.onItemRemoved = onItemRemoved
         self.supportsDragging = supportsDragging
+        tableView = UITableView(frame: .zero, style: style ?? .plain)
         super.init(nibName: nil, bundle: nil)
         tableView.backgroundColor = tableViewColor
     }

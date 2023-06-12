@@ -43,6 +43,7 @@ protocol MusicPlayerStorageProtocol: AnyObject {
 }
 
 protocol MusicPlayerProtocol: AnyObject, MusicPlayerControlProtocol, MusicPlayerStorageProtocol {
+    func fetchActionModels(indexPath: IndexPath) -> [ActionModel]
     var dataManager: PlayerDataManagerProtocol? { get set }
     var currentFile: MediaFileUIProtocol? { get }
     var currentIndex: Int? { get }
@@ -55,6 +56,30 @@ protocol MusicPlayerProtocol: AnyObject, MusicPlayerControlProtocol, MusicPlayer
 typealias OutsidePlayerControlProtocol = MusicPlayerStorageProtocol & MusicPlayerControlProtocol
 
 class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
+    
+    func fetchActionModels(indexPath: IndexPath) -> [ActionModel] {
+        var actions = [ActionModel]()
+        
+        if let item = storage.value[indexPath.row] as? MediaFile {
+            let playNextAction = ActionModel(title: "Play next", onTap: {
+                self.addNext(file: item)
+            }, iconName: "text.insert")
+            actions.append(playNextAction)
+            
+            let playLastAction = ActionModel(title: "Add to queue", onTap: {
+                self.addLast(file: item)
+            }, iconName: "text.append")
+            actions.append(playLastAction)
+            
+            let removeAction = ActionModel(title: "Remove", onTap: {
+                self.storage.removeElement(at: indexPath.row)
+            }, iconName: "trash")
+            actions.append(removeAction)
+        }
+        
+        return actions
+    }
+    
     
     var isInLoop: Bool = false
     

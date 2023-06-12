@@ -15,6 +15,7 @@ import LNPopupController
 import Differentiator
 import RxDataSources
 import RxCocoa
+import PopMenu
 
 protocol MusicPlayerViewProtocol: UIViewController {
     init(musicPlayer: MusicPlayerProtocol, imageCornerRadius: CGFloat, titleScrollingDuration: CGFloat)
@@ -22,10 +23,31 @@ protocol MusicPlayerViewProtocol: UIViewController {
 
 class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, MusicPlayerViewDelegate, MoreActionsTappedDelegate {
     
-    func onMoreActionsTapped(cell: UITableViewCell) {
-//
-    }
+    private var popMenuViewController: PopMenuViewController?
     
+    var currentStorageViewController: CurrentStorageViewController?
+    
+    func onMoreActionsTapped(cell: UITableViewCell) {
+        let actions = musicPlayer.fetchActionModels(indexPath: (currentStorageTableView?.tableView.indexPath(for: cell)!)!).map { element in
+            
+            var image: UIImage? = nil
+            if element.iconName != nil {
+                image = UIImage(systemName: element.iconName!)
+            }
+            
+            let action = PopMenuDefaultAction(title: element.title, image: image, color: UIColor.white) { action in element.onTap?() }
+            return action
+        }
+        
+        if let cell = cell as? MediaFileCell {
+            popMenuViewController = PopMenuViewController(sourceView: cell.moreActionsButton, actions: actions)
+            
+            popMenuViewController!.appearance.popMenuFont = .mediumSizeBoldFont
+            popMenuViewController!.appearance.popMenuBackgroundStyle = .dimmed(color: .black, opacity: 0.6)
+            popMenuViewController!.appearance.popMenuItemSeparator = .fill()
+            currentStorageViewController!.present(popMenuViewController!, animated: true)
+        }
+    }
     
     var dismissAnimationDuration = 0.3
     
@@ -43,6 +65,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     
     private enum Constants {
         static let verticalPadding = 30
+        static let smallVerticalPadding = 10
         static let horizontalPadding = 20
         static let smallButtonSize: CGFloat = 50
         static let strokeWidth = 40
@@ -190,7 +213,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
                                                               dataSource: dataSource,
                                                               classesToRegister: cellsToRegister,
                                                               supportsDragging: true)
-        currentStorageTableView?.view.backgroundColor = .lightGray
+        currentStorageTableView?.view.backgroundColor = .darkGray
         currentStorageTableView.tableView.cellLayoutMarginsFollowReadableWidth = true
         
         songImageView.contentMode = .scaleAspectFill
@@ -396,23 +419,16 @@ extension MusicPlayerViewController {
     }
     
     @objc private func didTapShowCurrentStorage() {
-//        if let indexPath = playlistsTableView?.tableView.indexPath(for: cell), let model = viewModel?.uiModels.value[indexPath.row], let viewModel = viewModel {
-//            let headerView = PlaylistAsHeaderView(uiModel: model, backgroundColor: .clear)
-//            actionsController = DisplayActionsTableView(source: viewModel.fetchActionModels(indexPath: indexPath), headerView: headerView, heightForRow: view.frame.size.height / 10, heightForHeader: view.frame.size.height / 8)
-//        }
-//
-//        actionsController?.modalPresentationStyle = .custom
-//        actionsController?.transitioningDelegate = self
-//
-//        present(actionsController!, animated: true)
-        
-        present(currentStorageTableView!, animated: true)
+        currentStorageViewController = CurrentStorageViewController(tableView: currentStorageTableView.tableView)
+        currentStorageViewController?.modalPresentationStyle = .custom
+        currentStorageViewController?.transitioningDelegate = self
+        present(currentStorageViewController!, animated: true)
         updateViews()
     }
 }
 
-//extension MusicPlayerViewController: UIViewControllerTransitioningDelegate {
-//    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-//        PresentationController(presentedViewController: presented, presenting: presenting)
-//    }
-//}
+extension MusicPlayerViewController: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        PresentationController(presentedViewController: presented, presenting: presenting)
+    }
+}

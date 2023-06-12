@@ -62,7 +62,8 @@
 		9DC4CB7E29D4EAE40045D7F7 /* DownloadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7D29D4EAE40045D7F7 /* DownloadModel.swift */; };
 		9DC4CB8029D4EC690045D7F7 /* DownloadCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7F29D4EC690045D7F7 /* DownloadCell.swift */; };
 		9DCFC7842A37604A00616FCF /* PopMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCFC7832A37604A00616FCF /* PopMenu */; };
-		9DF0405C2A36F40800CDECBE /* ContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF0405B2A36F40800CDECBE /* ContextMenuButton.swift */; };
+		9DCFC7872A37898700616FCF /* CurrentStorageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCFC7862A37898700616FCF /* CurrentStorageViewController.swift */; };
+		9DCFC7892A378C7700616FCF /* DraggableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCFC7882A378C7700616FCF /* DraggableViewController.swift */; };
 		9DF870FF29D60D9100E21DBC /* DisplayActionsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF870FE29D60D9100E21DBC /* DisplayActionsTableView.swift */; };
 		9DF8710229D60E5B00E21DBC /* ActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710129D60E5B00E21DBC /* ActionCell.swift */; };
 		9DF8710629D6123800E21DBC /* ActionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710529D6123800E21DBC /* ActionModel.swift */; };
@@ -167,7 +168,8 @@
 		9DC4CB7B29D4E9FD0045D7F7 /* DownloadsTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsTableView.swift; sourceTree = "<group>"; };
 		9DC4CB7D29D4EAE40045D7F7 /* DownloadModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadModel.swift; sourceTree = "<group>"; };
 		9DC4CB7F29D4EC690045D7F7 /* DownloadCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadCell.swift; sourceTree = "<group>"; };
-		9DF0405B2A36F40800CDECBE /* ContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuButton.swift; sourceTree = "<group>"; };
+		9DCFC7862A37898700616FCF /* CurrentStorageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentStorageViewController.swift; sourceTree = "<group>"; };
+		9DCFC7882A378C7700616FCF /* DraggableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableViewController.swift; sourceTree = "<group>"; };
 		9DF870FE29D60D9100E21DBC /* DisplayActionsTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayActionsTableView.swift; sourceTree = "<group>"; };
 		9DF8710129D60E5B00E21DBC /* ActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCell.swift; sourceTree = "<group>"; };
 		9DF8710529D6123800E21DBC /* ActionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionModel.swift; sourceTree = "<group>"; };
@@ -234,7 +236,7 @@
 			isa = PBXGroup;
 			children = (
 				9D508FF129C87A0D00F9EE5F /* BindableTableView.swift */,
-				9DF0405B2A36F40800CDECBE /* ContextMenuButton.swift */,
+				9DCFC7882A378C7700616FCF /* DraggableViewController.swift */,
 			);
 			path = Generics;
 			sourceTree = "<group>";
@@ -271,9 +273,9 @@
 		9D6E93E229C8605E0044A642 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				9DCFC7852A37897400616FCF /* MusicPlayer */,
 				9DC4CB5F29D1AD550045D7F7 /* FounderPage */,
 				9DC4CB5E29D1AD490045D7F7 /* LibraryPage */,
-				9DC4CB6129D1AD6F0045D7F7 /* MusicPlayerController.swift */,
 				9DC4CB6329D1D60F0045D7F7 /* MainViewController.swift */,
 			);
 			path = Controllers;
@@ -440,6 +442,15 @@
 				9DC4CB7729D4C17C0045D7F7 /* PlayerDataManager.swift */,
 			);
 			path = DataManagers;
+			sourceTree = "<group>";
+		};
+		9DCFC7852A37897400616FCF /* MusicPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				9DC4CB6129D1AD6F0045D7F7 /* MusicPlayerController.swift */,
+				9DCFC7862A37898700616FCF /* CurrentStorageViewController.swift */,
+			);
+			path = MusicPlayer;
 			sourceTree = "<group>";
 		};
 		9DF8710029D60E4800E21DBC /* Cells */ = {
@@ -737,6 +748,7 @@
 				9DF8710A29D6D30200E21DBC /* UIExtensions.swift in Sources */,
 				9D6E93E029C84DD40044A642 /* LibraryPageRouter.swift in Sources */,
 				9DF870FF29D60D9100E21DBC /* DisplayActionsTableView.swift in Sources */,
+				9DCFC7892A378C7700616FCF /* DraggableViewController.swift in Sources */,
 				9D508FFA29C8981500F9EE5F /* LibraryPageBuilder.swift in Sources */,
 				9DA011FF29C21C0D00962778 /* MainRouter.swift in Sources */,
 				9DA0121229C239D100962778 /* Extensions.swift in Sources */,
@@ -759,9 +771,9 @@
 				9DA42C1F29DA09BA00D7C3B1 /* PlaylistTableViewHeader.swift in Sources */,
 				9D50900029C9D2FD00F9EE5F /* NotificationCenterNames.swift in Sources */,
 				9D6E93EA29C876740044A642 /* VideoFounderViewController.swift in Sources */,
+				9DCFC7872A37898700616FCF /* CurrentStorageViewController.swift in Sources */,
 				9DC4CB7829D4C17C0045D7F7 /* PlayerDataManager.swift in Sources */,
 				9DA0120329C2297F00962778 /* MediaFileModel.swift in Sources */,
-				9DF0405C2A36F40800CDECBE /* ContextMenuButton.swift in Sources */,
 				9D508FF029C879DE00F9EE5F /* AllPlaylistsTableView.swift in Sources */,
 				9DC4CB8029D4EC690045D7F7 /* DownloadCell.swift in Sources */,
 				9DF8710C29D6D75800E21DBC /* MediaFileAsHeaderView.swift in Sources */,

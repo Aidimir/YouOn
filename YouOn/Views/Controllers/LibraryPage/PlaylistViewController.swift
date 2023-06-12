@@ -23,7 +23,10 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     
     var activityVC: UIActivityViewController?
     
+    var popMenuViewController: PopMenuViewController?
+    
     func onShareButtonTapped(itemsToShare: [Any]) {
+        popMenuViewController?.dismiss(animated: true)
         activityVC?.dismiss(animated: true)
         activityVC = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
         activityVC!.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.any
@@ -44,11 +47,12 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
         }
         
         if let cell = cell as? MediaFileCell {
-            let controller = PopMenuViewController(sourceView: cell.moreActionsButton, actions: actions)
-            controller.appearance.popMenuFont = UIFont(name: "AvenirNext-DemiBold", size: 16)!
-            controller.appearance.popMenuBackgroundStyle = .dimmed(color: .black, opacity: 0.6)
-            controller.appearance.popMenuItemSeparator = .fill()
-            present(controller, animated: true)
+            popMenuViewController = PopMenuViewController(sourceView: cell.moreActionsButton, actions: actions)
+            
+            popMenuViewController!.appearance.popMenuFont = .mediumSizeBoldFont
+            popMenuViewController!.appearance.popMenuBackgroundStyle = .dimmed(color: .black, opacity: 0.6)
+            popMenuViewController!.appearance.popMenuItemSeparator = .fill()
+            present(popMenuViewController!, animated: true)
         }
     }
     
