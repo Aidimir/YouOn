@@ -100,8 +100,7 @@ extension Reactive where Base: AVPlayerItem {
 
 extension Reactive where Base: AVPlayer {
     public var isPlaying: Observable<Bool> {
-        return self.observe(Bool.self, #keyPath(AVPlayer.rate))
-            .map({ $0 ?? false })
+        return self.observe(Float.self, #keyPath(AVPlayer.rate)).map({ $0 == 1 })
     }
     
     public var currentDuration: Observable<Double?> {

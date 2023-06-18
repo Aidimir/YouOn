@@ -90,6 +90,24 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
         super.viewDidLoad()
                                 
         addSubviews()
+        setBindings()
+    }
+    
+    private func setBindings() {
+        viewModel?.currentFile?.asDriver().drive(onNext: { [weak self] model in
+            if let cells = (self?.tableViewController?.tableView.visibleCells as? [MediaFileCell])?.filter({ $0.file?.id == model?.id }), cells.count > 0,
+               let allCells = self?.tableViewController?.tableView.visibleCells as? [MediaFileCell] {
+                allCells.forEach({ $0.playState = .stopped })
+                cells.forEach({ $0.playState = .playing })
+            }
+        }).disposed(by: disposeBag)
+        
+        viewModel?.isPlaying?.asDriver(onErrorJustReturn: false).drive(onNext: { [weak self] val in
+            if let model = self?.viewModel?.currentFile?.value,
+                let cells = (self?.tableViewController?.tableView.visibleCells as? [MediaFileCell])?.filter({ $0.file?.id == model.id }), cells.count > 0 {
+                cells.forEach({ $0.playState = val ? .playing : .paused })
+            }
+        }).disposed(by: disposeBag)
     }
     
     private func addSubviews() {
@@ -173,8 +191,18 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             }
             
             tableViewController?.didMove(toParent: self)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                if let model = viewModel.currentFile?.value,
+                   let disposeBag = self?.disposeBag,
+                   let isPlaying = viewModel.isPlaying,
+                   let cells = (self?.tableViewController?.tableView.visibleCells as? [MediaFileCell])?.filter({ $0.file?.id == model.id }), cells.count > 0,
+                   let allCells = self?.tableViewController?.tableView.visibleCells as? [MediaFileCell] {
+                    allCells.forEach({ $0.playState = .stopped })
+                    cells.forEach({ isPlaying.bind(to: $0.rx.isPlaying).disposed(by: disposeBag) })
+                }
+            }
         }
-
     }
     
     @objc private func addFiles() {

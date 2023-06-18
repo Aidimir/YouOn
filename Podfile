@@ -14,6 +14,8 @@ target 'YouOn' do
     	pod 'Kingfisher'
 	pod 'RxDataSources', '~> 5.0'
 	pod 'ParallaxHeader'
+	pod 'ESTMusicIndicator'
+
 
 
 

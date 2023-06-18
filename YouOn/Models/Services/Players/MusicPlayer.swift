@@ -17,7 +17,6 @@ import RxCocoa
 protocol MusicPlayerViewDelegate: AnyObject {
     var isScrubbingFlag: Bool { get set }
     var isSeekInProgress: Bool { get set }
-    func onItemChanged()
     func updateDuration(duration: Double)
     func updateProgress(progress: Double)
     func errorHandler(error: Error)
@@ -40,22 +39,27 @@ protocol MusicPlayerStorageProtocol: AnyObject {
     func addNext(file: MediaFile)
     func addLast(file: MediaFile)
     var storage: BehaviorRelay<[MediaFileUIProtocol]> { get }
+    var currentFile: BehaviorRelay<MediaFileUIProtocol?> { get }
 }
 
-protocol MusicPlayerProtocol: AnyObject, MusicPlayerControlProtocol, MusicPlayerStorageProtocol {
+protocol PlayerStatusProtocol: AnyObject {
+    var isPlaying: Observable<Bool> { get }
+}
+
+typealias OutsidePlayerControlProtocol = MusicPlayerStorageProtocol & MusicPlayerControlProtocol & PlayerStatusProtocol
+
+protocol MusicPlayerProtocol: AnyObject, OutsidePlayerControlProtocol {
     func fetchActionModels(indexPath: IndexPath) -> [ActionModel]
     var dataManager: PlayerDataManagerProtocol? { get set }
-    var currentFile: MediaFileUIProtocol? { get }
-    var currentIndex: Int? { get }
-    var isPlaying: Observable<Bool> { get }
+    var currentIndex: BehaviorRelay<Int?> { get }
     var currentItemDuration: Observable<Double?> { get }
     var delegate: MusicPlayerViewDelegate? { get set }
     var fileManager: FileManager? { get set }
 }
 
-typealias OutsidePlayerControlProtocol = MusicPlayerStorageProtocol & MusicPlayerControlProtocol
-
 class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
+    
+    var currentFile: BehaviorRelay<MediaFileUIProtocol?> = BehaviorRelay(value: nil)
     
     func fetchActionModels(indexPath: IndexPath) -> [ActionModel] {
         var actions = [ActionModel]()
@@ -94,7 +98,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
             let info = try? dataManager?.fetchSavedData()
             savedInfo = info
             if info != nil {
-                currentIndex = savedInfo!.currentIndex
+                currentIndex.accept(savedInfo!.currentIndex)
                 storage.accept(savedInfo!.storage)
                 if  let unmodifiedStorage = savedInfo?.unmodifiedStorage {
                     self.unmodifiedStorage = unmodifiedStorage
@@ -123,22 +127,11 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
         }
     }
     
-    var currentFile: MediaFileUIProtocol? {
-        get {
-            if currentIndex != nil {
-                return storage.value[currentIndex!]
-            }
-            return nil
-        }
-    }
-    
     var fileManager: FileManager?
     
     weak var delegate: MusicPlayerViewDelegate?
     
-    var currentIndex: Int?
-    
-    private var alreadyPlayed: [MediaFileUIProtocol] = []
+    var currentIndex: BehaviorRelay<Int?> = BehaviorRelay(value: nil)
     
     var isAlreadyRandomized: Bool = false
     
@@ -165,7 +158,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     }
     
     func play(index: Int, updatesStorage: Bool? = false) {
-        self.currentIndex = index
+        currentIndex.accept(index)
         if updatesStorage! {
             if isAlreadyRandomized {
                 shuffleStorage(fromIndex: index)
@@ -177,7 +170,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
         MPRemoteCommandCenter.shared().previousTrackCommand.isEnabled = true
         MPRemoteCommandCenter.shared().changePlaybackPositionCommand.isEnabled = true
         
-        guard let file = storage.value[self.currentIndex!] as? MediaFile else { return }
+        guard let file = storage.value[currentIndex.value!] as? MediaFile else { return }
         
         guard let url = fileManager?.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(file.url) else { return }
         do {
@@ -205,7 +198,6 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
             startRemoteCommandsCenter()
             player.rate = 1
             setBindings()
-            delegate?.onItemChanged()
             NotificationCenter.default.post(name: NotificationCenterNames.playedSong, object: nil)
         } catch {
             delegate?.errorHandler(error: error)
@@ -213,36 +205,33 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     }
     
     @objc private func playerDidFinishPlaying(note: NSNotification) {
-        alreadyPlayed.append(currentFile!)
         playNext()
     }
     
     
     func playNext() {
-        if currentIndex != nil {
-            if currentIndex! + 1 <= storage.value.count - 1 {
-                play(index: currentIndex! + 1)
+        if currentIndex.value != nil {
+            if currentIndex.value! + 1 <= storage.value.count - 1 {
+                play(index: currentIndex.value! + 1)
             } else {
                 play(index: 0)
-                self.player.rate = isInLoop ? 1 : 0
+                player.rate = isInLoop ? 1 : 0
             }
-            delegate?.onItemChanged()
         }
     }
     
     func playPrevious() {
-        if currentIndex != nil {
+        if currentIndex.value != nil {
             if player.currentTime().seconds >= TimeInterval(3) {
-                play(index: currentIndex!)
+                play(index: currentIndex.value!)
                 return
             }
             
-            if currentIndex! - 1 >= 0 {
-                play(index: currentIndex! - 1)
+            if currentIndex.value! - 1 >= 0 {
+                play(index: currentIndex.value! - 1)
             } else {
                 play(index: storage.value.count - 1)
             }
-            delegate?.onItemChanged()
         }
     }
     
@@ -297,7 +286,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     }
     
     func playTapped() {
-        if currentFile != nil {
+        if currentFile.value != nil {
             if player.rate == 0 {
                 continuePlay()
             } else {
@@ -333,13 +322,19 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
             if status == .readyToPlay {
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = self.player.currentItem?.duration.seconds
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackProgress] = self.player.currentItem?.currentTime().seconds
-                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] = self.currentFile?.title
+                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] = self.currentFile.value?.title
                 
                 if let storage = self.storage.value as? [MediaFile],
                    let unmodifiedStorage = self.unmodifiedStorage as? [MediaFile]?,
                    let item = self.player.currentItem {
-                    self.savedInfo = PlayerInfo(storage: storage, unmodifiedStorage: unmodifiedStorage, currentIndex: self.currentIndex!, currentTime: item.currentTime().seconds, duration: item.duration.seconds, isRandomized: self.isAlreadyRandomized)
+                    self.savedInfo = PlayerInfo(storage: storage, unmodifiedStorage: unmodifiedStorage, currentIndex: self.currentIndex.value!, currentTime: item.currentTime().seconds, duration: item.duration.seconds, isRandomized: self.isAlreadyRandomized)
                 }
+            }
+        }.disposed(by: disposeBag)
+        
+        currentIndex.subscribe { [weak self] index in
+            if index != nil {
+                self?.currentFile.accept(self?.storage.value[index!])
             }
         }.disposed(by: disposeBag)
     }
@@ -349,8 +344,8 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
             shuffleStorage(fromIndex: fromIndex)
         } else {
             if unmodifiedStorage != nil {
-                currentIndex = unmodifiedStorage!.firstIndex(where: { $0.id == currentFile?.id })
                 storage.accept(unmodifiedStorage!)
+                currentIndex.accept(unmodifiedStorage!.firstIndex(where: { $0.id == currentFile.value?.id }))
             }
         }
         isAlreadyRandomized = !isAlreadyRandomized
@@ -366,14 +361,14 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
                 let shuffledPart = storage.value[0 ..< storage.value.count - 1].shuffled()
                 storage.accept([storage.value[fromIndex]] + shuffledPart)
             }
-            currentIndex = 0
+            currentIndex.accept(0)
         }
     }
     
     func addNext(file: MediaFile) {
-        if currentIndex != nil {
+        if currentIndex.value != nil {
             var newStorage = storage.value
-            newStorage.insert(file, at: currentIndex! + 1)
+            newStorage.insert(file, at: currentIndex.value! + 1)
             storage.accept(newStorage)
         }
     }

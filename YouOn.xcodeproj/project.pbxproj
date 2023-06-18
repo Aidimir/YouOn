@@ -64,6 +64,7 @@
 		9DCFC7842A37604A00616FCF /* PopMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCFC7832A37604A00616FCF /* PopMenu */; };
 		9DCFC7872A37898700616FCF /* CurrentStorageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCFC7862A37898700616FCF /* CurrentStorageViewController.swift */; };
 		9DCFC7892A378C7700616FCF /* DraggableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCFC7882A378C7700616FCF /* DraggableViewController.swift */; };
+		9DCFC78B2A3EF5E400616FCF /* WaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCFC78A2A3EF5E400616FCF /* WaveView.swift */; };
 		9DF870FF29D60D9100E21DBC /* DisplayActionsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF870FE29D60D9100E21DBC /* DisplayActionsTableView.swift */; };
 		9DF8710229D60E5B00E21DBC /* ActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710129D60E5B00E21DBC /* ActionCell.swift */; };
 		9DF8710629D6123800E21DBC /* ActionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8710529D6123800E21DBC /* ActionModel.swift */; };
@@ -170,6 +171,7 @@
 		9DC4CB7F29D4EC690045D7F7 /* DownloadCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadCell.swift; sourceTree = "<group>"; };
 		9DCFC7862A37898700616FCF /* CurrentStorageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentStorageViewController.swift; sourceTree = "<group>"; };
 		9DCFC7882A378C7700616FCF /* DraggableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableViewController.swift; sourceTree = "<group>"; };
+		9DCFC78A2A3EF5E400616FCF /* WaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveView.swift; sourceTree = "<group>"; };
 		9DF870FE29D60D9100E21DBC /* DisplayActionsTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayActionsTableView.swift; sourceTree = "<group>"; };
 		9DF8710129D60E5B00E21DBC /* ActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCell.swift; sourceTree = "<group>"; };
 		9DF8710529D6123800E21DBC /* ActionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionModel.swift; sourceTree = "<group>"; };
@@ -237,6 +239,7 @@
 			children = (
 				9D508FF129C87A0D00F9EE5F /* BindableTableView.swift */,
 				9DCFC7882A378C7700616FCF /* DraggableViewController.swift */,
+				9DCFC78A2A3EF5E400616FCF /* WaveView.swift */,
 			);
 			path = Generics;
 			sourceTree = "<group>";
@@ -773,6 +776,7 @@
 				9D6E93EA29C876740044A642 /* VideoFounderViewController.swift in Sources */,
 				9DCFC7872A37898700616FCF /* CurrentStorageViewController.swift in Sources */,
 				9DC4CB7829D4C17C0045D7F7 /* PlayerDataManager.swift in Sources */,
+				9DCFC78B2A3EF5E400616FCF /* WaveView.swift in Sources */,
 				9DA0120329C2297F00962778 /* MediaFileModel.swift in Sources */,
 				9D508FF029C879DE00F9EE5F /* AllPlaylistsTableView.swift in Sources */,
 				9DC4CB8029D4EC690045D7F7 /* DownloadCell.swift in Sources */,

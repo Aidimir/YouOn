@@ -16,6 +16,7 @@ import Differentiator
 import RxDataSources
 import RxCocoa
 import PopMenu
+import ESTMusicIndicator
 
 protocol MusicPlayerViewProtocol: UIViewController {
     init(musicPlayer: MusicPlayerProtocol, imageCornerRadius: CGFloat, titleScrollingDuration: CGFloat)
@@ -172,8 +173,6 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         self.titleScrollingDuration = titleScrollingDuration
         super.init(nibName: nil, bundle: nil)
         popupContentView.backgroundColor = .red
-        self.musicPlayer.delegate = self
-        setBindings()
     }
     
     required init?(coder: NSCoder) {
@@ -183,6 +182,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     override func viewDidLoad() {
         super.viewDidLoad()
         addSubviews()
+        setBindings()
     }
     
     private func addSubviews() {
@@ -217,7 +217,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         currentStorageTableView.tableView.cellLayoutMarginsFollowReadableWidth = true
         
         songImageView.contentMode = .scaleAspectFill
-        songImageView.kf.setImage(with: musicPlayer.currentFile?.imageURL, placeholder: imagePlaceholder)
+        songImageView.kf.setImage(with: musicPlayer.currentFile.value?.imageURL, placeholder: imagePlaceholder)
         songImageView.layer.cornerRadius = imageCornerRadius
         songImageView.tintColor = .gray
         songImageView.clipsToBounds = true
@@ -225,9 +225,9 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         timeLeft.textColor = .white
         timeWent.textColor = .white
         
-        songTitle.text = musicPlayer.currentFile?.title
+        songTitle.text = musicPlayer.currentFile.value?.title
         
-        songAuthor.text = musicPlayer.currentFile?.author
+        songAuthor.text = musicPlayer.currentFile.value?.author
         songAuthor.font = .mediumSizeFont
         songAuthor.textColor = .gray
         
@@ -337,33 +337,17 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         present(alert, animated: true)
     }
     
-    func onItemChanged() {
-        updateViews()
-    }
-    
-    private func updateViews() {
-        songTitle.text = musicPlayer.currentFile?.title
-        songAuthor.text = musicPlayer.currentFile?.author
-        songImageView.kf.setImage(with: musicPlayer.currentFile?.imageURL, placeholder: imagePlaceholder) { res in
-            switch res {
-            case .success(let img):
-                self.popupItem.image = img.image
-            case .failure(_):
-                self.popupItem.image = nil
-            }
-        }
-        if musicPlayer.currentFile == nil {
-            timeWent.text = nil
-        }
-        popupItem.title = musicPlayer.currentFile?.title
-        popupItem.subtitle = musicPlayer.currentFile?.author
-    }
-    
     private func setBindings() {
         musicPlayer.isPlaying.asDriver(onErrorJustReturn: false).drive { [weak self] value in
             let playImage = value ? UIImage(systemName: "pause.fill") : UIImage(systemName: "play.fill")
             self?.playButton.setImage(playImage, for: .normal)
             self?.popupItem.trailingBarButtonItems?.first?.image = playImage
+            
+            if self?.currentStorageTableView != nil,
+               let index = self?.musicPlayer.currentIndex.value,
+               let cell = self?.currentStorageTableView.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MediaFileCell {
+                cell.playState = value ? .playing : .paused
+            }
         }.disposed(by: disposeBag)
         
         musicPlayer.currentItemDuration.filter({ $0 != nil }).map({ $0! }).asDriver(onErrorJustReturn: 0).drive { [weak self] val in
@@ -374,6 +358,39 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
                 self?.changePlaybackPositionSlider.maximumValue = floated
             }
         }.disposed(by: disposeBag)
+        
+        musicPlayer.currentIndex.asDriver().filter({ $0 != nil }).drive { [weak self] index in
+            if self?.currentStorageTableView != nil, let cells = self?.currentStorageTableView.tableView.visibleCells as? [MediaFileCell] {
+                cells.forEach({ $0.playState = .stopped })
+            }
+        }.disposed(by: disposeBag)
+        
+        
+        musicPlayer.currentFile.asDriver().filter({ $0 != nil }).drive { [weak self] file in
+            self?.songTitle.text = file!.title
+            self?.songAuthor.text = file!.author
+            self?.songImageView.kf.setImage(with: file!.imageURL, placeholder: self?.imagePlaceholder) { res in
+                switch res {
+                case .success(let img):
+                    self?.popupItem.image = img.image
+                case .failure(_):
+                    self?.popupItem.image = nil
+                }
+            }
+            self?.popupItem.title = file!.title
+            self?.popupItem.subtitle = file!.author
+        }.disposed(by: disposeBag)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -401,21 +418,18 @@ extension MusicPlayerViewController {
     
     @objc private func didTapPlay() {
         musicPlayer.playTapped()
-        updateViews()
     }
     
     @objc private func didTapRandomize() {
-        if musicPlayer.currentIndex != nil {
-            musicPlayer.randomize(fromIndex: musicPlayer.currentIndex!)
+        if musicPlayer.currentIndex.value != nil {
+            musicPlayer.randomize(fromIndex: musicPlayer.currentIndex.value!)
             randomizeOrderButton.tintColor = musicPlayer.isAlreadyRandomized ? .green : .lightGray
-            updateViews()
         }
     }
     
     @objc private func didTapLoop() {
         musicPlayer.isInLoop = !musicPlayer.isInLoop
         loopButton.tintColor = musicPlayer.isInLoop ? .green : .lightGray
-        updateViews()
     }
     
     @objc private func didTapShowCurrentStorage() {
@@ -423,7 +437,6 @@ extension MusicPlayerViewController {
         currentStorageViewController?.modalPresentationStyle = .custom
         currentStorageViewController?.transitioningDelegate = self
         present(currentStorageViewController!, animated: true)
-        updateViews()
     }
 }
 

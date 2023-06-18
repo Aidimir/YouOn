@@ -8,6 +8,7 @@
 import Foundation
 import RxRelay
 import Differentiator
+import RxSwift
 
 protocol CollectableViewModelProtocol: ViewModelProtocol {
     associatedtype T
@@ -26,6 +27,8 @@ protocol PlaylistViewModelProtocol: AnyObject, CollectableViewModelProtocol wher
     var isAddable: Bool { get }
     var title: String? { get }
     var imgURL: BehaviorRelay<URL?> { get }
+    var currentFile: BehaviorRelay<MediaFileUIProtocol?>? { get }
+    var isPlaying: Observable<Bool>? { get }
     func playSong(indexPath: IndexPath)
     func playVideo(indexPath: IndexPath)
     func removeFromPlaylist(indexPath: IndexPath)
@@ -37,6 +40,18 @@ protocol PlaylistViewModelProtocol: AnyObject, CollectableViewModelProtocol wher
 }
 
 class PlaylistViewModel: PlaylistViewModelProtocol {
+    
+    var isPlaying: Observable<Bool>? {
+        get {
+            return player?.isPlaying
+        }
+    }
+    
+    var currentFile: RxRelay.BehaviorRelay<MediaFileUIProtocol?>? {
+        get {
+            return player?.currentFile
+        }
+    }
     
     var urlToShare: URL?
     

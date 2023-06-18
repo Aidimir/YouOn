@@ -36,7 +36,7 @@ class MainViewModel: MainViewModelProtocol {
     }
     
     @objc private func updateValue() {
-        delegate?.onPlayerFileAppeared(title: player?.currentFile?.title, author: player?.currentFile?.author)
+        delegate?.onPlayerFileAppeared(title: player?.currentFile.value?.title, author: player?.currentFile.value?.author)
     }
     
     func errorHandler(_ error: Error) {

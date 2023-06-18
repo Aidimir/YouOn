@@ -10,12 +10,15 @@ import UIKit
 import SnapKit
 import MarqueeLabel
 import Kingfisher
+import ESTMusicIndicator
 
 protocol MoreActionsTappedDelegate: AnyObject {
     func onMoreActionsTapped(cell: UITableViewCell)
 }
 
 class MediaFileCell: UITableViewCell {
+    
+    private(set) var file: MediaFileUIProtocol?
     
     weak var delegate: MoreActionsTappedDelegate?
     
@@ -29,6 +32,28 @@ class MediaFileCell: UITableViewCell {
     
     private(set) var imgView: UIImageView!
     
+    private var indicator: ESTMusicIndicatorView?
+    
+    public var isPlaying: Bool = false {
+        didSet {
+            playState = isPlaying ? .playing : .paused
+        }
+    }
+    
+    public var playState: ESTMusicIndicatorViewState = .stopped {
+        didSet {
+            if playState == .stopped {
+                removeIndicator()
+            }
+            if indicator == nil {
+                addIndicator()
+            }
+            DispatchQueue.main.async {
+                self.indicator?.state = self.playState
+            }
+        }
+    }
+    
     public func setup(file: MediaFileUIProtocol,
                       backgroundColor: UIColor,
                       imageCornerRadius: CGFloat = 0,
@@ -36,6 +61,7 @@ class MediaFileCell: UITableViewCell {
                       animationDuration: CGFloat = 6,
                       supportsMoreActions: Bool = false,
                       contextMenuActions: [UIAction]? = nil) {
+        self.file = file
         
         nameLabel = MarqueeLabel(frame: .zero, duration: animationDuration, fadeLength: 0)
         nameLabel.animationDelay = 2
@@ -98,7 +124,7 @@ class MediaFileCell: UITableViewCell {
             moreActionsButton = UIButton()
             moreActionsButton?.setImage(image, for: .normal)
             moreActionsButton?.tintColor = .white
-            moreActionsButton?.addTarget(self, action: #selector(onTap), for: .touchUpInside)
+            moreActionsButton?.addTarget(self, action: #selector(onMoreActionsTap), for: .touchUpInside)
             addSubview(moreActionsButton!)
             moreActionsButton!.snp.makeConstraints { make in
                 make.right.centerY.equalToSuperview()
@@ -109,7 +135,7 @@ class MediaFileCell: UITableViewCell {
         contentView.backgroundColor = backgroundColor
     }
     
-    @objc private func onTap() {
+    @objc private func onMoreActionsTap() {
         delegate?.onMoreActionsTapped(cell: self)
     }
     
@@ -150,6 +176,29 @@ class MediaFileCell: UITableViewCell {
         durationLabel = nil
         imgView = nil
         moreActionsButton = nil
+        indicator = nil
+    }
+    
+    private func addIndicator() {
+        indicator = ESTMusicIndicatorView(frame: .zero)
+        indicator?.tintColor = .white
+        indicator?.backgroundColor = .black
+        indicator?.layer.opacity = 0.7
+        indicator?.layer.cornerRadius = imgView.layer.cornerRadius
+        addSubview(indicator!)
+        indicator!.snp.makeConstraints({ make in
+            make.left.right.top.bottom.equalTo(imgView)
+        })
+    }
+    
+    private func removeIndicator() {
+        indicator?.removeFromSuperview()
+        indicator = nil
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        indicator?.state = playState
     }
 }
 
