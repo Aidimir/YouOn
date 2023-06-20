@@ -151,11 +151,12 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             } canMoveRowAtIndexPath: { source, IndexPath in
                 return true
             }
-            
+                        
             tableViewController = BindableTableViewController(items: viewModel.uiModels
                 .asObservable()
-                .map({ [AnimatableSectionModel(model: "",
-                                               items: $0.map({ MediaFileUIModel(model: $0) }))] }),
+                .map({ [MediaFilesSectionModel(model: "",
+                                               items: $0.map({ MediaFileUIModel(model: $0) }))]
+                }),
                                                               heightForRow: view.frame.size.height / 10,
                                                               onItemSelected: onItemSelected,
                                                               onItemMoved: onItemMoved,

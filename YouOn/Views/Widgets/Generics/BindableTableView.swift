@@ -13,13 +13,11 @@ import RxRelay
 import RxCocoa
 
 class BindableTableViewController<T: AnimatableSectionModelType>: UIViewController, UITableViewDelegate, UITableViewDragDelegate {
-    
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         let dragItem = UIDragItem(itemProvider: NSItemProvider())
-        dragItem.localObject = tableView.visibleCells[indexPath.row]
+        dragItem.localObject = tableView.cellForRow(at: indexPath)
         return [dragItem]
     }
-    
     
     var items: RxSwift.Observable<[T]>?
     
@@ -71,6 +69,7 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return heightForRow
     }
+        
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,22 +78,12 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
             tableView.register(value, forCellReuseIdentifier: key)
         }
         
-        tableView.rx.itemDeleted
-            .asDriver()
-            .drive(onNext: onItemRemoved)
-            .disposed(by: disposeBag)
-        
-        tableView.rx.itemMoved
-            .asDriver()
-            .drive(onNext: onItemMoved)
+        items?.bind(to: tableView.rx.items(dataSource: dataSource!))
             .disposed(by: disposeBag)
         
         tableView.rx.itemSelected
             .asDriver()
             .drive(onNext: onItemSelected)
-            .disposed(by: disposeBag)
-        
-        items?.bind(to: tableView.rx.items(dataSource: dataSource!))
             .disposed(by: disposeBag)
         
         view.addSubview(tableView)
@@ -106,8 +95,11 @@ class BindableTableViewController<T: AnimatableSectionModelType>: UIViewControll
         
         if supportsDragging {
             tableView.dragDelegate = self
+            tableView.rx.itemMoved
+                .asDriver()
+                .drive(onNext: onItemMoved)
+                .disposed(by: disposeBag)
         }
-        
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
     }
 }

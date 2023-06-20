@@ -64,7 +64,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     func fetchActionModels(indexPath: IndexPath) -> [ActionModel] {
         var actions = [ActionModel]()
         
-        if let item = storage.value[indexPath.row] as? MediaFile {
+        if let item = storage.value[indexPath.row] as? MediaFile, let storage = self.storage.value as? [MediaFile] {
             let playNextAction = ActionModel(title: "Play next", onTap: {
                 self.addNext(file: item)
             }, iconName: "text.insert")
@@ -332,6 +332,13 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
             }
         }.disposed(by: disposeBag)
         
+        storage.subscribe { val in
+            if let storage = val.element as? [MediaFile], var info = self.savedInfo {
+                info.storage = storage
+                try? self.dataManager?.saveData(info: info)
+            }
+        }.disposed(by: disposeBag)
+        
         currentIndex.subscribe { [weak self] index in
             if index != nil {
                 self?.currentFile.accept(self?.storage.value[index!])
@@ -368,12 +375,16 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     func addNext(file: MediaFile) {
         if currentIndex.value != nil {
             var newStorage = storage.value
-            newStorage.insert(file, at: currentIndex.value! + 1)
+            var fileNewId = file
+            fileNewId.playlistSpecID = UUID()
+            newStorage.insert(fileNewId, at: currentIndex.value! + 1)
             storage.accept(newStorage)
         }
     }
     
     func addLast(file: MediaFile) {
-        storage.accept(storage.value + [file])
+        var fileNewId = file
+        fileNewId.playlistSpecID = UUID()
+        storage.accept(storage.value + [fileNewId])
     }
 }

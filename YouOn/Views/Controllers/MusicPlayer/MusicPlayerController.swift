@@ -120,12 +120,6 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         }
     }
     
-    private var onItemRemoved: (IndexPath) -> () {
-        return { [weak self] (indexPath) in
-            self?.musicPlayer.storage.removeElement(at: indexPath.row)
-        }
-    }
-    
     private lazy var changePlaybackPositionSlider: UISlider = {
         let bar = UISlider()
         bar.minimumTrackTintColor = .black
@@ -172,6 +166,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         self.imageCornerRadius = imageCornerRadius
         self.titleScrollingDuration = titleScrollingDuration
         super.init(nibName: nil, bundle: nil)
+        self.musicPlayer.delegate = self
         popupContentView.backgroundColor = .red
     }
     
@@ -197,21 +192,22 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             cell.selectionStyle = .none
             return cell
         } canEditRowAtIndexPath: { source, indexPath in
-            true
+            return true
+        } canMoveRowAtIndexPath: { source, indexPath in
+            return true
         }
         
-        let cellsToRegister = ["MediaFileCell": MediaFileCell.self]
+        let classesToRegister = ["MediaFileCell": MediaFileCell.self]
         
         currentStorageTableView = BindableTableViewController(items: musicPlayer.storage
             .asObservable()
-            .map({ [AnimatableSectionModel(model: "",
+            .map({ [MediaFilesSectionModel(model: "",
                                            items: $0.map({ MediaFileUIModel(model: $0)}))] }),
                                                               heightForRow: view.frame.size.height / 8,
                                                               onItemSelected: onItemSelected,
                                                               onItemMoved: onItemMoved,
-                                                              onItemRemoved: onItemRemoved,
                                                               dataSource: dataSource,
-                                                              classesToRegister: cellsToRegister,
+                                                              classesToRegister: classesToRegister,
                                                               supportsDragging: true)
         currentStorageTableView?.view.backgroundColor = .darkGray
         currentStorageTableView.tableView.cellLayoutMarginsFollowReadableWidth = true
@@ -326,6 +322,17 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             make.width.height.equalTo(Constants.smallButtonSize)
         }
         
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
+            self?.currentStorageTableView.viewDidLoad()
+            if let model = self?.musicPlayer.currentFile.value,
+               let disposeBag = self?.disposeBag,
+               let isPlaying = self?.musicPlayer.isPlaying,
+               let cells = (self?.currentStorageTableView.tableView.visibleCells as? [MediaFileCell])?.filter({ $0.file?.id == model.id }), cells.count > 0,
+               let allCells = self?.currentStorageTableView.tableView.visibleCells as? [MediaFileCell] {
+                allCells.forEach({ $0.playState = .stopped })
+                cells.forEach({ isPlaying.bind(to: $0.rx.isPlaying).disposed(by: disposeBag) })
+            }
+        }
     }
     
     func errorHandler(error: Error) {
@@ -380,17 +387,6 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             self?.popupItem.title = file!.title
             self?.popupItem.subtitle = file!.author
         }.disposed(by: disposeBag)
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
     }
     
     override func viewDidLayoutSubviews() {
