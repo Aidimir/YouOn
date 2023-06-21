@@ -50,6 +50,7 @@ typealias OutsidePlayerControlProtocol = MusicPlayerStorageProtocol & MusicPlaye
 
 protocol MusicPlayerProtocol: AnyObject, OutsidePlayerControlProtocol {
     func fetchActionModels(indexPath: IndexPath) -> [ActionModel]
+    func updateOnUiChanges()
     var dataManager: PlayerDataManagerProtocol? { get set }
     var currentIndex: BehaviorRelay<Int?> { get }
     var currentItemDuration: Observable<Double?> { get }
@@ -58,6 +59,17 @@ protocol MusicPlayerProtocol: AnyObject, OutsidePlayerControlProtocol {
 }
 
 class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
+    
+    func updateOnUiChanges() {
+        currentIndex.accept(storage.value.firstIndex(where: { model in
+            if let id = currentFile.value?.playlistSpecID {
+                return id == model.playlistSpecID
+            } else {
+                return currentFile.value?.id == model.id
+            }
+        }))
+    }
+    
     
     var currentFile: BehaviorRelay<MediaFileUIProtocol?> = BehaviorRelay(value: nil)
     

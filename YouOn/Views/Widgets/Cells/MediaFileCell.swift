@@ -171,6 +171,7 @@ class MediaFileCell: UITableViewCell {
         durationLabel.removeFromSuperview()
         imgView.removeFromSuperview()
         moreActionsButton?.removeFromSuperview()
+        indicator?.removeFromSuperview()
         nameLabel = nil
         authorLabel = nil
         durationLabel = nil

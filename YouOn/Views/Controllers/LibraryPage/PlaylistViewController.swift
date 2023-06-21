@@ -25,6 +25,8 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     
     var popMenuViewController: PopMenuViewController?
     
+    private var cellToTrack: MediaFileCell?
+    
     func onShareButtonTapped(itemsToShare: [Any]) {
         popMenuViewController?.dismiss(animated: true)
         activityVC?.dismiss(animated: true)
@@ -88,24 +90,28 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                                
+        
         addSubviews()
         setBindings()
     }
     
     private func setBindings() {
         viewModel?.currentFile?.asDriver().drive(onNext: { [weak self] model in
-            if let cells = (self?.tableViewController?.tableView.visibleCells as? [MediaFileCell])?.filter({ $0.file?.id == model?.id }), cells.count > 0,
-               let allCells = self?.tableViewController?.tableView.visibleCells as? [MediaFileCell] {
+            self?.cellToTrack = nil
+            if let allCells = (self?.tableViewController?.tableView.visibleCells as? [MediaFileCell])?.filter({ $0.file?.id != model?.id }) {
                 allCells.forEach({ $0.playState = .stopped })
-                cells.forEach({ $0.playState = .playing })
             }
         }).disposed(by: disposeBag)
         
         viewModel?.isPlaying?.asDriver(onErrorJustReturn: false).drive(onNext: { [weak self] val in
             if let model = self?.viewModel?.currentFile?.value,
                 let cells = (self?.tableViewController?.tableView.visibleCells as? [MediaFileCell])?.filter({ $0.file?.id == model.id }), cells.count > 0 {
-                cells.forEach({ $0.playState = val ? .playing : .paused })
+                cells.forEach({ $0.playState = .stopped })
+                if self?.viewModel?.currentFile?.value?.playlistSpecID != nil {
+                    cells.first(where: { $0.file?.playlistSpecID == self?.viewModel?.currentFile?.value?.playlistSpecID })?.playState = val ? .playing : .paused
+                } else {
+                    cells.first?.playState = val ? .playing : .paused
+                }
             }
         }).disposed(by: disposeBag)
     }
@@ -113,7 +119,7 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
     private func addSubviews() {
         if let viewModel = viewModel {
             let backgroundColor = UIColor.darkGray
-
+            
             let classesToRegister = ["MediaFileCell": MediaFileCell.self]
             
             asInfoFetched(viewModel.isAddable)
@@ -122,7 +128,6 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             
             let dataSource = RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel> { [weak self] _, tableView, indexPath, item in
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as? MediaFileCell {
-                    
                     let actions = viewModel.fetchActionModels(indexPath: indexPath).map { element in
                         let action = UIAction(handler: { action in element.onTap?() })
                         action.title = element.title ?? ""
@@ -140,83 +145,103 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
                     cell.delegate = self
                     cell.backgroundColor = .clear
                     cell.selectionStyle = .none
-                    return cell
-                } else {
-                    return UITableViewCell()
-                }
-            } titleForHeaderInSection: { source, sectionIndex in
-                return source[sectionIndex].model
-            } canEditRowAtIndexPath: { source, indexPath in
-                return true
-            } canMoveRowAtIndexPath: { source, IndexPath in
-                return true
-            }
+                    
+                    if let disposeBag = self?.disposeBag {
+                        if viewModel.isAddable {
+                            if let id = viewModel.currentFile?.value?.playlistSpecID {
+                                if id.uuidString == item.identity {
+                                    viewModel.isPlaying?.take(while: { val in
+                                        cell.playState = val ? .playing : .paused
+                                        return viewModel.currentFile?.value?.playlistSpecID?.uuidString == item.identity
+                                    }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
+                                } else {
+                                    cell.playState = .stopped
+                                }
+                            } else {
+                                if self?.viewModel?.currentFile?.value?.id == item.id {
+                                    if self?.cellToTrack == nil || self?.cellToTrack == cell {
+                                        viewModel.isPlaying?.take(while: { val in
+                                            cell.playState = val ? .playing : .paused
+                                            return viewModel.currentFile?.value?.id == item.identity
+                                        }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
+                                        self?.cellToTrack = cell
+                                    }
+                                }
+                            }
+                        } else {
+                                if viewModel.currentFile?.value?.id == item.id {
+                                    viewModel.isPlaying?.take(while: { val in
+                                        cell.playState = val ? .playing : .paused
+                                        return viewModel.currentFile?.value?.id == item.id
+                                    }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
+                                }
+                            }
+                        }
                         
-            tableViewController = BindableTableViewController(items: viewModel.uiModels
-                .asObservable()
-                .map({ [MediaFilesSectionModel(model: "",
-                                               items: $0.map({ MediaFileUIModel(model: $0) }))]
-                }),
-                                                              heightForRow: view.frame.size.height / 10,
-                                                              onItemSelected: onItemSelected,
-                                                              onItemMoved: onItemMoved,
-                                                              onItemRemoved: onItemRemoved,
-                                                              dataSource: dataSource,
-                                                              classesToRegister: classesToRegister,
-                                                              supportsDragging: true)
-            
-            let placeholder = UIImage(systemName: "music.note.list")
-            let headerView = PlaylistHeaderView(title: viewModel.title ?? String())
-            
-            viewModel.imgURL.asDriver().drive { url in
-                if let url = url {
-                    headerView.imgView.kf.setImage(with: url, placeholder: nil)
-                } else {
-                    headerView.imgView.kf.setImage(with: url, placeholder: placeholder)
+                        return cell
+                    } else {
+                        return UITableViewCell()
+                    }
+                } canEditRowAtIndexPath: { source, indexPath in
+                    return true
+                } canMoveRowAtIndexPath: { source, IndexPath in
+                    return true
                 }
-            }.disposed(by: disposeBag)
-            
-            tableViewController?.tableView.parallaxHeader.view = headerView
-            tableViewController?.tableView.parallaxHeader.height = view.frame.height / 3
-            tableViewController?.tableView.parallaxHeader.minimumHeight = 0
-            tableViewController?.tableView.parallaxHeader.mode = .topFill
-            
-            view.backgroundColor = backgroundColor
-            
-            addChild(tableViewController!)
-            
-            view.addSubview(tableViewController!.view)
-            tableViewController!.view.snp.makeConstraints { make in
-                make.left.right.equalToSuperview()
-                make.top.bottom.equalTo(view)
-            }
-            
-            tableViewController?.didMove(toParent: self)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                if let model = viewModel.currentFile?.value,
-                   let disposeBag = self?.disposeBag,
-                   let isPlaying = viewModel.isPlaying,
-                   let cells = (self?.tableViewController?.tableView.visibleCells as? [MediaFileCell])?.filter({ $0.file?.id == model.id }), cells.count > 0,
-                   let allCells = self?.tableViewController?.tableView.visibleCells as? [MediaFileCell] {
-                    allCells.forEach({ $0.playState = .stopped })
-                    cells.forEach({ isPlaying.bind(to: $0.rx.isPlaying).disposed(by: disposeBag) })
+                
+                tableViewController = BindableTableViewController(items: viewModel.uiModels
+                    .asObservable()
+                    .map({ [MediaFilesSectionModel(model: "",
+                                                   items: $0.map({ MediaFileUIModel(model: $0) }))]
+                    }),
+                                                                  heightForRow: view.frame.size.height / 10,
+                                                                  onItemSelected: onItemSelected,
+                                                                  onItemMoved: onItemMoved,
+                                                                  onItemRemoved: onItemRemoved,
+                                                                  dataSource: dataSource,
+                                                                  classesToRegister: classesToRegister,
+                                                                  supportsDragging: true)
+                
+                let placeholder = UIImage(systemName: "music.note.list")
+                let headerView = PlaylistHeaderView(title: viewModel.title ?? String())
+                
+                viewModel.imgURL.asDriver().drive { url in
+                    if let url = url {
+                        headerView.imgView.kf.setImage(with: url, placeholder: nil)
+                    } else {
+                        headerView.imgView.kf.setImage(with: url, placeholder: placeholder)
+                    }
+                }.disposed(by: disposeBag)
+                
+                tableViewController?.tableView.parallaxHeader.view = headerView
+                tableViewController?.tableView.parallaxHeader.height = view.frame.height / 3
+                tableViewController?.tableView.parallaxHeader.minimumHeight = 0
+                tableViewController?.tableView.parallaxHeader.mode = .topFill
+                
+                view.backgroundColor = backgroundColor
+                
+                addChild(tableViewController!)
+                
+                view.addSubview(tableViewController!.view)
+                tableViewController!.view.snp.makeConstraints { make in
+                    make.left.right.equalToSuperview()
+                    make.top.bottom.equalTo(view)
                 }
+                
+                tableViewController?.didMove(toParent: self)
             }
         }
-    }
-    
-    @objc private func addFiles() {
-        viewModel?.moveToAddFilesController()
-    }
-    
-    func asInfoFetched(_ isAddable: Bool) {
-        if isAddable && navigationItem.rightBarButtonItem == nil {
-            let itemImage = UIImage(systemName: "plus")
-            let barItem = UIBarButtonItem(image: itemImage, style: .plain, target: self, action: #selector(addFiles))
-            barItem.tintColor = .white
-            navigationItem.rightBarButtonItem = barItem
+        
+        @objc private func addFiles() {
+            viewModel?.moveToAddFilesController()
         }
-        title = viewModel?.title
+        
+        func asInfoFetched(_ isAddable: Bool) {
+            if isAddable && navigationItem.rightBarButtonItem == nil {
+                let itemImage = UIImage(systemName: "plus")
+                let barItem = UIBarButtonItem(image: itemImage, style: .plain, target: self, action: #selector(addFiles))
+                barItem.tintColor = .white
+                navigationItem.rightBarButtonItem = barItem
+            }
+            title = viewModel?.title
+        }
     }
-}

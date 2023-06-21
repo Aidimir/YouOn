@@ -107,6 +107,8 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     
     private var currentStorageTableView: BindableTableViewController<MediaFilesSectionModel>!
     
+    private var cellToTrack: MediaFileCell?
+    
     private var onItemSelected: (IndexPath) -> () {
         return { [weak self] (indexPath) in
             self?.musicPlayer.play(index: indexPath.row, updatesStorage: false)
@@ -117,6 +119,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         return { [weak self] (event) in
             guard let item = self?.musicPlayer.storage.value[event.sourceIndex.row] else { return }
             self?.musicPlayer.storage.replaceElement(at: event.sourceIndex.row, insertTo: event.destinationIndex.row, with: item)
+            self?.musicPlayer.updateOnUiChanges()
         }
     }
     
@@ -181,7 +184,7 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
     }
     
     private func addSubviews() {
-        let dataSource = RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel> { _, tableView, indexPath, item in
+        let dataSource = RxTableViewSectionedAnimatedDataSource<MediaFilesSectionModel> { [weak self] _, tableView, indexPath, item in
             let cell = tableView.dequeueReusableCell(withIdentifier: "MediaFileCell", for: indexPath) as! MediaFileCell
             cell.setup(file: item,
                        backgroundColor: .darkGray,
@@ -190,6 +193,32 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             cell.delegate = self
             cell.backgroundColor = .clear
             cell.selectionStyle = .none
+            
+            if let disposeBag = self?.disposeBag {
+                if let id = self?.musicPlayer.currentFile.value?.playlistSpecID {
+                    if id == item.playlistSpecID {
+                        self?.musicPlayer.isPlaying.take(while: { val in
+                            cell.playState = val ? .playing : .paused
+                            return self?.musicPlayer.currentFile.value?.playlistSpecID?.uuidString == item.identity
+                        }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
+                    } else {
+                        cell.playState = .stopped
+                    }
+                } else {
+                    if self?.musicPlayer.currentFile.value?.id == item.identity {
+                        if self?.cellToTrack == nil || self?.cellToTrack == cell {
+                            self?.musicPlayer.isPlaying.take(while: { val in
+                                cell.playState = val ? .playing : .paused
+                                return self?.musicPlayer.currentFile.value?.id == item.identity
+                            }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
+                            self?.cellToTrack = cell
+                        }
+                    } else {
+                        cell.playState = .stopped
+                    }
+                }
+            }
+            
             return cell
         } canEditRowAtIndexPath: { source, indexPath in
             return true
@@ -321,18 +350,6 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             make.bottom.equalTo(songImageView.snp.top)
             make.width.height.equalTo(Constants.smallButtonSize)
         }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
-            self?.currentStorageTableView.viewDidLoad()
-            if let model = self?.musicPlayer.currentFile.value,
-               let disposeBag = self?.disposeBag,
-               let isPlaying = self?.musicPlayer.isPlaying,
-               let cells = (self?.currentStorageTableView.tableView.visibleCells as? [MediaFileCell])?.filter({ $0.file?.id == model.id }), cells.count > 0,
-               let allCells = self?.currentStorageTableView.tableView.visibleCells as? [MediaFileCell] {
-                allCells.forEach({ $0.playState = .stopped })
-                cells.forEach({ isPlaying.bind(to: $0.rx.isPlaying).disposed(by: disposeBag) })
-            }
-        }
     }
     
     func errorHandler(error: Error) {
@@ -351,10 +368,14 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             self?.popupItem.trailingBarButtonItems?.first?.image = playImage
             
             if self?.currentStorageTableView != nil,
-               let index = self?.musicPlayer.currentIndex.value,
-               let cell = self?.currentStorageTableView.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MediaFileCell {
-                cell.playState = value ? .playing : .paused
-            }
+               let model = self?.musicPlayer.currentFile.value,
+               let cells = (self?.currentStorageTableView?.tableView.visibleCells as? [MediaFileCell])?.filter({ $0.file?.id == model.id }), cells.count > 0 {
+                cells.forEach({ $0.playState = .stopped })
+                if self?.musicPlayer.currentFile.value?.playlistSpecID != nil {
+                    cells.first(where: { $0.file?.playlistSpecID == self?.musicPlayer.currentFile.value?.playlistSpecID })?.playState = value ? .playing : .paused
+                } else {
+                    cells.first?.playState = value ? .playing : .paused
+                }            }
         }.disposed(by: disposeBag)
         
         musicPlayer.currentItemDuration.filter({ $0 != nil }).map({ $0! }).asDriver(onErrorJustReturn: 0).drive { [weak self] val in
@@ -366,14 +387,8 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             }
         }.disposed(by: disposeBag)
         
-        musicPlayer.currentIndex.asDriver().filter({ $0 != nil }).drive { [weak self] index in
-            if self?.currentStorageTableView != nil, let cells = self?.currentStorageTableView.tableView.visibleCells as? [MediaFileCell] {
-                cells.forEach({ $0.playState = .stopped })
-            }
-        }.disposed(by: disposeBag)
-        
-        
         musicPlayer.currentFile.asDriver().filter({ $0 != nil }).drive { [weak self] file in
+            self?.cellToTrack = nil
             self?.songTitle.text = file!.title
             self?.songAuthor.text = file!.author
             self?.songImageView.kf.setImage(with: file!.imageURL, placeholder: self?.imagePlaceholder) { res in
@@ -386,6 +401,10 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             }
             self?.popupItem.title = file!.title
             self?.popupItem.subtitle = file!.author
+            
+            if self?.currentStorageTableView != nil, let allCells = (self?.currentStorageTableView?.tableView.visibleCells as? [MediaFileCell])?.filter({ $0.file?.id != file?.id }) {
+                allCells.forEach({ $0.playState = .stopped })
+            }
         }.disposed(by: disposeBag)
     }
     
@@ -433,6 +452,9 @@ extension MusicPlayerViewController {
         currentStorageViewController?.modalPresentationStyle = .custom
         currentStorageViewController?.transitioningDelegate = self
         present(currentStorageViewController!, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.currentStorageTableView.tableView.scrollToRow(at: IndexPath(row: self?.musicPlayer.currentIndex.value ?? 0, section: 0), at: .middle, animated: true)
+        }
     }
 }
 
