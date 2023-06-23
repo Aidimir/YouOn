@@ -8,14 +8,3 @@ This app has a lot of features that are worth adding in the future, such as down
 If someone wants to join/modify my project, I will be glad to receive your pull request.
 
 <img src="/GithubImages/Demo.gif" width="250" height="500" >
-
-TODO: <br/>
-  add custom videoPlayer; <br/>
-  
-  add download settings, where you can choose streams (audio/video+audio) and quality of video; <br/>
-  
-  remake finder page; <br/>
-  
-  add search by title with dropping list of videos; <br/>
-  
-  add more actions for downloads, such as pause, continue, saveToCache, retry;
