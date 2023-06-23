@@ -45,16 +45,17 @@ class MediaSaver: MediaSaverProtocol {
     func removeFromAll(file: MediaFile) throws {
         try dataManager.removeMedia(id: file.id)
         if UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist) != nil {
-            let idStr = UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist)
-            let id = UUID(uuidString: idStr!)!
-            var playlist = try dataManager.fetchPlaylist(id: id)
+            var allPlaylists = try dataManager.fetchAllPlaylists()
             
             if let url = fileManager.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(file.url) {
                 try fileManager.removeItem(at: url)
             }
             
-            playlist?.removeFileById(id: file.id)
-            try dataManager.savePlaylist(data: playlist, id: id)
+            try allPlaylists.forEach { pl in
+                var playlist = pl
+                playlist.removeFileById(id: file.id)
+                try dataManager.savePlaylist(data: playlist, id: playlist.id)
+            }
             NotificationCenter.default.post(name: NotificationCenterNames.updatedPlaylists, object: nil)
         }
     }

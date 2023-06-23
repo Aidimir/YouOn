@@ -36,6 +36,7 @@ protocol PlaylistViewModelProtocol: AnyObject, CollectableViewModelProtocol wher
     func fetchActionModels(indexPath: IndexPath) -> [ActionModel]
     func saveStorage()
     func moveToAddFilesController()
+    func checkSpecIdInsideStorage(id: UUID) -> Bool
     init(player: OutsidePlayerControlProtocol, saver: PlaylistSaverProtocol?, id: UUID, playlist: Playlist?)
 }
 
@@ -190,12 +191,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     }
     
     func removeFromPlaylist(indexPath: IndexPath) {
-        if let defaultAllPlaylistId = UserDefaults.standard.string(forKey: UserDefaultKeys.defaultAllPlaylist), defaultAllPlaylistId == playlist?.id.uuidString {
-            removeFromAll(indexPath: indexPath)
-        } else {
-            uiModels.removeElement(at: indexPath.row)
-        }
-        
+        uiModels.removeElement(at: indexPath.row)
         saveStorage()
     }
     
@@ -234,6 +230,14 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
             }
         } catch {
             errorHandler(error)
+        }
+    }
+    
+    func checkSpecIdInsideStorage(id: UUID) -> Bool {
+        if player?.storage.value.first(where: { $0.playlistSpecID == id }) != nil {
+            return true
+        } else {
+            return false
         }
     }
     
