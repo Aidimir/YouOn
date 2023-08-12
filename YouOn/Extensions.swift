@@ -15,7 +15,7 @@ import MediaPlayer
 
 extension String {
     func getYoutubeID() -> String? {
-        let pattern = #"(?<=v(=|/))([-a-zA-Z0-9_]+)|(?<=youtu.be/)([-a-zA-Z0-9_]+)"#
+        let pattern = #"(?<=v(=|/))([-a-zA-Z0-9_]+)|(?<=youtu.be/)([-a-zA-Z0-9_]+)|(?<=youtube.com/shorts/)([-a-zA-Z0-9_]+)"#
         if let matchRange = self.range(of: pattern, options: .regularExpression) {
             return String(self[matchRange])
         } else {

@@ -30,6 +30,7 @@ protocol MusicPlayerControlProtocol: AnyObject {
     func playTapped()
     func pause()
     func continuePlay()
+    func removeControlCenterCommands()
     var isInLoop: Bool { get set }
     var isAlreadyRandomized: Bool { get }
 }
@@ -59,6 +60,16 @@ protocol MusicPlayerProtocol: AnyObject, OutsidePlayerControlProtocol {
 }
 
 class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
+    
+    private var remotePlayCommand: Any?
+    
+    private var remotePauseCommand: Any?
+    
+    private var remoteChangePlaybackPosCommand: Any?
+    
+    private var remoteNextTrackCommand: Any?
+    
+    private var remotePreviousTrackCommand: Any?
     
     func updateOnUiChanges() {
         currentIndex.accept(storage.value.firstIndex(where: { model in
@@ -155,7 +166,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     
     override init() {
         super.init()
-        setupCommandCenterCommands()
+        startRemoteControlCenter()
         player.addPeriodicTimeObserver(forInterval: CMTime(value: CMTimeValue(1), timescale: 2), queue: DispatchQueue.main) { [weak self] (progressTime) in
             self?.delegate?.updateProgress(progress: progressTime.seconds)
             self?.savedInfo?.currentTime = progressTime.seconds
@@ -207,7 +218,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
                 }
             }.resume()
             
-            startRemoteCommandsCenter()
+            startRemoteControlCenter()
             player.rate = 1
             setBindings()
             NotificationCenter.default.post(name: NotificationCenterNames.playedSong, object: nil)
@@ -247,19 +258,21 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
         }
     }
     
-    private func startRemoteCommandsCenter() {
+    private func startRemoteControlCenter() {
         //LockScreen Media control registry
+        removeControlCenterCommands()
         if UIApplication.shared.responds(to: #selector(UIApplication.beginReceivingRemoteControlEvents)) {
             UIApplication.shared.beginReceivingRemoteControlEvents()
+            setupControlCenterCommands()
             UIApplication.shared.beginBackgroundTask(expirationHandler: { () -> Void in
             })
         }
     }
     
-    private func setupCommandCenterCommands() {
+    private func setupControlCenterCommands() {
         let commandCenter = MPRemoteCommandCenter.shared()
         
-        commandCenter.playCommand.addTarget { [unowned self] event in
+        remotePlayCommand = commandCenter.playCommand.addTarget { [unowned self] event in
             if self.player.rate == 0 {
                 continuePlay()
                 return .success
@@ -267,7 +280,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
             return .commandFailed
         }
         
-        commandCenter.pauseCommand.addTarget { [unowned self] event in
+        remotePauseCommand = commandCenter.pauseCommand.addTarget { [unowned self] event in
             if self.player.rate == 1 {
                 self.pause()
                 return .success
@@ -276,17 +289,17 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
         }
         
         
-        commandCenter.nextTrackCommand.addTarget { [unowned self] event in
+        remoteNextTrackCommand = commandCenter.nextTrackCommand.addTarget { [unowned self] event in
             playNext()
             return .success
         }
         
-        commandCenter.previousTrackCommand.addTarget { [unowned self] event in
+        remotePreviousTrackCommand = commandCenter.previousTrackCommand.addTarget { [unowned self] event in
             playPrevious()
             return .success
         }
         
-        commandCenter.changePlaybackPositionCommand.addTarget { [unowned self] remoteEvent in
+        remoteChangePlaybackPosCommand = commandCenter.changePlaybackPositionCommand.addTarget { [unowned self] remoteEvent in
             if let seekEvent = remoteEvent as? MPChangePlaybackPositionCommandEvent {
                 let time = CMTime(seconds: seekEvent.positionTime, preferredTimescale: 1000000)
                 self.player.seek(to: time)
@@ -295,6 +308,21 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
             }
             return .commandFailed
         }
+    }
+    
+    func removeControlCenterCommands() {
+        let commandCenter = MPRemoteCommandCenter.shared()
+        commandCenter.playCommand.removeTarget(remotePlayCommand)
+        commandCenter.pauseCommand.removeTarget(remotePauseCommand)
+        commandCenter.nextTrackCommand.removeTarget(remoteNextTrackCommand)
+        commandCenter.previousTrackCommand.removeTarget(remotePreviousTrackCommand)
+        commandCenter.changePlaybackPositionCommand.removeTarget(remoteChangePlaybackPosCommand)
+        
+        remotePlayCommand = nil
+        remotePauseCommand = nil
+        remoteNextTrackCommand = nil
+        remotePreviousTrackCommand = nil
+        remoteChangePlaybackPosCommand = nil
     }
     
     func playTapped() {
@@ -318,6 +346,9 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentItem?.currentTime().seconds
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackProgress] = player.currentItem?.currentTime().seconds
         
+        if remotePlayCommand == nil || remoteChangePlaybackPosCommand == nil {
+            startRemoteControlCenter()
+        }
     }
     
     func seekTo(seconds: Double) {
@@ -388,7 +419,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
         if currentIndex.value != nil {
             var newStorage = storage.value
             var fileNewId = file
-            fileNewId.playlistSpecID = UUID()
+            fileNewId.playerSpecID = UUID()
             newStorage.insert(fileNewId, at: currentIndex.value! + 1)
             storage.accept(newStorage)
         }
@@ -396,7 +427,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     
     func addLast(file: MediaFile) {
         var fileNewId = file
-        fileNewId.playlistSpecID = UUID()
+        fileNewId.playerSpecID = UUID()
         storage.accept(storage.value + [fileNewId])
     }
 }

@@ -172,6 +172,8 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     func playVideo(indexPath: IndexPath) {
         if let mediaFile = uiModels.value[indexPath.row] as? MediaFile, mediaFile.supportsVideo {
             DispatchQueue.main.async { [weak self] in
+                self?.player?.pause()
+                self?.player?.removeControlCenterCommands()
                 self?.router?.moveToVideoPlayer(file: mediaFile)
             }
         }

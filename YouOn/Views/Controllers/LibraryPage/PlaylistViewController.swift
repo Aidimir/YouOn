@@ -149,31 +149,20 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
                     if let disposeBag = self?.disposeBag,
                         let currentFile = viewModel.currentFile?.value {
                         if viewModel.isAddable {
-                            if let id = currentFile.playlistSpecID {
-                                if !viewModel.checkSpecIdInsideStorage(id: id) {
-                                    if currentFile.id == item.id {
-                                        if self?.cellToTrack == nil || self?.cellToTrack == cell {
-                                            viewModel.isPlaying?.take(while: { val in
-                                                cell.playState = val ? .playing : .paused
-                                                return currentFile.id == item.identity
-                                            }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
-                                            self?.cellToTrack = cell
-                                        }
+                            if let id = currentFile.playlistSpecID, viewModel.checkSpecIdInsideStorage(id: id) {
+                                    if id.uuidString == item.identity {
+                                        viewModel.isPlaying?.take(while: { val in
+                                            cell.playState = val ? .playing : .paused
+                                            return viewModel.currentFile?.value?.playlistSpecID?.uuidString == item.identity
+                                        }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
+                                    } else {
+                                        cell.playState = .stopped
                                     }
-                                } else if id.uuidString == item.identity {
-                                    viewModel.isPlaying?.take(while: { val in
-                                        cell.playState = val ? .playing : .paused
-                                        return currentFile.playlistSpecID?.uuidString == item.identity
-                                    }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
-                                } else {
-                                    cell.playState = .stopped
-                                }
                             } else {
                                 if currentFile.id == item.id {
                                     if self?.cellToTrack == nil || self?.cellToTrack == cell {
                                         viewModel.isPlaying?.take(while: { val in
-                                            cell.playState = val ? .playing : .paused
-                                            return currentFile.id == item.identity
+                                            return viewModel.currentFile?.value?.id == item.id
                                         }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
                                         self?.cellToTrack = cell
                                     }
@@ -182,8 +171,7 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
                         } else {
                             if currentFile.id == item.id {
                                 viewModel.isPlaying?.take(while: { val in
-                                    cell.playState = val ? .playing : .paused
-                                    return currentFile.id == item.id
+                                    return viewModel.currentFile?.value?.id == item.id
                                 }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
                             }
                         }

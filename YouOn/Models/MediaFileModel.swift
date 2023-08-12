@@ -15,6 +15,7 @@ protocol MediaFileUIProtocol: Any {
     var author: String { get set }
     var imageURL: URL? { get set }
     var playlistSpecID: UUID? { get set }
+    var playerSpecID: UUID? { get set }
 }
 
 struct MediaFile: Codable, MediaFileUIProtocol {
@@ -22,6 +23,7 @@ struct MediaFile: Codable, MediaFileUIProtocol {
     var title: String
     var id: String
     var playlistSpecID: UUID?
+    var playerSpecID: UUID?
     var duration: TimeInterval
     var author: String
     var videoURL: URL
@@ -37,6 +39,7 @@ struct MediaFileUIModel: IdentifiableType, Equatable, MediaFileUIProtocol {
     var author: String
     var imageURL: URL?
     var playlistSpecID: UUID?
+    var playerSpecID: UUID?
     
     var identity: String {
         get {
@@ -51,5 +54,6 @@ struct MediaFileUIModel: IdentifiableType, Equatable, MediaFileUIProtocol {
         self.duration = model.duration
         self.author = model.author
         self.playlistSpecID = model.playlistSpecID
+        self.playerSpecID = model.playerSpecID
     }
 }

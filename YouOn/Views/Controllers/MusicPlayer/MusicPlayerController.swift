@@ -195,21 +195,26 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             cell.selectionStyle = .none
             
             if let disposeBag = self?.disposeBag {
-                if let id = self?.musicPlayer.currentFile.value?.playlistSpecID {
-                    if id == item.playlistSpecID {
+                if let id = self?.musicPlayer.currentFile.value?.playerSpecID {
+                    if id == item.playerSpecID {
                         self?.musicPlayer.isPlaying.take(while: { val in
                             cell.playState = val ? .playing : .paused
-                            return self?.musicPlayer.currentFile.value?.playlistSpecID?.uuidString == item.identity
+                            return self?.musicPlayer.currentFile.value?.playerSpecID?.uuidString == item.playerSpecID?.uuidString
                         }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
                     } else {
                         cell.playState = .stopped
                     }
+                } else if let id = self?.musicPlayer.currentFile.value?.playlistSpecID?.uuidString, id == item.playlistSpecID?.uuidString {
+                    self?.musicPlayer.isPlaying.take(while: { val in
+                        cell.playState = val ? .playing : .paused
+                        return self?.musicPlayer.currentFile.value?.playerSpecID?.uuidString == item.playerSpecID?.uuidString
+                    }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
                 } else {
                     if self?.musicPlayer.currentFile.value?.id == item.identity {
                         if self?.cellToTrack == nil || self?.cellToTrack == cell {
                             self?.musicPlayer.isPlaying.take(while: { val in
                                 cell.playState = val ? .playing : .paused
-                                return self?.musicPlayer.currentFile.value?.id == item.identity
+                                return self?.musicPlayer.currentFile.value?.id == item.id
                             }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
                             self?.cellToTrack = cell
                         }
