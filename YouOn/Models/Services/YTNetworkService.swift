@@ -123,7 +123,6 @@ class YTNetworkService: YTNetworkServiceProtocol {
                             errorHandler?(error)
                             downloadModel.dataRequest.cancel()
                             self.nowInDownloading.accept(self.nowInDownloading.value.filter({ $0.dataRequest != downloadModel.dataRequest }))
-                            return
                         }
                     }
                 } catch {
@@ -145,7 +144,7 @@ class YTNetworkService: YTNetworkServiceProtocol {
                                 errorHandler: ((Error) -> Void)?) {
         
         XCDYouTubeClient.default().getVideoWithIdentifier(linkString) { [weak self] video, error in
-            guard let video = video, error == nil, let self = self else {
+            guard let video = video else {
                 if let error = error {
                     errorHandler?(error)
                 }

@@ -11,7 +11,6 @@ import RxDataSources
 import SnapKit
 import RxSwift
 import RxCocoa
-import LNPopupController
 
 protocol LibraryViewProtocol: UIViewController {
     var viewModel: (any LibraryViewModelProtocol)? { get set }

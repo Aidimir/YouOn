@@ -7,7 +7,6 @@
 
 import UIKit
 import CoreData
-import LNPopupController
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {

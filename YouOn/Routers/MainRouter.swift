@@ -40,7 +40,9 @@ class MainRouter: MainRouterProtocol {
             action?()
         })
         
-        navigationController.present(alert, animated: true)
+        DispatchQueue.main.async {
+            self.navigationController.present(alert, animated: true)
+        }
     }
     
     func popToRoot() {

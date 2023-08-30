@@ -139,8 +139,10 @@ class VideoFounderViewController: UIViewController,
                 self?.spinner.startAnimating()
                 self?.button.alpha = 0.5
             } else {
-                self?.spinner.stopAnimating()
-                self?.button.alpha = 1
+                DispatchQueue.main.async {
+                    self?.spinner.stopAnimating()
+                    self?.button.alpha = 1
+                }
             }
         }.disposed(by: disposeBag)
         

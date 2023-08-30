@@ -76,6 +76,7 @@ class VideoFounderViewModel: VideoFounderViewModelProtocol {
     }
     
     public func errorHandler(_ error: Error) -> Void {
+        waitingToResponse.accept(false)
         router?.showAlert(title: "Download error", error: error, msgWithError: nil, action: nil)
     }
 }

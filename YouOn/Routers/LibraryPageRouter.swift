@@ -39,18 +39,26 @@ class LibraryPageRouter: LibraryPageRouterProtocol {
     
     func moveToAddItemsToPlaylist(_ fromStorage: [MediaFile], saveAction: (([IndexPath]) -> Void)?) {
         let controller = builder.buildAddItemsToPlaylist(fromStorage, saveAction: saveAction)
-        navigationController.present(controller, animated: true)
+        
+        DispatchQueue.main.async {
+            self.navigationController.present(controller, animated: true)
+        }
     }
     
     func moveToVideoPlayer(file: MediaFile) {
         if let controller = builder.buildVideoPlayer(item: file) {
-            navigationController.present(controller, animated: true)
+            DispatchQueue.main.async {
+                self.navigationController.present(controller, animated: true)
+            }
         }
     }
     
     func showAlert(title: String, error: Error?, msgWithError: String?, action: (() -> Void)?) {
         let alert = builder.createAlert(title: title, error: error, msgWithError: msgWithError, action: action)
-        navigationController.present(alert, animated: true)
+        
+        DispatchQueue.main.async {
+            self.navigationController.present(alert, animated: true)
+        }
     }
     
     func popToRoot() {
