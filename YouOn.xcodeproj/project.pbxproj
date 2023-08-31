@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		2632501A5802B62DE7836783 /* Pods_YouOnTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F425F0CBFB6198A89E21BA3 /* Pods_YouOnTests.framework */; };
 		9D0997C529FE6BE5009A40FB /* XCDYouTubeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9D0997C429FE6BE5009A40FB /* XCDYouTubeKit */; };
-		9D32530B2A1754C000A1F616 /* YouTubeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9D32530A2A1754C000A1F616 /* YouTubeKit */; };
 		9D345E8529DB020A00FBE917 /* Demo.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9D345E8429DB020900FBE917 /* Demo.gif */; };
 		9D508FF029C879DE00F9EE5F /* AllPlaylistsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FEF29C879DD00F9EE5F /* AllPlaylistsTableView.swift */; };
 		9D508FF229C87A0D00F9EE5F /* BindableTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FF129C87A0D00F9EE5F /* BindableTableView.swift */; };
@@ -51,16 +50,17 @@
 		9DA0121229C239D100962778 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA0121129C239D100962778 /* Extensions.swift */; };
 		9DA0121629C3037A00962778 /* MediaSaverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA0121529C3037A00962778 /* MediaSaverService.swift */; };
 		9DA42C1F29DA09BA00D7C3B1 /* PlaylistTableViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA42C1E29DA09BA00D7C3B1 /* PlaylistTableViewHeader.swift */; };
+		9DB19FAE2AA12684000C2180 /* LNPopupController in Frameworks */ = {isa = PBXBuildFile; productRef = 9DB19FAD2AA12684000C2180 /* LNPopupController */; };
+		9DB19FAF2AA126D9000C2180 /* LNPopupController in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 9DB19FAD2AA12684000C2180 /* LNPopupController */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9DC4CB5B29CF9E2B0045D7F7 /* SelectMediaFilesTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB5A29CF9E2B0045D7F7 /* SelectMediaFilesTableView.swift */; };
 		9DC4CB6229D1AD6F0045D7F7 /* MusicPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB6129D1AD6F0045D7F7 /* MusicPlayerController.swift */; };
 		9DC4CB6429D1D60F0045D7F7 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB6329D1D60F0045D7F7 /* MainViewController.swift */; };
-		9DC4CB7329D494DB0045D7F7 /* LNPopupController in Frameworks */ = {isa = PBXBuildFile; productRef = 9DC4CB7229D494DB0045D7F7 /* LNPopupController */; };
-		9DC4CB7429D494FA0045D7F7 /* LNPopupController in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 9DC4CB7229D494DB0045D7F7 /* LNPopupController */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9DC4CB7829D4C17C0045D7F7 /* PlayerDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7729D4C17C0045D7F7 /* PlayerDataManager.swift */; };
 		9DC4CB7A29D4C3250045D7F7 /* PlayerInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7929D4C3250045D7F7 /* PlayerInfoModel.swift */; };
 		9DC4CB7C29D4E9FD0045D7F7 /* DownloadsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7B29D4E9FD0045D7F7 /* DownloadsTableView.swift */; };
 		9DC4CB7E29D4EAE40045D7F7 /* DownloadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7D29D4EAE40045D7F7 /* DownloadModel.swift */; };
 		9DC4CB8029D4EC690045D7F7 /* DownloadCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7F29D4EC690045D7F7 /* DownloadCell.swift */; };
+		9DCB510F2A9D36DB004A0626 /* YouTubeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCB510E2A9D36DB004A0626 /* YouTubeKit */; };
 		9DCFC7842A37604A00616FCF /* PopMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCFC7832A37604A00616FCF /* PopMenu */; };
 		9DCFC7872A37898700616FCF /* CurrentStorageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCFC7862A37898700616FCF /* CurrentStorageViewController.swift */; };
 		9DCFC7892A378C7700616FCF /* DraggableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCFC7882A378C7700616FCF /* DraggableViewController.swift */; };
@@ -100,7 +100,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				9DC4CB7429D494FA0045D7F7 /* LNPopupController in Embed Frameworks */,
+				9DB19FAF2AA126D9000C2180 /* LNPopupController in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -187,10 +187,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DB19FAE2AA12684000C2180 /* LNPopupController in Frameworks */,
 				E847D7C616F772C15E6A2083 /* Pods_YouOn.framework in Frameworks */,
-				9DC4CB7329D494DB0045D7F7 /* LNPopupController in Frameworks */,
+				9DCB510F2A9D36DB004A0626 /* YouTubeKit in Frameworks */,
 				9D0997C529FE6BE5009A40FB /* XCDYouTubeKit in Frameworks */,
-				9D32530B2A1754C000A1F616 /* YouTubeKit in Frameworks */,
 				9DCFC7842A37604A00616FCF /* PopMenu in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -512,10 +512,10 @@
 			);
 			name = YouOn;
 			packageProductDependencies = (
-				9DC4CB7229D494DB0045D7F7 /* LNPopupController */,
 				9D0997C429FE6BE5009A40FB /* XCDYouTubeKit */,
-				9D32530A2A1754C000A1F616 /* YouTubeKit */,
 				9DCFC7832A37604A00616FCF /* PopMenu */,
+				9DCB510E2A9D36DB004A0626 /* YouTubeKit */,
+				9DB19FAD2AA12684000C2180 /* LNPopupController */,
 			);
 			productName = YouOn;
 			productReference = 9DA011C329C1B61E00962778 /* YouOn.app */;
@@ -593,10 +593,10 @@
 			);
 			mainGroup = 9DA011BA29C1B61E00962778;
 			packageReferences = (
-				9DC4CB7129D494DB0045D7F7 /* XCRemoteSwiftPackageReference "LNPopupController" */,
 				9D0997C329FE6BE5009A40FB /* XCRemoteSwiftPackageReference "XCDYouTubeKit" */,
-				9D3253092A1754C000A1F616 /* XCRemoteSwiftPackageReference "YouTubeKit" */,
 				9DCFC7822A37604A00616FCF /* XCRemoteSwiftPackageReference "PopMenu" */,
+				9DCB510D2A9D36DB004A0626 /* XCRemoteSwiftPackageReference "YouTubeKit" */,
+				9DB19FAC2AA12684000C2180 /* XCRemoteSwiftPackageReference "LNPopupController" */,
 			);
 			productRefGroup = 9DA011C429C1B61E00962778 /* Products */;
 			projectDirPath = "";
@@ -974,6 +974,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9L9U8R4659;
@@ -991,8 +992,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "-.YouOn";
+				PRODUCT_BUNDLE_IDENTIFIER = "-YouOn";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1005,6 +1007,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9L9U8R4659;
@@ -1022,8 +1025,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "-.YouOn";
+				PRODUCT_BUNDLE_IDENTIFIER = "-YouOn";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1160,19 +1164,19 @@
 				kind = branch;
 			};
 		};
-		9D3253092A1754C000A1F616 /* XCRemoteSwiftPackageReference "YouTubeKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/alexeichhorn/YouTubeKit.git";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-		9DC4CB7129D494DB0045D7F7 /* XCRemoteSwiftPackageReference "LNPopupController" */ = {
+		9DB19FAC2AA12684000C2180 /* XCRemoteSwiftPackageReference "LNPopupController" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/LeoNatan/LNPopupController.git";
 			requirement = {
-				branch = master;
+				kind = exactVersion;
+				version = 2.14.10;
+			};
+		};
+		9DCB510D2A9D36DB004A0626 /* XCRemoteSwiftPackageReference "YouTubeKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/alexeichhorn/YouTubeKit";
+			requirement = {
+				branch = main;
 				kind = branch;
 			};
 		};
@@ -1192,15 +1196,15 @@
 			package = 9D0997C329FE6BE5009A40FB /* XCRemoteSwiftPackageReference "XCDYouTubeKit" */;
 			productName = XCDYouTubeKit;
 		};
-		9D32530A2A1754C000A1F616 /* YouTubeKit */ = {
+		9DB19FAD2AA12684000C2180 /* LNPopupController */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 9D3253092A1754C000A1F616 /* XCRemoteSwiftPackageReference "YouTubeKit" */;
-			productName = YouTubeKit;
-		};
-		9DC4CB7229D494DB0045D7F7 /* LNPopupController */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9DC4CB7129D494DB0045D7F7 /* XCRemoteSwiftPackageReference "LNPopupController" */;
+			package = 9DB19FAC2AA12684000C2180 /* XCRemoteSwiftPackageReference "LNPopupController" */;
 			productName = LNPopupController;
+		};
+		9DCB510E2A9D36DB004A0626 /* YouTubeKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9DCB510D2A9D36DB004A0626 /* XCRemoteSwiftPackageReference "YouTubeKit" */;
+			productName = YouTubeKit;
 		};
 		9DCFC7832A37604A00616FCF /* PopMenu */ = {
 			isa = XCSwiftPackageProductDependency;

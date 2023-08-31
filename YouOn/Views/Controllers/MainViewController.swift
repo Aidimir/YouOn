@@ -71,7 +71,9 @@ class MainViewController: UITabBarController, MainViewProtocol, MainViewModelDel
         
         popupBar.barStyle = .default
         popupBar.progressView.tintColor = .white
-        presentPopupBar(withContentViewController: playerViewController, openPopup: false, animated: true, completion: nil)
+        DispatchQueue.main.async {
+            self.presentPopupBar(withContentViewController: self.playerViewController, openPopup: false, animated: true, completion: nil)
+        }
         
         if firstTimePopup {
             let swipeGestureRecognizerLeft = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))

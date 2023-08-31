@@ -170,7 +170,6 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
         self.titleScrollingDuration = titleScrollingDuration
         super.init(nibName: nil, bundle: nil)
         self.musicPlayer.delegate = self
-        popupContentView.backgroundColor = .red
     }
     
     required init?(coder: NSCoder) {
