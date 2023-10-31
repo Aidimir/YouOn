@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2632501A5802B62DE7836783 /* Pods_YouOnTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F425F0CBFB6198A89E21BA3 /* Pods_YouOnTests.framework */; };
+		6E641F442AB05D9D003D9F0D /* YouTubeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6E641F432AB05D9D003D9F0D /* YouTubeKit */; };
 		9D0997C529FE6BE5009A40FB /* XCDYouTubeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9D0997C429FE6BE5009A40FB /* XCDYouTubeKit */; };
 		9D345E8529DB020A00FBE917 /* Demo.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9D345E8429DB020900FBE917 /* Demo.gif */; };
 		9D508FF029C879DE00F9EE5F /* AllPlaylistsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D508FEF29C879DD00F9EE5F /* AllPlaylistsTableView.swift */; };
@@ -60,7 +61,6 @@
 		9DC4CB7C29D4E9FD0045D7F7 /* DownloadsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7B29D4E9FD0045D7F7 /* DownloadsTableView.swift */; };
 		9DC4CB7E29D4EAE40045D7F7 /* DownloadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7D29D4EAE40045D7F7 /* DownloadModel.swift */; };
 		9DC4CB8029D4EC690045D7F7 /* DownloadCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC4CB7F29D4EC690045D7F7 /* DownloadCell.swift */; };
-		9DCB510F2A9D36DB004A0626 /* YouTubeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCB510E2A9D36DB004A0626 /* YouTubeKit */; };
 		9DCFC7842A37604A00616FCF /* PopMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 9DCFC7832A37604A00616FCF /* PopMenu */; };
 		9DCFC7872A37898700616FCF /* CurrentStorageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCFC7862A37898700616FCF /* CurrentStorageViewController.swift */; };
 		9DCFC7892A378C7700616FCF /* DraggableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCFC7882A378C7700616FCF /* DraggableViewController.swift */; };
@@ -189,7 +189,7 @@
 			files = (
 				9DB19FAE2AA12684000C2180 /* LNPopupController in Frameworks */,
 				E847D7C616F772C15E6A2083 /* Pods_YouOn.framework in Frameworks */,
-				9DCB510F2A9D36DB004A0626 /* YouTubeKit in Frameworks */,
+				6E641F442AB05D9D003D9F0D /* YouTubeKit in Frameworks */,
 				9D0997C529FE6BE5009A40FB /* XCDYouTubeKit in Frameworks */,
 				9DCFC7842A37604A00616FCF /* PopMenu in Frameworks */,
 			);
@@ -514,8 +514,8 @@
 			packageProductDependencies = (
 				9D0997C429FE6BE5009A40FB /* XCDYouTubeKit */,
 				9DCFC7832A37604A00616FCF /* PopMenu */,
-				9DCB510E2A9D36DB004A0626 /* YouTubeKit */,
 				9DB19FAD2AA12684000C2180 /* LNPopupController */,
+				6E641F432AB05D9D003D9F0D /* YouTubeKit */,
 			);
 			productName = YouOn;
 			productReference = 9DA011C329C1B61E00962778 /* YouOn.app */;
@@ -595,8 +595,8 @@
 			packageReferences = (
 				9D0997C329FE6BE5009A40FB /* XCRemoteSwiftPackageReference "XCDYouTubeKit" */,
 				9DCFC7822A37604A00616FCF /* XCRemoteSwiftPackageReference "PopMenu" */,
-				9DCB510D2A9D36DB004A0626 /* XCRemoteSwiftPackageReference "YouTubeKit" */,
 				9DB19FAC2AA12684000C2180 /* XCRemoteSwiftPackageReference "LNPopupController" */,
+				6E641F422AB05D9D003D9F0D /* XCRemoteSwiftPackageReference "YouTubeKit" */,
 			);
 			productRefGroup = 9DA011C429C1B61E00962778 /* Products */;
 			projectDirPath = "";
@@ -903,7 +903,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_KEY_LSBackgroundOnly = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 13;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -958,7 +958,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_KEY_LSBackgroundOnly = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 13;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -1156,6 +1156,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		6E641F422AB05D9D003D9F0D /* XCRemoteSwiftPackageReference "YouTubeKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Jeehut/YouTubeKit.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		9D0997C329FE6BE5009A40FB /* XCRemoteSwiftPackageReference "XCDYouTubeKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/cbg-dev-k/XCDYouTubeKit.git";
@@ -1172,14 +1180,6 @@
 				version = 2.14.10;
 			};
 		};
-		9DCB510D2A9D36DB004A0626 /* XCRemoteSwiftPackageReference "YouTubeKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/alexeichhorn/YouTubeKit";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
 		9DCFC7822A37604A00616FCF /* XCRemoteSwiftPackageReference "PopMenu" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/CaliCastle/PopMenu.git";
@@ -1191,6 +1191,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		6E641F432AB05D9D003D9F0D /* YouTubeKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E641F422AB05D9D003D9F0D /* XCRemoteSwiftPackageReference "YouTubeKit" */;
+			productName = YouTubeKit;
+		};
 		9D0997C429FE6BE5009A40FB /* XCDYouTubeKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 9D0997C329FE6BE5009A40FB /* XCRemoteSwiftPackageReference "XCDYouTubeKit" */;
@@ -1200,11 +1205,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9DB19FAC2AA12684000C2180 /* XCRemoteSwiftPackageReference "LNPopupController" */;
 			productName = LNPopupController;
-		};
-		9DCB510E2A9D36DB004A0626 /* YouTubeKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9DCB510D2A9D36DB004A0626 /* XCRemoteSwiftPackageReference "YouTubeKit" */;
-			productName = YouTubeKit;
 		};
 		9DCFC7832A37604A00616FCF /* PopMenu */ = {
 			isa = XCSwiftPackageProductDependency;

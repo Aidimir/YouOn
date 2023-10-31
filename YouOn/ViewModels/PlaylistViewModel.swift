@@ -224,7 +224,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
             if let allFilesStorage = allFilesStorage, let playlist = playlist {
                 indexes.forEach { index in
                     var item = allFilesStorage[index.item]
-                    item.playlistSpecID = UUID()
+                    item.uiId = UUID()
                     self.playlist!.addFile(file: item)
                     uiModels.accept([item] + uiModels.value)
                 }
@@ -236,7 +236,7 @@ class PlaylistViewModel: PlaylistViewModelProtocol {
     }
     
     func checkSpecIdInsideStorage(id: UUID) -> Bool {
-        if player?.storage.value.first(where: { $0.playlistSpecID == id }) != nil {
+        if player?.storage.value.first(where: { $0.uiId == id }) != nil {
             return true
         } else {
             return false

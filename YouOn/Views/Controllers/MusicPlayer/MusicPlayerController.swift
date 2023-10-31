@@ -193,37 +193,31 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
             cell.backgroundColor = .clear
             cell.selectionStyle = .none
             
-            if let disposeBag = self?.disposeBag {
-                if let id = self?.musicPlayer.currentFile.value?.playerSpecID {
-                    if id == item.playerSpecID {
-                        self?.musicPlayer.isPlaying.take(while: { val in
-                            cell.playState = val ? .playing : .paused
-                            return self?.musicPlayer.currentFile.value?.playerSpecID?.uuidString == item.playerSpecID?.uuidString
-                        }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
+            if let disposeBag = self?.disposeBag,
+               let currentFile = self?.musicPlayer.currentFile.value {
+                if let id = currentFile.uiId, self?.musicPlayer.checkSpecIdInsideStorage(id: id) ?? false {
+                            if id.uuidString == item.identity {
+                                self?.musicPlayer.isPlaying.take(while: { val in
+                                    cell.playState = val ? .playing : .paused
+                                    return self?.musicPlayer.currentFile.value?.uiId?.uuidString == item.identity
+                                }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
+                            } else {
+                                cell.playState = .stopped
+                            }
                     } else {
-                        cell.playState = .stopped
-                    }
-                } else if let id = self?.musicPlayer.currentFile.value?.playlistSpecID?.uuidString, id == item.playlistSpecID?.uuidString {
-                    self?.musicPlayer.isPlaying.take(while: { val in
-                        cell.playState = val ? .playing : .paused
-                        return self?.musicPlayer.currentFile.value?.playerSpecID?.uuidString == item.playerSpecID?.uuidString
-                    }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
-                } else {
-                    if self?.musicPlayer.currentFile.value?.id == item.identity {
-                        if self?.cellToTrack == nil || self?.cellToTrack == cell {
-                            self?.musicPlayer.isPlaying.take(while: { val in
-                                cell.playState = val ? .playing : .paused
-                                return self?.musicPlayer.currentFile.value?.id == item.id
-                            }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
-                            self?.cellToTrack = cell
+                        if currentFile.id == item.id {
+                            if self?.cellToTrack == nil || self?.cellToTrack == cell {
+                                self?.musicPlayer.isPlaying.take(while: { val in
+                                    return self?.musicPlayer.currentFile.value?.id == item.id
+                                }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
+                                self?.cellToTrack = cell
+                            }
                         }
-                    } else {
-                        cell.playState = .stopped
                     }
-                }
             }
             
             return cell
+
         } canEditRowAtIndexPath: { source, indexPath in
             return true
         } canMoveRowAtIndexPath: { source, indexPath in
@@ -375,11 +369,12 @@ class MusicPlayerViewController: UIViewController, MusicPlayerViewProtocol, Musi
                let model = self?.musicPlayer.currentFile.value,
                let cells = (self?.currentStorageTableView?.tableView.visibleCells as? [MediaFileCell])?.filter({ $0.file?.id == model.id }), cells.count > 0 {
                 cells.forEach({ $0.playState = .stopped })
-                if self?.musicPlayer.currentFile.value?.playlistSpecID != nil {
-                    cells.first(where: { $0.file?.playlistSpecID == self?.musicPlayer.currentFile.value?.playlistSpecID })?.playState = value ? .playing : .paused
+                if self?.musicPlayer.currentFile.value?.uiId != nil {
+                    cells.first(where: { $0.file?.uiId == self?.musicPlayer.currentFile.value?.uiId })?.playState = value ? .playing : .paused
                 } else {
                     cells.first?.playState = value ? .playing : .paused
-                }            }
+                }
+            }
         }.disposed(by: disposeBag)
         
         musicPlayer.currentItemDuration.filter({ $0 != nil }).map({ $0! }).asDriver(onErrorJustReturn: 0).drive { [weak self] val in

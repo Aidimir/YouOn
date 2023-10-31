@@ -14,7 +14,7 @@ protocol MediaFileUIProtocol: Any {
     var duration: TimeInterval { get set }
     var author: String { get set }
     var imageURL: URL? { get set }
-    var playlistSpecID: UUID? { get set }
+    var uiId: UUID? { get set }
     var playerSpecID: UUID? { get set }
 }
 
@@ -22,8 +22,7 @@ struct MediaFile: Codable, MediaFileUIProtocol {
     var url: String
     var title: String
     var id: String
-    var playlistSpecID: UUID?
-    var playerSpecID: UUID?
+    var uiId: UUID?
     var duration: TimeInterval
     var author: String
     var videoURL: URL
@@ -33,17 +32,17 @@ struct MediaFile: Codable, MediaFileUIProtocol {
 }
 
 struct MediaFileUIModel: IdentifiableType, Equatable, MediaFileUIProtocol {
+    var playerSpecID: UUID?
     var id: String
     var title: String
     var duration: TimeInterval
     var author: String
     var imageURL: URL?
-    var playlistSpecID: UUID?
-    var playerSpecID: UUID?
+    var uiId: UUID?
     
     var identity: String {
         get {
-            return playlistSpecID?.uuidString ?? id
+            return uiId?.uuidString ?? id
         }
     }
     
@@ -53,7 +52,7 @@ struct MediaFileUIModel: IdentifiableType, Equatable, MediaFileUIProtocol {
         self.imageURL = model.imageURL
         self.duration = model.duration
         self.author = model.author
-        self.playlistSpecID = model.playlistSpecID
+        self.uiId = model.uiId
         self.playerSpecID = model.playerSpecID
     }
 }

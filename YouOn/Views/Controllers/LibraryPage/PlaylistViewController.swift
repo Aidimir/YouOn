@@ -107,8 +107,8 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
             if let model = self?.viewModel?.currentFile?.value,
                let cells = (self?.tableViewController?.tableView.visibleCells as? [MediaFileCell])?.filter({ $0.file?.id == model.id }), cells.count > 0 {
                 cells.forEach({ $0.playState = .stopped })
-                if self?.viewModel?.currentFile?.value?.playlistSpecID != nil {
-                    cells.first(where: { $0.file?.playlistSpecID == self?.viewModel?.currentFile?.value?.playlistSpecID })?.playState = val ? .playing : .paused
+                if self?.viewModel?.currentFile?.value?.uiId != nil {
+                    cells.first(where: { $0.file?.uiId == self?.viewModel?.currentFile?.value?.uiId })?.playState = val ? .playing : .paused
                 } else {
                     cells.first?.playState = val ? .playing : .paused
                 }
@@ -149,11 +149,11 @@ class PlaylistViewController: UIViewController, PlaylistViewProtocol, PlaylistVi
                     if let disposeBag = self?.disposeBag,
                         let currentFile = viewModel.currentFile?.value {
                         if viewModel.isAddable {
-                            if let id = currentFile.playlistSpecID, viewModel.checkSpecIdInsideStorage(id: id) {
+                            if let id = currentFile.uiId, viewModel.checkSpecIdInsideStorage(id: id) {
                                     if id.uuidString == item.identity {
                                         viewModel.isPlaying?.take(while: { val in
                                             cell.playState = val ? .playing : .paused
-                                            return viewModel.currentFile?.value?.playlistSpecID?.uuidString == item.identity
+                                            return viewModel.currentFile?.value?.uiId?.uuidString == item.identity
                                         }).bind(to: cell.rx.isPlaying).disposed(by: disposeBag)
                                     } else {
                                         cell.playState = .stopped

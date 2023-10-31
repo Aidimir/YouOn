@@ -1,0 +1,6 @@
+framework module ESTMusicIndicator {
+  umbrella header "ESTMusicIndicator-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,41 @@
+{
+  "pins" : [
+    {
+      "identity" : "lnpopupcontroller",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/LeoNatan/LNPopupController.git",
+      "state" : {
+        "revision" : "910545b1ed0c42366cfb89949278e1e8edfc0110",
+        "version" : "2.14.10"
+      }
+    },
+    {
+      "identity" : "popmenu",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/CaliCastle/PopMenu.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "60dd4c7a5cc3d0a4262485aa1224f6219be47344"
+      }
+    },
+    {
+      "identity" : "xcdyoutubekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cbg-dev-k/XCDYouTubeKit.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "f2b1b685c375edca711cc2b229f6bf2bb4588611"
+      }
+    },
+    {
+      "identity" : "youtubekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Jeehut/YouTubeKit.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "356c81e5ac4a16053aea5d830c3b6be49e122117"
+      }
+    }
+  ],
+  "version" : 2
+}

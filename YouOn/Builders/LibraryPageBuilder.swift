@@ -16,23 +16,27 @@ protocol LibraryPageBuilderProtocol: BuilderProtocol {
     func buildAddItemsToPlaylist(_ fromStorage: [MediaFile], saveAction: (([IndexPath]) -> Void)?) -> UIViewController
 }
 
-class LibraryPageBuilder: LibraryPageBuilderProtocol {
+class LibraryPageBuilder: NSObject, LibraryPageBuilderProtocol, AVPlayerViewControllerDelegate {
     
     func buildVideoPlayer(item: MediaFile) -> AVPlayerViewController? {
         guard let url = fileManager.urls(for: .documentDirectory, in: .allDomainsMask).first?.appendingPathComponent(item.url) else { return nil }
         let playerItem = AVPlayerItem(url: url)
-        videoPlayer = AVPlayer(playerItem: playerItem)
-        let controller = AVPlayerViewController()
-        controller.player = videoPlayer
-        return controller
+        videoPlayer.replaceCurrentItem(with: playerItem)
+        videoController.player = videoPlayer
+        return videoController
     }
-    
     
     private var player: MusicPlayer = MusicPlayer.shared
     
     private var playlistViewModel: PlaylistViewModel?
     
-    private var videoPlayer: AVPlayer?
+    private lazy var videoPlayer: AVPlayer = AVPlayer()
+    
+    private lazy var videoController: AVPlayerViewController = {
+        var controller = AVPlayerViewController()
+        controller.delegate = self
+        return controller
+    }()
     
     private let fileManager = FileManager.default
     

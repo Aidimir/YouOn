@@ -1,0 +1,60 @@
+PODS:
+  - Alamofire (5.8.0)
+  - Differentiator (5.0.0)
+  - ESTMusicIndicator (0.2.0)
+  - Kingfisher (7.9.1)
+  - MarqueeLabel (4.3.1)
+  - ParallaxHeader (3.0.0)
+  - RxCocoa (6.5.0):
+    - RxRelay (= 6.5.0)
+    - RxSwift (= 6.5.0)
+  - RxDataSources (5.0.0):
+    - Differentiator (~> 5.0)
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - RxRelay (6.5.0):
+    - RxSwift (= 6.5.0)
+  - RxSwift (6.5.0)
+  - SnapKit (5.6.0)
+
+DEPENDENCIES:
+  - Alamofire
+  - ESTMusicIndicator
+  - Kingfisher
+  - MarqueeLabel
+  - ParallaxHeader
+  - RxCocoa
+  - RxDataSources (~> 5.0)
+  - RxSwift
+  - SnapKit
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - Differentiator
+    - ESTMusicIndicator
+    - Kingfisher
+    - MarqueeLabel
+    - ParallaxHeader
+    - RxCocoa
+    - RxDataSources
+    - RxRelay
+    - RxSwift
+    - SnapKit
+
+SPEC CHECKSUMS:
+  Alamofire: 0e92e751b3e9e66d7982db43919d01f313b8eb91
+  Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
+  ESTMusicIndicator: 80a123b51a7de3caa44dc91829b9619185dad0f6
+  Kingfisher: 1d14e9f59cbe19389f591c929000332bf70efd32
+  MarqueeLabel: da4b9cf619fe70c75d7bab4580b0b4a0b868aa6b
+  ParallaxHeader: a343f55eb38f52a89c5820a77e14cf975b84e6aa
+  RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
+  RxDataSources: aa47cc1ed6c500fa0dfecac5c979b723542d79cf
+  RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
+  RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
+  SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
+
+PODFILE CHECKSUM: 4700c4df850a5ca9af8662419ef562b61a1747e9
+
+COCOAPODS: 1.12.1

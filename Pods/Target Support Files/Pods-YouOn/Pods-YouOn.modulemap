@@ -1,0 +1,6 @@
+framework module Pods_YouOn {
+  umbrella header "Pods-YouOn-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -52,6 +52,7 @@ typealias OutsidePlayerControlProtocol = MusicPlayerStorageProtocol & MusicPlaye
 protocol MusicPlayerProtocol: AnyObject, OutsidePlayerControlProtocol {
     func fetchActionModels(indexPath: IndexPath) -> [ActionModel]
     func updateOnUiChanges()
+    func checkSpecIdInsideStorage(id: UUID) -> Bool
     var dataManager: PlayerDataManagerProtocol? { get set }
     var currentIndex: BehaviorRelay<Int?> { get }
     var currentItemDuration: Observable<Double?> { get }
@@ -73,12 +74,20 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     
     func updateOnUiChanges() {
         currentIndex.accept(storage.value.firstIndex(where: { model in
-            if let id = currentFile.value?.playlistSpecID {
-                return id == model.playlistSpecID
+            if let id = currentFile.value?.uiId {
+                return id == model.uiId
             } else {
                 return currentFile.value?.id == model.id
             }
         }))
+    }
+    
+    func checkSpecIdInsideStorage(id: UUID) -> Bool {
+        if storage.value.first(where: { $0.uiId == id }) != nil {
+            return true
+        } else {
+            return false
+        }
     }
     
     
@@ -419,7 +428,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
         if currentIndex.value != nil {
             var newStorage = storage.value
             var fileNewId = file
-            fileNewId.playerSpecID = UUID()
+            fileNewId.uiId = UUID()
             newStorage.insert(fileNewId, at: currentIndex.value! + 1)
             storage.accept(newStorage)
         }
@@ -427,7 +436,7 @@ class MusicPlayer: NSObject, MusicPlayerProtocol, MusicPlayerControlProtocol {
     
     func addLast(file: MediaFile) {
         var fileNewId = file
-        fileNewId.playerSpecID = UUID()
+        fileNewId.uiId = UUID()
         storage.accept(storage.value + [fileNewId])
     }
 }
